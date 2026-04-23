@@ -18,11 +18,13 @@ echo ""
 echo "[1/4] Updating historical data..."
 python3 -c "
 from scrapers.football_data import FootballDataLoader
+from config.settings import load_settings
 loader = FootballDataLoader()
-# Load current season for all leagues
-for league in ['EPL', 'L1', 'Bundesliga', 'SerieA', 'LaLiga']:
-    matches = loader.fetch_season(league, '2425')
-    loader.save_to_db(matches)
+settings = load_settings()
+for season in settings.get('historical_seasons', ['2526']):
+    for league in settings.get('leagues', ['EPL', 'L1', 'Bundesliga', 'SerieA', 'LaLiga']):
+        matches = loader.fetch_season(league, season)
+        loader.save_to_db(matches)
 "
 
 # Step 2: Fetch upcoming fixtures

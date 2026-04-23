@@ -18,6 +18,7 @@ def load_settings():
         "fixture_days_ahead": 7,
         "fixture_timezone": "Asia/Macau",
         "fixture_season": None,
+        "historical_seasons": ["2526"],
         "leagues": ["EPL", "L1", "Bundesliga", "SerieA", "LaLiga"],
         "bankroll": 1000,
         "staking_mode": "kelly",

@@ -16,10 +16,13 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from config.paths import DB_PATH
 
 # Football-Data.co.uk CSV URLs
-# Season format: 2425 = 2024-25 season
+# Season format: 2526 = 2025-26 season
 SEASONS = {
+    '2122': '2021-22',
+    '2223': '2022-23',
     '2324': '2023-24',
     '2425': '2024-25',
+    '2526': '2025-26',
 }
 
 LEAGUE_CODES = {
@@ -33,6 +36,13 @@ LEAGUE_CODES = {
 
 BASE_URL = 'https://www.football-data.co.uk/mmz4281/{season}/{league}.csv'
 
+
+def current_season_code(reference_date: datetime = None) -> str:
+    """Return the football-data.co.uk season code for the current season."""
+    reference_date = reference_date or datetime.now()
+    start_year = reference_date.year if reference_date.month >= 7 else reference_date.year - 1
+    return f"{str(start_year)[-2:]}{str(start_year + 1)[-2:]}"
+
 class FootballDataLoader:
     """
     Loads historical match data from football-data.co.uk
@@ -45,13 +55,13 @@ class FootballDataLoader:
             'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36'
         })
     
-    def fetch_season(self, league: str, season: str = '2425') -> List[Dict]:
+    def fetch_season(self, league: str, season: str = None) -> List[Dict]:
         """
         Fetch a full season of match data.
         
         Args:
             league: League code (EPL, L1, Bundesliga, etc.)
-            season: Season code (e.g., '2425' for 2024-25)
+            season: Season code (e.g., '2526' for 2025-26)
         
         Returns:
             List of match dictionaries with results and odds
@@ -60,6 +70,7 @@ class FootballDataLoader:
             print(f"Unknown league: {league}")
             return []
         
+        season = season or current_season_code()
         league_code = LEAGUE_CODES[league]
         url = BASE_URL.format(season=season, league=league_code)
         
@@ -138,10 +149,14 @@ class FootballDataLoader:
         count = 0
         for match in matches:
             c.execute('''
-                INSERT OR IGNORE INTO matches 
+                INSERT INTO matches
                 (match_id, home_team, away_team, league, kickoff, 
                  home_goals, away_goals, status)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                ON CONFLICT(match_id) DO UPDATE SET
+                    home_goals = excluded.home_goals,
+                    away_goals = excluded.away_goals,
+                    status = 'completed'
             ''', (
                 match['match_id'],
                 match['home_team'],
@@ -158,7 +173,7 @@ class FootballDataLoader:
         
         conn.commit()
         conn.close()
-        print(f"Saved {count} new matches to database")
+        print(f"Upserted {count} completed matches to database")
     
     def load_all_data(self, leagues: List[str] = None, seasons: List[str] = None):
         """
@@ -166,12 +181,12 @@ class FootballDataLoader:
         
         Args:
             leagues: List of leagues to load (default: all)
-            seasons: List of seasons to load (default: ['2425', '2324'])
+            seasons: List of seasons to load (default: current season)
         """
         if leagues is None:
             leagues = list(LEAGUE_CODES.keys())
         if seasons is None:
-            seasons = ['2425', '2324']
+            seasons = [current_season_code()]
         
         total = 0
         for league in leagues:
@@ -186,7 +201,7 @@ if __name__ == '__main__':
     loader = FootballDataLoader()
     
     # Test with one season of EPL
-    matches = loader.fetch_season('EPL', '2425')
+    matches = loader.fetch_season('EPL')
     loader.save_to_db(matches)
     
     print(f"\nDatabase now has {len(matches)} matches")

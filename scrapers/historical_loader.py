@@ -80,6 +80,8 @@ class HistoricalDataLoader:
                     # Skip rows with missing data
                     if not row.get('HomeTeam') or not row.get('AwayTeam'):
                         continue
+                    if not row.get('FTHG') or not row.get('FTAG'):
+                        continue
                     
                     # Parse date
                     date_str = row.get('Date', '')
@@ -94,8 +96,8 @@ class HistoricalDataLoader:
                     match = {
                         'home_team': row['HomeTeam'].strip(),
                         'away_team': row['AwayTeam'].strip(),
-                        'home_goals': int(row.get('FTHG', 0) or 0),
-                        'away_goals': int(row.get('FTAG', 0) or 0),
+                        'home_goals': int(row['FTHG']),
+                        'away_goals': int(row['FTAG']),
                         'date': date,
                         'league': league,
                         'result': row.get('FTR', ''),  # H/D/A
@@ -123,9 +125,13 @@ class HistoricalDataLoader:
             match_id = f"{match['home_team']}_vs_{match['away_team']}_{match['date']}"
             
             c.execute('''
-                INSERT OR IGNORE INTO matches 
+                INSERT INTO matches
                 (match_id, home_team, away_team, league, kickoff, home_goals, away_goals, status)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                ON CONFLICT(match_id) DO UPDATE SET
+                    home_goals = excluded.home_goals,
+                    away_goals = excluded.away_goals,
+                    status = 'completed'
             ''', (
                 match_id,
                 match['home_team'],
@@ -143,7 +149,7 @@ class HistoricalDataLoader:
         conn.commit()
         conn.close()
         
-        print(f"Saved {count} new matches to database")
+        print(f"Upserted {count} completed matches to database")
     
     def load_all_leagues(self, season: str = '2526'):
         """Load data for all configured leagues."""

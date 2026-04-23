@@ -5,6 +5,7 @@
   "fixture_days_ahead": 7,
   "fixture_timezone": "Asia/Macau",
   "fixture_season": null,
+  "historical_seasons": ["2526"],
   "stake_use_scraper": false,
   "stake_proxy": null,
   "leagues": ["EPL", "L1", "Bundesliga", "SerieA", "LaLiga"],
