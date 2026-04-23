@@ -5,10 +5,12 @@ Systematic value-betting engine for soccer. Finds +EV bets by comparing Dixon-Co
 ## Current Status: ✅ WORKING
 
 **What's live:**
-- 3,293 real historical matches loaded (5 leagues)
-- Dixon-Coles model fitted on 87 relevant matches
-- 91 picks generated with realistic edges
+- 7,989 real historical matches loaded (5 leagues, 2021-2025)
+- Dixon-Coles model fitted per league
+- 12 picks generated with realistic edges
 - Dark HTML dashboard with STRONG/KEEP/CAUTION classification
+- Kelly criterion staking (optimal bet sizing)
+- Team news adjustment CLI
 
 ## Quick Start
 
@@ -31,21 +33,56 @@ rollo-stake-model/
 │   ├── core.py             # SQLite DB
 │   └── dixon_coles.py      # Dixon-Coles model
 ├── scrapers/
-│   ├── stake_scraper.py    # Stake.com odds
+│   ├── stake_scraper.py    # Stake.com odds (placeholder)
 │   ├── football_data.py    # Historical data (football-data.co.uk)
-│   └── fixtures.py         # Upcoming fixtures (API-Football)
+│   ├── fixtures.py         # Upcoming fixtures (demo data)
+│   ├── manual_odds.py      # CLI to input real bookmaker odds
+│   ├── news_scraper.py     # Free team news (blocked by sites)
+│   └── historical_loader.py # Multi-season data loader
 ├── analysis/
-│   ├── edge_calculator.py  # Value bet finder
-│   └── fatigue.py          # Fixture congestion analysis
+│   ├── edge_calculator.py  # Value bet finder + Kelly staking
+│   ├── fatigue.py          # Fixture congestion analysis
+│   └── team_news.py        # Injury/transfer adjustments
 ├── dashboard/
 │   └── generator.py        # HTML dashboard
+├── scripts/
+│   └── team_news_cli.py    # Interactive team news input
 ├── data/
-│   └── rollo_stake.db      # SQLite database
+│   └── rollo_stake.db      # SQLite database (not in repo)
 └── tests/
     ├── populate_demo.py    # Demo data
     ├── add_odds.py         # Realistic odds
     └── backtest.py         # Model validation
 ```
+
+## Collaboration: Garfis + Codex + Rollo
+
+This repo is set up for collaboration between:
+- **Garfis** (me) — Initial build, architecture, model
+- **Codex (GPT-5.4)** — Your local coding assistant
+- **Rollo** — You, the user
+
+### Workflow
+1. Clone this repo to your laptop
+2. Use Codex to modify/improve
+3. Push to GitHub
+4. I (Garfis) read commits and suggest improvements
+
+### What Codex Should Know
+
+| File | Purpose | Modify? |
+|------|---------|---------|
+| `main.py` | Entry point | ✅ Add features |
+| `models/dixon_coles.py` | Core math | ⚠️ Be careful |
+| `analysis/edge_calculator.py` | Kelly + edge | ✅ Adjust staking |
+| `dashboard/generator.py` | HTML output | ✅ Add UI features |
+| `config/settings.json` | Settings | ✅ Adjust thresholds |
+
+### Priority Tasks for Codex
+1. **Results tracking** — Input match outcomes, calculate P&L
+2. **Flat staking option** — $X/pick instead of Kelly %
+3. **Real fixtures API** — API-Football integration
+4. **Two-range architecture** — Separate bankrolls for C/D ranges
 
 ## Model Details
 
@@ -54,28 +91,34 @@ rollo-stake-model/
 - Home advantage factor (~35%)
 - Dixon-Coles correction for low-score correlation
 - Team-specific attack/defense ratings
-- Trained on 200 most recent relevant matches
+- Trained per league on all historical data
 
 ### Edge Calculation
-- **STRONG**: Edge ≥ 25% → $250 stake
-- **KEEP**: Edge ≥ 10%, < 25% → $200 stake
-- **CAUTION**: Edge ≥ 5%, < 10% → $200 stake
+- **STRONG**: Edge ≥ 25% → Kelly stake
+- **KEEP**: Edge ≥ 10%, < 25% → Kelly stake
+- **CAUTION**: Edge ≥ 5%, < 10% → Kelly stake (capped)
 - **SKIP**: Edge < 5%
+
+### Kelly Criterion
+```
+Stake = Bankroll × Edge / (Odds - 1)
+```
+Where `Edge = Model Prob - (1 / Odds)`
 
 ### Markets Supported
 - 1X2 (Home/Draw/Away)
 - Over/Under 2.5 goals
-- Both Teams To Score (BTTS)
 
 ## Data Sources
 
 | Source | Status | Notes |
 |--------|--------|-------|
-| Football-Data.co.uk | ✅ Working | Free historical data, 1,752 matches loaded |
+| Football-Data.co.uk | ✅ Working | Free, 7,989 matches, 5 leagues |
 | Demo fixtures | ✅ Working | Sample upcoming matches |
-| Realistic odds | ✅ Working | Manually populated market odds |
+| Realistic odds | ✅ Working | Manually populated |
 | API-Football | ⚠️ Needs key | Free tier: 100 calls/day |
-| Stake.com scraper | ⚠️ Blocked | Anti-bot protection, needs workaround |
+| Stake.com scraper | ❌ Blocked | Anti-bot protection |
+| Team news scraper | ❌ Blocked | All sites block bots |
 
 ## To Activate Real-Time Mode
 
@@ -89,122 +132,42 @@ rollo-stake-model/
 }
 ```
 
-### 2. Stake.com Scraper (Optional - for live odds)
-Current status: Blocked by anti-bot protection
-Workarounds to try:
-- Use residential proxy
-- Add delays between requests
-- Try mobile version of site
-- Use alternative bookmaker API
-
-### 3. Run Daily
+### 2. Run Daily
 ```bash
 # Add to crontab (runs daily at 9 AM)
 0 9 * * * /home/ubuntu/rollo-stake-model/run_daily.sh
 ```
 
-## Backtesting
-
-```bash
-cd /home/ubuntu/rollo-stake-model
-python3 tests/backtest.py
-```
-
-Validates model performance on historical data.
-
-## Manual Usage
-
-```bash
-# Full pipeline with all features
-python3 main.py
-
-# Skip scraping (use existing data)
-python3 main.py --skip-scrape
-
-# Skip fatigue analysis
-python3 main.py --no-fatigue
-
-# Specific leagues only
-python3 main.py --leagues EPL L1
-
-# Update match result
-python3 main.py --update-result "match_id" win 2 1
-```
-
-## Dashboard
-
-Generated at: `dashboard/index.html`
-
-Features:
-- Bankroll tracking
-- Pick quality flags (STRONG/KEEP/CAUTION)
-- Edge percentages
-- Model probabilities
-- Stake sizing
-- P&L tracking (after results updated)
-
-## Roadmap
-
-- [x] Dixon-Coles model
-- [x] Edge calculator
-- [x] HTML dashboard
-- [x] Historical data (Football-Data)
-- [x] Fatigue analysis
-- [x] Backtesting
-- [ ] Live odds scraping (Stake.com blocked)
-- [ ] API-Football integration (needs key)
-- [ ] Kelly criterion stake sizing
-- [ ] Telegram alerts
-- [ ] Injury/rotation tracking
-
-## License
-
-Private - for Rollo's use only.
-
 ## Team News Adjustments
 
-The model can't see real-world factors like injuries or transfers. Use the team news CLI to adjust predictions manually.
-
-### Usage
+The model can't see real-world factors. Use the CLI to adjust manually.
 
 ```bash
-cd /home/ubuntu/rollo-stake-model
-source .venv/bin/activate
 python3 scripts/team_news_cli.py
 ```
 
-### Supported Commands
-
-```
-<team> injury <player> <position> <importance>
-<team> transfer <player> <position> <quality>
-<team> manager <name> <impact>
-<team> motivation <situation>
-```
-
-### Examples
-
+**Commands:**
 ```
 Liverpool injury Salah striker star
 Man City transfer Haaland striker good
-Arsenal manager Arteta positive
-Chelsea motivation derby
+Arsenal motivation title_race
 done
 ```
 
-### Impact Levels
+## Backtesting
 
-| Factor | Values | Impact |
-|--------|--------|--------|
-| injury importance | star/key/squad | -25% / -20% / -10% |
-| transfer quality | star/good/squad | +25% / +15% / +5% |
-| manager impact | positive/negative/neutral | +10% / -10% / 0% |
-| motivation | title_race/relegation/derby | +8% / +12% / +8% |
+```bash
+python3 tests/backtest.py
+```
 
-### How It Works
+## What's Missing (Priority Order)
 
-Adjustments modify base model predictions:
-- Attack adjustments: Affects goal scoring probability
-- Defense adjustments: Affects goal conceding probability  
-- Overall adjustments: Affects win probability directly
-- All adjustments are dampened to avoid overcorrection
+1. **Results tracking** — Can't track P&L yet
+2. **Flat staking** — Only Kelly % now
+3. **Real fixtures** — Need API-Football
+4. **Auto odds** — Need residential proxy or paid API
+5. **Two-range system** — Separate C/D bankrolls
+
+## License
+
+Private — for Rollo's use only.
