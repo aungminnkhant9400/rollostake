@@ -134,6 +134,88 @@ class DashboardGenerator:
         except ValueError:
             return raw
 
+    def _get_h2h(self, home_team: str, away_team: str, limit: int = 5) -> str:
+        """Get head-to-head history between two teams."""
+        conn = sqlite3.connect(DB_PATH)
+        c = conn.cursor()
+        
+        c.execute('''
+            SELECT home_team, away_team, home_goals, away_goals, kickoff
+            FROM matches
+            WHERE status = 'completed'
+            AND (
+                (home_team = ? AND away_team = ?)
+                OR (home_team = ? AND away_team = ?)
+            )
+            ORDER BY kickoff DESC
+            LIMIT ?
+        ''', (home_team, away_team, away_team, home_team, limit))
+        
+        rows = c.fetchall()
+        conn.close()
+        
+        if not rows:
+            return ""
+        
+        h2h_rows = []
+        for h, a, hg, ag, date in rows:
+            winner = "H" if hg > ag else "A" if ag > hg else "D"
+            h2h_rows.append(
+                f"<tr><td>{date[:10]}</td>"
+                f"<td>{html.escape(h)} {hg}-{ag} {html.escape(a)}</td>"
+                f"<td>{winner}</td></tr>"
+            )
+        
+        return (
+            '<div class="h2h"><h3>Head-to-Head</h3>'
+            '<table><thead><tr><th>Date</th><th>Match</th><th>W</th></tr></thead><tbody>'
+            + ''.join(h2h_rows)
+            + '</tbody></table></div>'
+        )
+
+    def _get_recent_form(self, team: str, limit: int = 5) -> str:
+        """Get recent form for a team."""
+        conn = sqlite3.connect(DB_PATH)
+        c = conn.cursor()
+        
+        c.execute('''
+            SELECT home_team, away_team, home_goals, away_goals, kickoff
+            FROM matches
+            WHERE status = 'completed'
+            AND (home_team = ? OR away_team = ?)
+            ORDER BY kickoff DESC
+            LIMIT ?
+        ''', (team, team, limit))
+        
+        rows = c.fetchall()
+        conn.close()
+        
+        if not rows:
+            return ""
+        
+        form_rows = []
+        for h, a, hg, ag, date in rows:
+            if h == team:
+                result = "W" if hg > ag else "D" if hg == ag else "L"
+                score = f"{hg}-{ag}"
+                opponent = a
+            else:
+                result = "W" if ag > hg else "D" if ag == hg else "L"
+                score = f"{ag}-{hg}"
+                opponent = h
+            
+            form_rows.append(
+                f'<span class="form-{result.lower()}">{result}</span>'
+                f'<small>{html.escape(opponent)} {score}</small>'
+            )
+        
+        return (
+            '<div class="recent-form"><h3>Recent Form</h3>'
+            '<div class="form-row">'
+            + ''.join(form_rows)
+            + '</div></div>'
+        )
+
     def _pick_reasoning(self, pick: Dict) -> str:
         parts = []
         if pick.get("reasoning"):
@@ -203,6 +285,11 @@ class DashboardGenerator:
         pick_id = int(pick["id"])
         win_profit = round(float(pick["stake"]) * (float(pick["odds"]) - 1))
         reasoning = self._pick_reasoning(pick)
+        
+        # Get H2H and form
+        h2h_html = self._get_h2h(pick.get('home_team', ''), pick.get('away_team', ''))
+        home_form = self._get_recent_form(pick.get('home_team', ''))
+        away_form = self._get_recent_form(pick.get('away_team', ''))
 
         return f"""
 <div class="pick-card {quality_class}" id="pick-{pick_id}" data-date="{html.escape(date_key)}">
@@ -233,6 +320,9 @@ class DashboardGenerator:
       <span>Win <strong class="good">+${win_profit}</strong></span>
       <span>Lose <strong class="bad">-${float(pick['stake']):.0f}</strong></span>
     </div>
+    {h2h_html}
+    {home_form}
+    {away_form}
   </div>
 </div>
 """
@@ -390,6 +480,19 @@ button.loss {{ color:var(--bad); border-color:rgba(239,68,68,.35); }}
 .history th,.history td {{ padding:10px 12px; border-bottom:1px solid var(--border); text-align:left; font-size:11px; color:var(--muted); }}
 .history th {{ color:var(--dim); text-transform:uppercase; letter-spacing:.08em; font-size:9px; }}
 .empty-history {{ padding:18px; color:var(--muted); }}
+.h2h {{ margin-top:12px; margin-bottom:12px; }}
+.h2h h3 {{ font-size:11px; color:var(--dim); text-transform:uppercase; letter-spacing:.08em; margin-bottom:8px; }}
+.h2h table {{ width:100%; border-collapse:collapse; font-size:11px; }}
+.h2h th,.h2h td {{ padding:6px 8px; border-bottom:1px solid var(--border); color:var(--muted); text-align:left; }}
+.h2h th {{ color:var(--dim); font-size:9px; text-transform:uppercase; }}
+.recent-form {{ margin-top:12px; margin-bottom:12px; }}
+.recent-form h3 {{ font-size:11px; color:var(--dim); text-transform:uppercase; letter-spacing:.08em; margin-bottom:8px; }}
+.form-row {{ display:flex; gap:12px; align-items:center; flex-wrap:wrap; }}
+.form-row span {{ display:inline-flex; align-items:center; justify-content:center; width:24px; height:24px; border-radius:4px; font-size:11px; font-weight:800; }}
+.form-row .form-w {{ color:var(--good); background:rgba(34,197,94,.15); }}
+.form-row .form-d {{ color:var(--warn); background:rgba(251,191,36,.15); }}
+.form-row .form-l {{ color:var(--bad); background:rgba(239,68,68,.15); }}
+.form-row small {{ color:var(--muted); font-size:10px; margin-left:2px; }}
 @media (max-width:900px) {{
   header {{ height:auto; gap:8px; align-items:flex-start; flex-direction:column; padding:12px 16px; }}
   .pnl-bar {{ grid-template-columns:repeat(2,minmax(120px,1fr)); }}

@@ -83,6 +83,19 @@ button.loss { color:var(--bad); border-color:rgba(239,68,68,.35); }
 .history th,.history td { padding:10px 12px; border-bottom:1px solid var(--border); text-align:left; font-size:11px; color:var(--muted); }
 .history th { color:var(--dim); text-transform:uppercase; letter-spacing:.08em; font-size:9px; }
 .empty-history { padding:18px; color:var(--muted); }
+.h2h { margin-top:12px; margin-bottom:12px; }
+.h2h h3 { font-size:11px; color:var(--dim); text-transform:uppercase; letter-spacing:.08em; margin-bottom:8px; }
+.h2h table { width:100%; border-collapse:collapse; font-size:11px; }
+.h2h th,.h2h td { padding:6px 8px; border-bottom:1px solid var(--border); color:var(--muted); text-align:left; }
+.h2h th { color:var(--dim); font-size:9px; text-transform:uppercase; }
+.recent-form { margin-top:12px; margin-bottom:12px; }
+.recent-form h3 { font-size:11px; color:var(--dim); text-transform:uppercase; letter-spacing:.08em; margin-bottom:8px; }
+.form-row { display:flex; gap:12px; align-items:center; flex-wrap:wrap; }
+.form-row span { display:inline-flex; align-items:center; justify-content:center; width:24px; height:24px; border-radius:4px; font-size:11px; font-weight:800; }
+.form-row .form-w { color:var(--good); background:rgba(34,197,94,.15); }
+.form-row .form-d { color:var(--warn); background:rgba(251,191,36,.15); }
+.form-row .form-l { color:var(--bad); background:rgba(239,68,68,.15); }
+.form-row small { color:var(--muted); font-size:10px; margin-left:2px; }
 @media (max-width:900px) {
   header { height:auto; gap:8px; align-items:flex-start; flex-direction:column; padding:12px 16px; }
   .pnl-bar { grid-template-columns:repeat(2,minmax(120px,1fr)); }
@@ -97,7 +110,7 @@ button.loss { color:var(--bad); border-color:rgba(239,68,68,.35); }
 <body>
 <header>
   <div class="logo">ROLLO STAKE MODEL <em>Range C/D</em></div>
-  <div class="header-meta">16 picks · generated Thursday, April 23, 2026 at 22:22</div>
+  <div class="header-meta">16 picks · generated Thursday, April 23, 2026 at 22:30</div>
 </header>
 <main class="shell">
   <div class="tabs">
@@ -161,6 +174,9 @@ button.loss { color:var(--bad); border-color:rgba(239,68,68,.35); }
       <span>Win <strong class="good">+$480</strong></span>
       <span>Lose <strong class="bad">-$200</strong></span>
     </div>
+    <div class="h2h"><h3>Head-to-Head</h3><table><thead><tr><th>Date</th><th>Match</th><th>W</th></tr></thead><tbody><tr><td>2026-03-01</td><td>Man City 1-2 Liverpool</td><td>A</td></tr><tr><td>2026-02-08</td><td>Liverpool 1-2 Man City</td><td>A</td></tr><tr><td>2025-11-09</td><td>Man City 3-0 Liverpool</td><td>H</td></tr><tr><td>2025-11-02</td><td>Liverpool 1-1 Man City</td><td>D</td></tr><tr><td>2025-08-15</td><td>Man City 2-1 Liverpool</td><td>H</td></tr></tbody></table></div>
+    <div class="recent-form"><h3>Recent Form</h3><div class="form-row"><span class="form-w">W</span><small>Arsenal 2-1</small><span class="form-w">W</span><small>Chelsea 3-0</small><span class="form-d">D</span><small>West Ham 1-1</small><span class="form-d">D</span><small>Nott&#x27;m Forest 2-2</small><span class="form-d">D</span><small>Nottingham Forest 2-2</small></div></div>
+    <div class="recent-form"><h3>Recent Form</h3><div class="form-row"><span class="form-w">W</span><small>Everton 2-1</small><span class="form-w">W</span><small>Fulham 2-0</small><span class="form-l">L</span><small>Brighton 1-2</small><span class="form-d">D</span><small>Tottenham 1-1</small><span class="form-l">L</span><small>Wolves 1-2</small></div></div>
   </div>
 </div>
 <div class="day-header" data-date="2026-04-26"><span>Sun Apr 26</span><small>1 picks</small></div>
@@ -192,6 +208,9 @@ button.loss { color:var(--bad); border-color:rgba(239,68,68,.35); }
       <span>Win <strong class="good">+$480</strong></span>
       <span>Lose <strong class="bad">-$200</strong></span>
     </div>
+    <div class="h2h"><h3>Head-to-Head</h3><table><thead><tr><th>Date</th><th>Match</th><th>W</th></tr></thead><tbody><tr><td>2026-02-07</td><td>Man United 2-0 Tottenham</td><td>H</td></tr><tr><td>2025-11-08</td><td>Tottenham 2-2 Man United</td><td>D</td></tr><tr><td>2025-02-16</td><td>Tottenham 1-0 Man United</td><td>H</td></tr><tr><td>2024-09-29</td><td>Man United 0-3 Tottenham</td><td>A</td></tr><tr><td>2024-01-14</td><td>Man United 2-2 Tottenham</td><td>D</td></tr></tbody></table></div>
+    <div class="recent-form"><h3>Recent Form</h3><div class="form-row"><span class="form-w">W</span><small>Chelsea 1-0</small><span class="form-l">L</span><small>Leeds 1-2</small><span class="form-d">D</span><small>Bournemouth 2-2</small><span class="form-w">W</span><small>Aston Villa 3-1</small><span class="form-l">L</span><small>Newcastle 1-2</small></div></div>
+    <div class="recent-form"><h3>Recent Form</h3><div class="form-row"><span class="form-d">D</span><small>Brighton 2-2</small><span class="form-l">L</span><small>Sunderland 0-1</small><span class="form-l">L</span><small>Nott&#x27;m Forest 0-3</small><span class="form-l">L</span><small>Nottingham Forest 0-3</small><span class="form-d">D</span><small>Liverpool 1-1</small></div></div>
   </div>
 </div>
 <div class="day-header" data-date="2026-04-29"><span>Wed Apr 29</span><small>2 picks</small></div>
@@ -223,6 +242,9 @@ button.loss { color:var(--bad); border-color:rgba(239,68,68,.35); }
       <span>Win <strong class="good">+$500</strong></span>
       <span>Lose <strong class="bad">-$200</strong></span>
     </div>
+    <div class="h2h"><h3>Head-to-Head</h3><table><thead><tr><th>Date</th><th>Match</th><th>W</th></tr></thead><tbody><tr><td>2025-11-15</td><td>Barcelona 1-1 Real Madrid</td><td>D</td></tr><tr><td>2025-10-26</td><td>Real Madrid 2-1 Barcelona</td><td>H</td></tr><tr><td>2025-08-20</td><td>Real Madrid 2-1 Barcelona</td><td>H</td></tr><tr><td>2025-05-11</td><td>Barcelona 4-3 Real Madrid</td><td>H</td></tr><tr><td>2024-10-26</td><td>Real Madrid 0-4 Barcelona</td><td>A</td></tr></tbody></table></div>
+    <div class="recent-form"><h3>Recent Form</h3><div class="form-row"><span class="form-d">D</span><small>Girona 1-1</small><span class="form-l">L</span><small>Mallorca 1-2</small><span class="form-w">W</span><small>Ath Madrid 3-2</small><span class="form-w">W</span><small>Atletico Madrid 3-2</small><span class="form-w">W</span><small>Elche 4-1</small></div></div>
+    <div class="recent-form"><h3>Recent Form</h3><div class="form-row"><span class="form-w">W</span><small>Espanol 4-1</small><span class="form-w">W</span><small>Ath Madrid 2-1</small><span class="form-w">W</span><small>Atletico Madrid 2-1</small><span class="form-w">W</span><small>Vallecano 1-0</small><span class="form-w">W</span><small>Sevilla 5-2</small></div></div>
   </div>
 </div>
 
@@ -254,6 +276,9 @@ button.loss { color:var(--bad); border-color:rgba(239,68,68,.35); }
       <span>Win <strong class="good">+$360</strong></span>
       <span>Lose <strong class="bad">-$200</strong></span>
     </div>
+    <div class="h2h"><h3>Head-to-Head</h3><table><thead><tr><th>Date</th><th>Match</th><th>W</th></tr></thead><tbody><tr><td>2025-11-15</td><td>Barcelona 1-1 Real Madrid</td><td>D</td></tr><tr><td>2025-10-26</td><td>Real Madrid 2-1 Barcelona</td><td>H</td></tr><tr><td>2025-08-20</td><td>Real Madrid 2-1 Barcelona</td><td>H</td></tr><tr><td>2025-05-11</td><td>Barcelona 4-3 Real Madrid</td><td>H</td></tr><tr><td>2024-10-26</td><td>Real Madrid 0-4 Barcelona</td><td>A</td></tr></tbody></table></div>
+    <div class="recent-form"><h3>Recent Form</h3><div class="form-row"><span class="form-d">D</span><small>Girona 1-1</small><span class="form-l">L</span><small>Mallorca 1-2</small><span class="form-w">W</span><small>Ath Madrid 3-2</small><span class="form-w">W</span><small>Atletico Madrid 3-2</small><span class="form-w">W</span><small>Elche 4-1</small></div></div>
+    <div class="recent-form"><h3>Recent Form</h3><div class="form-row"><span class="form-w">W</span><small>Espanol 4-1</small><span class="form-w">W</span><small>Ath Madrid 2-1</small><span class="form-w">W</span><small>Atletico Madrid 2-1</small><span class="form-w">W</span><small>Vallecano 1-0</small><span class="form-w">W</span><small>Sevilla 5-2</small></div></div>
   </div>
 </div>
 
@@ -312,6 +337,9 @@ button.loss { color:var(--bad); border-color:rgba(239,68,68,.35); }
       <span>Win <strong class="good">+$260</strong></span>
       <span>Lose <strong class="bad">-$200</strong></span>
     </div>
+    <div class="h2h"><h3>Head-to-Head</h3><table><thead><tr><th>Date</th><th>Match</th><th>W</th></tr></thead><tbody><tr><td>2026-03-01</td><td>Man City 1-2 Liverpool</td><td>A</td></tr><tr><td>2026-02-08</td><td>Liverpool 1-2 Man City</td><td>A</td></tr><tr><td>2025-11-09</td><td>Man City 3-0 Liverpool</td><td>H</td></tr><tr><td>2025-11-02</td><td>Liverpool 1-1 Man City</td><td>D</td></tr><tr><td>2025-08-15</td><td>Man City 2-1 Liverpool</td><td>H</td></tr></tbody></table></div>
+    <div class="recent-form"><h3>Recent Form</h3><div class="form-row"><span class="form-w">W</span><small>Arsenal 2-1</small><span class="form-w">W</span><small>Chelsea 3-0</small><span class="form-d">D</span><small>West Ham 1-1</small><span class="form-d">D</span><small>Nott&#x27;m Forest 2-2</small><span class="form-d">D</span><small>Nottingham Forest 2-2</small></div></div>
+    <div class="recent-form"><h3>Recent Form</h3><div class="form-row"><span class="form-w">W</span><small>Everton 2-1</small><span class="form-w">W</span><small>Fulham 2-0</small><span class="form-l">L</span><small>Brighton 1-2</small><span class="form-d">D</span><small>Tottenham 1-1</small><span class="form-l">L</span><small>Wolves 1-2</small></div></div>
   </div>
 </div>
 
@@ -343,6 +371,9 @@ button.loss { color:var(--bad); border-color:rgba(239,68,68,.35); }
       <span>Win <strong class="good">+$220</strong></span>
       <span>Lose <strong class="bad">-$200</strong></span>
     </div>
+    <div class="h2h"><h3>Head-to-Head</h3><table><thead><tr><th>Date</th><th>Match</th><th>W</th></tr></thead><tbody><tr><td>2026-03-01</td><td>Man City 1-2 Liverpool</td><td>A</td></tr><tr><td>2026-02-08</td><td>Liverpool 1-2 Man City</td><td>A</td></tr><tr><td>2025-11-09</td><td>Man City 3-0 Liverpool</td><td>H</td></tr><tr><td>2025-11-02</td><td>Liverpool 1-1 Man City</td><td>D</td></tr><tr><td>2025-08-15</td><td>Man City 2-1 Liverpool</td><td>H</td></tr></tbody></table></div>
+    <div class="recent-form"><h3>Recent Form</h3><div class="form-row"><span class="form-w">W</span><small>Arsenal 2-1</small><span class="form-w">W</span><small>Chelsea 3-0</small><span class="form-d">D</span><small>West Ham 1-1</small><span class="form-d">D</span><small>Nott&#x27;m Forest 2-2</small><span class="form-d">D</span><small>Nottingham Forest 2-2</small></div></div>
+    <div class="recent-form"><h3>Recent Form</h3><div class="form-row"><span class="form-w">W</span><small>Everton 2-1</small><span class="form-w">W</span><small>Fulham 2-0</small><span class="form-l">L</span><small>Brighton 1-2</small><span class="form-d">D</span><small>Tottenham 1-1</small><span class="form-l">L</span><small>Wolves 1-2</small></div></div>
   </div>
 </div>
 
@@ -374,6 +405,9 @@ button.loss { color:var(--bad); border-color:rgba(239,68,68,.35); }
       <span>Win <strong class="good">+$170</strong></span>
       <span>Lose <strong class="bad">-$200</strong></span>
     </div>
+    <div class="h2h"><h3>Head-to-Head</h3><table><thead><tr><th>Date</th><th>Match</th><th>W</th></tr></thead><tbody><tr><td>2026-04-05</td><td>Arsenal 2-1 Chelsea</td><td>H</td></tr><tr><td>2026-03-01</td><td>Arsenal 2-1 Chelsea</td><td>H</td></tr><tr><td>2025-11-30</td><td>Chelsea 1-1 Arsenal</td><td>D</td></tr><tr><td>2025-11-09</td><td>Chelsea 1-2 Arsenal</td><td>A</td></tr><tr><td>2025-08-16</td><td>Arsenal 3-0 Chelsea</td><td>H</td></tr></tbody></table></div>
+    <div class="recent-form"><h3>Recent Form</h3><div class="form-row"><span class="form-l">L</span><small>Man City 1-2</small><span class="form-l">L</span><small>Bournemouth 1-2</small><span class="form-w">W</span><small>Chelsea 2-1</small><span class="form-w">W</span><small>Everton 2-0</small><span class="form-w">W</span><small>Brighton 1-0</small></div></div>
+    <div class="recent-form"><h3>Recent Form</h3><div class="form-row"><span class="form-l">L</span><small>Man United 0-1</small><span class="form-l">L</span><small>Man City 0-3</small><span class="form-l">L</span><small>Arsenal 1-2</small><span class="form-l">L</span><small>Everton 0-3</small><span class="form-l">L</span><small>Newcastle 0-1</small></div></div>
   </div>
 </div>
 <div class="day-header" data-date="2026-04-26"><span>Sun Apr 26</span><small>3 picks</small></div>
@@ -405,6 +439,9 @@ button.loss { color:var(--bad); border-color:rgba(239,68,68,.35); }
       <span>Win <strong class="good">+$280</strong></span>
       <span>Lose <strong class="bad">-$200</strong></span>
     </div>
+    <div class="h2h"><h3>Head-to-Head</h3><table><thead><tr><th>Date</th><th>Match</th><th>W</th></tr></thead><tbody><tr><td>2026-02-07</td><td>Man United 2-0 Tottenham</td><td>H</td></tr><tr><td>2025-11-08</td><td>Tottenham 2-2 Man United</td><td>D</td></tr><tr><td>2025-02-16</td><td>Tottenham 1-0 Man United</td><td>H</td></tr><tr><td>2024-09-29</td><td>Man United 0-3 Tottenham</td><td>A</td></tr><tr><td>2024-01-14</td><td>Man United 2-2 Tottenham</td><td>D</td></tr></tbody></table></div>
+    <div class="recent-form"><h3>Recent Form</h3><div class="form-row"><span class="form-w">W</span><small>Chelsea 1-0</small><span class="form-l">L</span><small>Leeds 1-2</small><span class="form-d">D</span><small>Bournemouth 2-2</small><span class="form-w">W</span><small>Aston Villa 3-1</small><span class="form-l">L</span><small>Newcastle 1-2</small></div></div>
+    <div class="recent-form"><h3>Recent Form</h3><div class="form-row"><span class="form-d">D</span><small>Brighton 2-2</small><span class="form-l">L</span><small>Sunderland 0-1</small><span class="form-l">L</span><small>Nott&#x27;m Forest 0-3</small><span class="form-l">L</span><small>Nottingham Forest 0-3</small><span class="form-d">D</span><small>Liverpool 1-1</small></div></div>
   </div>
 </div>
 
@@ -436,6 +473,9 @@ button.loss { color:var(--bad); border-color:rgba(239,68,68,.35); }
       <span>Win <strong class="good">+$140</strong></span>
       <span>Lose <strong class="bad">-$200</strong></span>
     </div>
+    <div class="h2h"><h3>Head-to-Head</h3><table><thead><tr><th>Date</th><th>Match</th><th>W</th></tr></thead><tbody><tr><td>2026-02-07</td><td>Man United 2-0 Tottenham</td><td>H</td></tr><tr><td>2025-11-08</td><td>Tottenham 2-2 Man United</td><td>D</td></tr><tr><td>2025-02-16</td><td>Tottenham 1-0 Man United</td><td>H</td></tr><tr><td>2024-09-29</td><td>Man United 0-3 Tottenham</td><td>A</td></tr><tr><td>2024-01-14</td><td>Man United 2-2 Tottenham</td><td>D</td></tr></tbody></table></div>
+    <div class="recent-form"><h3>Recent Form</h3><div class="form-row"><span class="form-w">W</span><small>Chelsea 1-0</small><span class="form-l">L</span><small>Leeds 1-2</small><span class="form-d">D</span><small>Bournemouth 2-2</small><span class="form-w">W</span><small>Aston Villa 3-1</small><span class="form-l">L</span><small>Newcastle 1-2</small></div></div>
+    <div class="recent-form"><h3>Recent Form</h3><div class="form-row"><span class="form-d">D</span><small>Brighton 2-2</small><span class="form-l">L</span><small>Sunderland 0-1</small><span class="form-l">L</span><small>Nott&#x27;m Forest 0-3</small><span class="form-l">L</span><small>Nottingham Forest 0-3</small><span class="form-d">D</span><small>Liverpool 1-1</small></div></div>
   </div>
 </div>
 
@@ -467,6 +507,9 @@ button.loss { color:var(--bad); border-color:rgba(239,68,68,.35); }
       <span>Win <strong class="good">+$280</strong></span>
       <span>Lose <strong class="bad">-$200</strong></span>
     </div>
+    <div class="h2h"><h3>Head-to-Head</h3><table><thead><tr><th>Date</th><th>Match</th><th>W</th></tr></thead><tbody><tr><td>2026-02-08</td><td>PSG 5-0 Marseille</td><td>H</td></tr><tr><td>2025-11-10</td><td>Marseille 0-2 PSG</td><td>A</td></tr><tr><td>2025-09-22</td><td>Marseille 1-0 PSG</td><td>H</td></tr><tr><td>2025-08-17</td><td>PSG 3-1 Marseille</td><td>H</td></tr><tr><td>2025-03-16</td><td>PSG 3-1 Marseille</td><td>H</td></tr></tbody></table></div>
+    <div class="recent-form"><h3>Recent Form</h3><div class="form-row"><span class="form-l">L</span><small>Lyon 1-2</small><span class="form-w">W</span><small>Toulouse 3-1</small><span class="form-w">W</span><small>Nice 4-0</small><span class="form-l">L</span><small>Monaco 1-3</small><span class="form-w">W</span><small>Le Havre 1-0</small></div></div>
+    <div class="recent-form"><h3>Recent Form</h3><div class="form-row"><span class="form-l">L</span><small>Lorient 0-2</small><span class="form-w">W</span><small>Metz 3-1</small><span class="form-l">L</span><small>Monaco 1-2</small><span class="form-l">L</span><small>Lille 1-2</small><span class="form-w">W</span><small>Auxerre 1-0</small></div></div>
   </div>
 </div>
 <div class="day-header" data-date="2026-04-28"><span>Tue Apr 28</span><small>4 picks</small></div>
@@ -498,6 +541,9 @@ button.loss { color:var(--bad); border-color:rgba(239,68,68,.35); }
       <span>Win <strong class="good">+$240</strong></span>
       <span>Lose <strong class="bad">-$200</strong></span>
     </div>
+    <div class="h2h"><h3>Head-to-Head</h3><table><thead><tr><th>Date</th><th>Match</th><th>W</th></tr></thead><tbody><tr><td>2026-02-14</td><td>Inter Milan 3-2 Juventus</td><td>H</td></tr><tr><td>2025-11-12</td><td>Juventus 0-2 Inter Milan</td><td>A</td></tr><tr><td>2025-09-13</td><td>Juventus 4-3 Inter Milan</td><td>H</td></tr><tr><td>2025-08-18</td><td>Inter Milan 1-1 Juventus</td><td>D</td></tr><tr><td>2025-02-16</td><td>Juventus 1-0 Inter Milan</td><td>H</td></tr></tbody></table></div>
+    <div class="recent-form"><h3>Recent Form</h3><div class="form-row"><span class="form-w">W</span><small>Cagliari 3-0</small><span class="form-w">W</span><small>Como 4-3</small><span class="form-w">W</span><small>Roma 5-2</small><span class="form-d">D</span><small>Fiorentina 1-1</small><span class="form-d">D</span><small>Atalanta 1-1</small></div></div>
+    <div class="recent-form"><h3>Recent Form</h3><div class="form-row"><span class="form-w">W</span><small>Bologna 2-0</small><span class="form-w">W</span><small>Atalanta 1-0</small><span class="form-w">W</span><small>Genoa 2-0</small><span class="form-d">D</span><small>Sassuolo 1-1</small><span class="form-w">W</span><small>Udinese 1-0</small></div></div>
   </div>
 </div>
 
@@ -529,6 +575,9 @@ button.loss { color:var(--bad); border-color:rgba(239,68,68,.35); }
       <span>Win <strong class="good">+$160</strong></span>
       <span>Lose <strong class="bad">-$200</strong></span>
     </div>
+    <div class="h2h"><h3>Head-to-Head</h3><table><thead><tr><th>Date</th><th>Match</th><th>W</th></tr></thead><tbody><tr><td>2026-02-14</td><td>Inter Milan 3-2 Juventus</td><td>H</td></tr><tr><td>2025-11-12</td><td>Juventus 0-2 Inter Milan</td><td>A</td></tr><tr><td>2025-09-13</td><td>Juventus 4-3 Inter Milan</td><td>H</td></tr><tr><td>2025-08-18</td><td>Inter Milan 1-1 Juventus</td><td>D</td></tr><tr><td>2025-02-16</td><td>Juventus 1-0 Inter Milan</td><td>H</td></tr></tbody></table></div>
+    <div class="recent-form"><h3>Recent Form</h3><div class="form-row"><span class="form-w">W</span><small>Cagliari 3-0</small><span class="form-w">W</span><small>Como 4-3</small><span class="form-w">W</span><small>Roma 5-2</small><span class="form-d">D</span><small>Fiorentina 1-1</small><span class="form-d">D</span><small>Atalanta 1-1</small></div></div>
+    <div class="recent-form"><h3>Recent Form</h3><div class="form-row"><span class="form-w">W</span><small>Bologna 2-0</small><span class="form-w">W</span><small>Atalanta 1-0</small><span class="form-w">W</span><small>Genoa 2-0</small><span class="form-d">D</span><small>Sassuolo 1-1</small><span class="form-w">W</span><small>Udinese 1-0</small></div></div>
   </div>
 </div>
 
@@ -560,6 +609,9 @@ button.loss { color:var(--bad); border-color:rgba(239,68,68,.35); }
       <span>Win <strong class="good">+$160</strong></span>
       <span>Lose <strong class="bad">-$200</strong></span>
     </div>
+    <div class="h2h"><h3>Head-to-Head</h3><table><thead><tr><th>Date</th><th>Match</th><th>W</th></tr></thead><tbody><tr><td>2026-02-14</td><td>Inter Milan 3-2 Juventus</td><td>H</td></tr><tr><td>2025-11-12</td><td>Juventus 0-2 Inter Milan</td><td>A</td></tr><tr><td>2025-09-13</td><td>Juventus 4-3 Inter Milan</td><td>H</td></tr><tr><td>2025-08-18</td><td>Inter Milan 1-1 Juventus</td><td>D</td></tr><tr><td>2025-02-16</td><td>Juventus 1-0 Inter Milan</td><td>H</td></tr></tbody></table></div>
+    <div class="recent-form"><h3>Recent Form</h3><div class="form-row"><span class="form-w">W</span><small>Cagliari 3-0</small><span class="form-w">W</span><small>Como 4-3</small><span class="form-w">W</span><small>Roma 5-2</small><span class="form-d">D</span><small>Fiorentina 1-1</small><span class="form-d">D</span><small>Atalanta 1-1</small></div></div>
+    <div class="recent-form"><h3>Recent Form</h3><div class="form-row"><span class="form-w">W</span><small>Bologna 2-0</small><span class="form-w">W</span><small>Atalanta 1-0</small><span class="form-w">W</span><small>Genoa 2-0</small><span class="form-d">D</span><small>Sassuolo 1-1</small><span class="form-w">W</span><small>Udinese 1-0</small></div></div>
   </div>
 </div>
 
@@ -591,6 +643,9 @@ button.loss { color:var(--bad); border-color:rgba(239,68,68,.35); }
       <span>Win <strong class="good">+$200</strong></span>
       <span>Lose <strong class="bad">-$200</strong></span>
     </div>
+    <div class="h2h"><h3>Head-to-Head</h3><table><thead><tr><th>Date</th><th>Match</th><th>W</th></tr></thead><tbody><tr><td>2026-02-14</td><td>Inter Milan 3-2 Juventus</td><td>H</td></tr><tr><td>2025-11-12</td><td>Juventus 0-2 Inter Milan</td><td>A</td></tr><tr><td>2025-09-13</td><td>Juventus 4-3 Inter Milan</td><td>H</td></tr><tr><td>2025-08-18</td><td>Inter Milan 1-1 Juventus</td><td>D</td></tr><tr><td>2025-02-16</td><td>Juventus 1-0 Inter Milan</td><td>H</td></tr></tbody></table></div>
+    <div class="recent-form"><h3>Recent Form</h3><div class="form-row"><span class="form-w">W</span><small>Cagliari 3-0</small><span class="form-w">W</span><small>Como 4-3</small><span class="form-w">W</span><small>Roma 5-2</small><span class="form-d">D</span><small>Fiorentina 1-1</small><span class="form-d">D</span><small>Atalanta 1-1</small></div></div>
+    <div class="recent-form"><h3>Recent Form</h3><div class="form-row"><span class="form-w">W</span><small>Bologna 2-0</small><span class="form-w">W</span><small>Atalanta 1-0</small><span class="form-w">W</span><small>Genoa 2-0</small><span class="form-d">D</span><small>Sassuolo 1-1</small><span class="form-w">W</span><small>Udinese 1-0</small></div></div>
   </div>
 </div>
 <div class="day-header" data-date="2026-04-29"><span>Wed Apr 29</span><small>2 picks</small></div>
@@ -622,6 +677,9 @@ button.loss { color:var(--bad); border-color:rgba(239,68,68,.35); }
       <span>Win <strong class="good">+$280</strong></span>
       <span>Lose <strong class="bad">-$200</strong></span>
     </div>
+    <div class="h2h"><h3>Head-to-Head</h3><table><thead><tr><th>Date</th><th>Match</th><th>W</th></tr></thead><tbody><tr><td>2025-11-15</td><td>Barcelona 1-1 Real Madrid</td><td>D</td></tr><tr><td>2025-10-26</td><td>Real Madrid 2-1 Barcelona</td><td>H</td></tr><tr><td>2025-08-20</td><td>Real Madrid 2-1 Barcelona</td><td>H</td></tr><tr><td>2025-05-11</td><td>Barcelona 4-3 Real Madrid</td><td>H</td></tr><tr><td>2024-10-26</td><td>Real Madrid 0-4 Barcelona</td><td>A</td></tr></tbody></table></div>
+    <div class="recent-form"><h3>Recent Form</h3><div class="form-row"><span class="form-d">D</span><small>Girona 1-1</small><span class="form-l">L</span><small>Mallorca 1-2</small><span class="form-w">W</span><small>Ath Madrid 3-2</small><span class="form-w">W</span><small>Atletico Madrid 3-2</small><span class="form-w">W</span><small>Elche 4-1</small></div></div>
+    <div class="recent-form"><h3>Recent Form</h3><div class="form-row"><span class="form-w">W</span><small>Espanol 4-1</small><span class="form-w">W</span><small>Ath Madrid 2-1</small><span class="form-w">W</span><small>Atletico Madrid 2-1</small><span class="form-w">W</span><small>Vallecano 1-0</small><span class="form-w">W</span><small>Sevilla 5-2</small></div></div>
   </div>
 </div>
 
@@ -653,6 +711,9 @@ button.loss { color:var(--bad); border-color:rgba(239,68,68,.35); }
       <span>Win <strong class="good">+$250</strong></span>
       <span>Lose <strong class="bad">-$200</strong></span>
     </div>
+    <div class="h2h"><h3>Head-to-Head</h3><table><thead><tr><th>Date</th><th>Match</th><th>W</th></tr></thead><tbody><tr><td>2025-11-15</td><td>Barcelona 1-1 Real Madrid</td><td>D</td></tr><tr><td>2025-10-26</td><td>Real Madrid 2-1 Barcelona</td><td>H</td></tr><tr><td>2025-08-20</td><td>Real Madrid 2-1 Barcelona</td><td>H</td></tr><tr><td>2025-05-11</td><td>Barcelona 4-3 Real Madrid</td><td>H</td></tr><tr><td>2024-10-26</td><td>Real Madrid 0-4 Barcelona</td><td>A</td></tr></tbody></table></div>
+    <div class="recent-form"><h3>Recent Form</h3><div class="form-row"><span class="form-d">D</span><small>Girona 1-1</small><span class="form-l">L</span><small>Mallorca 1-2</small><span class="form-w">W</span><small>Ath Madrid 3-2</small><span class="form-w">W</span><small>Atletico Madrid 3-2</small><span class="form-w">W</span><small>Elche 4-1</small></div></div>
+    <div class="recent-form"><h3>Recent Form</h3><div class="form-row"><span class="form-w">W</span><small>Espanol 4-1</small><span class="form-w">W</span><small>Ath Madrid 2-1</small><span class="form-w">W</span><small>Atletico Madrid 2-1</small><span class="form-w">W</span><small>Vallecano 1-0</small><span class="form-w">W</span><small>Sevilla 5-2</small></div></div>
   </div>
 </div>
 
