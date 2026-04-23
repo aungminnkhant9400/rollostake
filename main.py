@@ -75,7 +75,13 @@ def run_pipeline(leagues=None, skip_scrape=False, use_fatigue=True):
     # Step 2b: Load upcoming fixtures
     print("\n[2b/8] Loading upcoming fixtures...")
     from scrapers.fixtures import FixturesFetcher
-    fetcher = FixturesFetcher(api_key=settings.get('api_football_key'))
+    fetcher = FixturesFetcher(
+        api_key=settings.get('api_football_key'),
+        days_ahead=int(settings.get('fixture_days_ahead', 7)),
+        timezone=settings.get('fixture_timezone', 'Asia/Macau'),
+        season=settings.get('fixture_season'),
+        use_rapidapi=bool(settings.get('api_football_use_rapidapi', False)),
+    )
     upcoming = fetcher.get_all_upcoming(configured_leagues)
     
     if not upcoming:

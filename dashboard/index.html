@@ -97,7 +97,7 @@ button.loss { color:var(--bad); border-color:rgba(239,68,68,.35); }
 <body>
 <header>
   <div class="logo">ROLLO STAKE MODEL <em>Range C/D</em></div>
-  <div class="header-meta">3 picks · generated Thursday, April 23, 2026 at 19:33</div>
+  <div class="header-meta">11 picks · generated Thursday, April 23, 2026 at 20:01</div>
 </header>
 <main class="shell">
   <div class="tabs">
@@ -122,17 +122,110 @@ button.loss { color:var(--bad); border-color:rgba(239,68,68,.35); }
     <div><span>ROI</span><strong id="C-roi">-</strong></div>
     <div><span>Bank</span><strong id="C-bank">$10,000</strong></div>
   </div>
-  <div class="range-note">0 picks · planned stake $0 · no duplicate selection exposure across ranges.</div>
+  <div class="range-note">3 picks · planned stake $600 · no duplicate selection exposure across ranges.</div>
 
 <div class="filter-bar">
   <label for="C-filter">Filter by kickoff</label>
   <select id="C-filter" class="filter-select" onchange="filterRange('C', this.value)">
-    <option value="all">All dates</option>
+    <option value="all">All dates</option><option value="2026-04-25">Sat Apr 25</option><option value="2026-04-26">Sun Apr 26</option><option value="2026-04-29">Wed Apr 29</option>
   </select>
-  <div class="filter-count">Showing <span id="C-visible">0</span> of 0 picks</div>
+  <div class="filter-count">Showing <span id="C-visible">3</span> of 3 picks</div>
 </div>
 
-  <div class="empty">No picks generated for this range yet.</div>
+  <div class="day-header" data-date="2026-04-25"><span>Sat Apr 25</span><small>1 picks</small></div>
+<div class="pick-card keep" id="pick-1" data-date="2026-04-25">
+  <div class="pick-summary" onclick="toggleDetails(1)">
+    <div class="rank">#1</div>
+    <div class="pick-main">
+      <div class="pick-title">Draw <span class="badge keep">KEEP</span></div>
+      <div class="pick-meta">Man City vs Liverpool · <span>2026-04-25 15:00</span> · EPL</div>
+    </div>
+    <div class="numbers">
+      <div><strong>@3.40</strong><span>Odds</span></div>
+      <div><strong class="good">+11.9%</strong><span>Edge</span></div>
+      <div><strong>$200</strong><span>Stake</span></div>
+    </div>
+    <div class="result" id="result-1">pending</div>
+    <div class="actions">
+      <button class="win" onclick="event.stopPropagation(); markPick('C', 1, 'win')">WIN</button>
+      <button class="loss" onclick="event.stopPropagation(); markPick('C', 1, 'loss')">LOSS</button>
+      <button onclick="event.stopPropagation(); markPick('C', 1, 'push')">PUSH</button>
+      <button onclick="event.stopPropagation(); markPick('C', 1, 'pending')">RST</button>
+    </div>
+  </div>
+  <div class="pick-details" id="details-1">
+    <div class="reasoning">Model prices this at 32.9% versus bookmaker implied 29.4%, creating +11.9% edge. 1X2 value should be manually checked against injuries, motivation, and likely rotation. Range C candidate by odds profile.<br><br><strong>Risk:</strong> High-odds pick: require manual verification before staking.</div>
+    <div class="metrics">
+      <span>Model <strong>32.9%</strong></span>
+      <span>Book <strong>29.4%</strong></span>
+      <span>Win <strong class="good">+$480</strong></span>
+      <span>Lose <strong class="bad">-$200</strong></span>
+    </div>
+  </div>
+</div>
+<div class="day-header" data-date="2026-04-26"><span>Sun Apr 26</span><small>1 picks</small></div>
+<div class="pick-card keep" id="pick-2" data-date="2026-04-26">
+  <div class="pick-summary" onclick="toggleDetails(2)">
+    <div class="rank">#2</div>
+    <div class="pick-main">
+      <div class="pick-title">Draw <span class="badge keep">KEEP</span></div>
+      <div class="pick-meta">Man United vs Tottenham · <span>2026-04-26 14:00</span> · EPL</div>
+    </div>
+    <div class="numbers">
+      <div><strong>@3.40</strong><span>Odds</span></div>
+      <div><strong class="good">+10.2%</strong><span>Edge</span></div>
+      <div><strong>$200</strong><span>Stake</span></div>
+    </div>
+    <div class="result" id="result-2">pending</div>
+    <div class="actions">
+      <button class="win" onclick="event.stopPropagation(); markPick('C', 2, 'win')">WIN</button>
+      <button class="loss" onclick="event.stopPropagation(); markPick('C', 2, 'loss')">LOSS</button>
+      <button onclick="event.stopPropagation(); markPick('C', 2, 'push')">PUSH</button>
+      <button onclick="event.stopPropagation(); markPick('C', 2, 'pending')">RST</button>
+    </div>
+  </div>
+  <div class="pick-details" id="details-2">
+    <div class="reasoning">Model prices this at 32.4% versus bookmaker implied 29.4%, creating +10.2% edge. 1X2 value should be manually checked against injuries, motivation, and likely rotation. Range C candidate by odds profile.<br><br><strong>Risk:</strong> High-odds pick: require manual verification before staking.</div>
+    <div class="metrics">
+      <span>Model <strong>32.4%</strong></span>
+      <span>Book <strong>29.4%</strong></span>
+      <span>Win <strong class="good">+$480</strong></span>
+      <span>Lose <strong class="bad">-$200</strong></span>
+    </div>
+  </div>
+</div>
+<div class="day-header" data-date="2026-04-29"><span>Wed Apr 29</span><small>1 picks</small></div>
+<div class="pick-card keep" id="pick-3" data-date="2026-04-29">
+  <div class="pick-summary" onclick="toggleDetails(3)">
+    <div class="rank">#3</div>
+    <div class="pick-main">
+      <div class="pick-title">Draw <span class="badge keep">KEEP</span></div>
+      <div class="pick-meta">Real Madrid vs Barcelona · <span>2026-04-29 21:00</span> · LaLiga</div>
+    </div>
+    <div class="numbers">
+      <div><strong>@3.50</strong><span>Odds</span></div>
+      <div><strong class="good">+15.5%</strong><span>Edge</span></div>
+      <div><strong>$200</strong><span>Stake</span></div>
+    </div>
+    <div class="result" id="result-3">pending</div>
+    <div class="actions">
+      <button class="win" onclick="event.stopPropagation(); markPick('C', 3, 'win')">WIN</button>
+      <button class="loss" onclick="event.stopPropagation(); markPick('C', 3, 'loss')">LOSS</button>
+      <button onclick="event.stopPropagation(); markPick('C', 3, 'push')">PUSH</button>
+      <button onclick="event.stopPropagation(); markPick('C', 3, 'pending')">RST</button>
+    </div>
+  </div>
+  <div class="pick-details" id="details-3">
+    <div class="reasoning">Model prices this at 33.0% versus bookmaker implied 28.6%, creating +15.5% edge. 1X2 value should be manually checked against injuries, motivation, and likely rotation. Range C candidate by odds profile.<br><br><strong>Risk:</strong> High-odds pick: require manual verification before staking.</div>
+    <div class="metrics">
+      <span>Model <strong>33.0%</strong></span>
+      <span>Book <strong>28.6%</strong></span>
+      <span>Win <strong class="good">+$500</strong></span>
+      <span>Lose <strong class="bad">-$200</strong></span>
+    </div>
+  </div>
+</div>
+
 </section>
 
 
@@ -141,7 +234,7 @@ button.loss { color:var(--bad); border-color:rgba(239,68,68,.35); }
     <div><span>Base Bank</span><strong>$10,000</strong></div>
     <div><span>Flat Stake</span><strong>$200</strong></div>
     <div><span>Odds Band</span><strong>1.70-2.70</strong></div>
-    <div><span>Strong</span><strong class="good">0</strong></div>
+    <div><span>Strong</span><strong class="good">2</strong></div>
     <div><span>Caution</span><strong class="warn">2</strong></div>
     <div><span>Record</span><strong id="D-record">-</strong></div>
     <div><span>Staked</span><strong id="D-staked">$0</strong></div>
@@ -149,72 +242,41 @@ button.loss { color:var(--bad); border-color:rgba(239,68,68,.35); }
     <div><span>ROI</span><strong id="D-roi">-</strong></div>
     <div><span>Bank</span><strong id="D-bank">$10,000</strong></div>
   </div>
-  <div class="range-note">3 picks · planned stake $600 · no duplicate selection exposure across ranges.</div>
+  <div class="range-note">8 picks · planned stake $1,600 · no duplicate selection exposure across ranges.</div>
 
 <div class="filter-bar">
   <label for="D-filter">Filter by kickoff</label>
   <select id="D-filter" class="filter-select" onchange="filterRange('D', this.value)">
-    <option value="all">All dates</option><option value="2026-04-25">Sat Apr 25</option>
+    <option value="all">All dates</option><option value="2026-04-25">Sat Apr 25</option><option value="2026-04-26">Sun Apr 26</option><option value="2026-04-28">Tue Apr 28</option><option value="2026-04-29">Wed Apr 29</option>
   </select>
-  <div class="filter-count">Showing <span id="D-visible">3</span> of 3 picks</div>
+  <div class="filter-count">Showing <span id="D-visible">8</span> of 8 picks</div>
 </div>
 
   <div class="day-header" data-date="2026-04-25"><span>Sat Apr 25</span><small>3 picks</small></div>
-<div class="pick-card keep" id="pick-1" data-date="2026-04-25">
-  <div class="pick-summary" onclick="toggleDetails(1)">
+<div class="pick-card keep" id="pick-4" data-date="2026-04-25">
+  <div class="pick-summary" onclick="toggleDetails(4)">
     <div class="rank">#1</div>
     <div class="pick-main">
-      <div class="pick-title">BTTS Yes <span class="badge keep">KEEP</span></div>
-      <div class="pick-meta">Man City vs Liverpool · <span>2026-04-25 15:00</span> · EPL</div>
-    </div>
-    <div class="numbers">
-      <div><strong>@1.70</strong><span>Odds</span></div>
-      <div><strong class="good">+10.5%</strong><span>Edge</span></div>
-      <div><strong>$200</strong><span>Stake</span></div>
-    </div>
-    <div class="result" id="result-1">pending</div>
-    <div class="actions">
-      <button class="win" onclick="event.stopPropagation(); markPick('D', 1, 'win')">WIN</button>
-      <button class="loss" onclick="event.stopPropagation(); markPick('D', 1, 'loss')">LOSS</button>
-      <button onclick="event.stopPropagation(); markPick('D', 1, 'push')">PUSH</button>
-      <button onclick="event.stopPropagation(); markPick('D', 1, 'pending')">RST</button>
-    </div>
-  </div>
-  <div class="pick-details" id="details-1">
-    <div class="reasoning">Model prices this at 65.0% versus bookmaker implied 58.8%, creating +10.5% edge. BTTS value should be manually checked against both teams&#x27; scoring and clean-sheet trends. Range D candidate by odds profile.<br><br><strong>Risk:</strong> Check lineup and fatigue news before kickoff.</div>
-    <div class="metrics">
-      <span>Model <strong>65.0%</strong></span>
-      <span>Book <strong>58.8%</strong></span>
-      <span>Win <strong class="good">+$140</strong></span>
-      <span>Lose <strong class="bad">-$200</strong></span>
-    </div>
-  </div>
-</div>
-
-<div class="pick-card caution" id="pick-2" data-date="2026-04-25">
-  <div class="pick-summary" onclick="toggleDetails(2)">
-    <div class="rank">#2</div>
-    <div class="pick-main">
-      <div class="pick-title">Man City Win <span class="badge caution">CAUTION</span></div>
+      <div class="pick-title">Under 2.5 <span class="badge keep">KEEP</span></div>
       <div class="pick-meta">Man City vs Liverpool · <span>2026-04-25 15:00</span> · EPL</div>
     </div>
     <div class="numbers">
       <div><strong>@2.10</strong><span>Odds</span></div>
-      <div><strong class="good">+9.2%</strong><span>Edge</span></div>
+      <div><strong class="good">+10.9%</strong><span>Edge</span></div>
       <div><strong>$200</strong><span>Stake</span></div>
     </div>
-    <div class="result" id="result-2">pending</div>
+    <div class="result" id="result-4">pending</div>
     <div class="actions">
-      <button class="win" onclick="event.stopPropagation(); markPick('D', 2, 'win')">WIN</button>
-      <button class="loss" onclick="event.stopPropagation(); markPick('D', 2, 'loss')">LOSS</button>
-      <button onclick="event.stopPropagation(); markPick('D', 2, 'push')">PUSH</button>
-      <button onclick="event.stopPropagation(); markPick('D', 2, 'pending')">RST</button>
+      <button class="win" onclick="event.stopPropagation(); markPick('D', 4, 'win')">WIN</button>
+      <button class="loss" onclick="event.stopPropagation(); markPick('D', 4, 'loss')">LOSS</button>
+      <button onclick="event.stopPropagation(); markPick('D', 4, 'push')">PUSH</button>
+      <button onclick="event.stopPropagation(); markPick('D', 4, 'pending')">RST</button>
     </div>
   </div>
-  <div class="pick-details" id="details-2">
-    <div class="reasoning">Model prices this at 52.0% versus bookmaker implied 47.6%, creating +9.2% edge. 1X2 value should be manually checked against injuries, motivation, and likely rotation. Range D candidate by odds profile.<br><br><strong>Risk:</strong> Check team news and odds movement before kickoff.</div>
+  <div class="pick-details" id="details-4">
+    <div class="reasoning">Model prices this at 52.8% versus bookmaker implied 47.6%, creating +10.9% edge. Goals market should be manually checked against fatigue, tactical setup, and recent scoring profiles. Range D candidate by odds profile.<br><br><strong>Risk:</strong> Check lineup and fatigue news before kickoff.</div>
     <div class="metrics">
-      <span>Model <strong>52.0%</strong></span>
+      <span>Model <strong>52.8%</strong></span>
       <span>Book <strong>47.6%</strong></span>
       <span>Win <strong class="good">+$220</strong></span>
       <span>Lose <strong class="bad">-$200</strong></span>
@@ -222,32 +284,218 @@ button.loss { color:var(--bad); border-color:rgba(239,68,68,.35); }
   </div>
 </div>
 
-<div class="pick-card caution" id="pick-3" data-date="2026-04-25">
-  <div class="pick-summary" onclick="toggleDetails(3)">
-    <div class="rank">#3</div>
+<div class="pick-card strong" id="pick-5" data-date="2026-04-25">
+  <div class="pick-summary" onclick="toggleDetails(5)">
+    <div class="rank">#2</div>
     <div class="pick-main">
-      <div class="pick-title">Over 2.5 <span class="badge caution">CAUTION</span></div>
-      <div class="pick-meta">Man City vs Liverpool · <span>2026-04-25 15:00</span> · EPL</div>
+      <div class="pick-title">Arsenal Win <span class="badge strong">STRONG</span></div>
+      <div class="pick-meta">Arsenal vs Chelsea · <span>2026-04-25 17:30</span> · EPL</div>
     </div>
     <div class="numbers">
       <div><strong>@1.85</strong><span>Odds</span></div>
-      <div><strong class="good">+7.3%</strong><span>Edge</span></div>
+      <div><strong class="good">+38.2%</strong><span>Edge</span></div>
       <div><strong>$200</strong><span>Stake</span></div>
     </div>
-    <div class="result" id="result-3">pending</div>
+    <div class="result" id="result-5">pending</div>
     <div class="actions">
-      <button class="win" onclick="event.stopPropagation(); markPick('D', 3, 'win')">WIN</button>
-      <button class="loss" onclick="event.stopPropagation(); markPick('D', 3, 'loss')">LOSS</button>
-      <button onclick="event.stopPropagation(); markPick('D', 3, 'push')">PUSH</button>
-      <button onclick="event.stopPropagation(); markPick('D', 3, 'pending')">RST</button>
+      <button class="win" onclick="event.stopPropagation(); markPick('D', 5, 'win')">WIN</button>
+      <button class="loss" onclick="event.stopPropagation(); markPick('D', 5, 'loss')">LOSS</button>
+      <button onclick="event.stopPropagation(); markPick('D', 5, 'push')">PUSH</button>
+      <button onclick="event.stopPropagation(); markPick('D', 5, 'pending')">RST</button>
     </div>
   </div>
-  <div class="pick-details" id="details-3">
-    <div class="reasoning">Model prices this at 58.0% versus bookmaker implied 54.0%, creating +7.3% edge. Goals market should be manually checked against fatigue, tactical setup, and recent scoring profiles. Range D candidate by odds profile.<br><br><strong>Risk:</strong> Check lineup and fatigue news before kickoff.</div>
+  <div class="pick-details" id="details-5">
+    <div class="reasoning">Model prices this at 74.7% versus bookmaker implied 54.0%, creating +38.2% edge. 1X2 value should be manually checked against injuries, motivation, and likely rotation. Range D candidate by odds profile.<br><br><strong>Risk:</strong> Check team news and odds movement before kickoff.</div>
     <div class="metrics">
-      <span>Model <strong>58.0%</strong></span>
+      <span>Model <strong>74.7%</strong></span>
       <span>Book <strong>54.0%</strong></span>
       <span>Win <strong class="good">+$170</strong></span>
+      <span>Lose <strong class="bad">-$200</strong></span>
+    </div>
+  </div>
+</div>
+
+<div class="pick-card caution" id="pick-6" data-date="2026-04-25">
+  <div class="pick-summary" onclick="toggleDetails(6)">
+    <div class="rank">#3</div>
+    <div class="pick-main">
+      <div class="pick-title">Over 2.5 <span class="badge caution">CAUTION</span></div>
+      <div class="pick-meta">Arsenal vs Chelsea · <span>2026-04-25 17:30</span> · EPL</div>
+    </div>
+    <div class="numbers">
+      <div><strong>@1.90</strong><span>Odds</span></div>
+      <div><strong class="good">+5.8%</strong><span>Edge</span></div>
+      <div><strong>$200</strong><span>Stake</span></div>
+    </div>
+    <div class="result" id="result-6">pending</div>
+    <div class="actions">
+      <button class="win" onclick="event.stopPropagation(); markPick('D', 6, 'win')">WIN</button>
+      <button class="loss" onclick="event.stopPropagation(); markPick('D', 6, 'loss')">LOSS</button>
+      <button onclick="event.stopPropagation(); markPick('D', 6, 'push')">PUSH</button>
+      <button onclick="event.stopPropagation(); markPick('D', 6, 'pending')">RST</button>
+    </div>
+  </div>
+  <div class="pick-details" id="details-6">
+    <div class="reasoning">Model prices this at 55.7% versus bookmaker implied 52.6%, creating +5.8% edge. Goals market should be manually checked against fatigue, tactical setup, and recent scoring profiles. Range D candidate by odds profile.<br><br><strong>Risk:</strong> Check lineup and fatigue news before kickoff.</div>
+    <div class="metrics">
+      <span>Model <strong>55.7%</strong></span>
+      <span>Book <strong>52.6%</strong></span>
+      <span>Win <strong class="good">+$180</strong></span>
+      <span>Lose <strong class="bad">-$200</strong></span>
+    </div>
+  </div>
+</div>
+<div class="day-header" data-date="2026-04-26"><span>Sun Apr 26</span><small>1 picks</small></div>
+<div class="pick-card caution" id="pick-7" data-date="2026-04-26">
+  <div class="pick-summary" onclick="toggleDetails(7)">
+    <div class="rank">#4</div>
+    <div class="pick-main">
+      <div class="pick-title">Under 2.5 <span class="badge caution">CAUTION</span></div>
+      <div class="pick-meta">Man United vs Tottenham · <span>2026-04-26 14:00</span> · EPL</div>
+    </div>
+    <div class="numbers">
+      <div><strong>@2.15</strong><span>Odds</span></div>
+      <div><strong class="good">+6.2%</strong><span>Edge</span></div>
+      <div><strong>$200</strong><span>Stake</span></div>
+    </div>
+    <div class="result" id="result-7">pending</div>
+    <div class="actions">
+      <button class="win" onclick="event.stopPropagation(); markPick('D', 7, 'win')">WIN</button>
+      <button class="loss" onclick="event.stopPropagation(); markPick('D', 7, 'loss')">LOSS</button>
+      <button onclick="event.stopPropagation(); markPick('D', 7, 'push')">PUSH</button>
+      <button onclick="event.stopPropagation(); markPick('D', 7, 'pending')">RST</button>
+    </div>
+  </div>
+  <div class="pick-details" id="details-7">
+    <div class="reasoning">Model prices this at 49.4% versus bookmaker implied 46.5%, creating +6.2% edge. Goals market should be manually checked against fatigue, tactical setup, and recent scoring profiles. Range D candidate by odds profile.<br><br><strong>Risk:</strong> Check lineup and fatigue news before kickoff.</div>
+    <div class="metrics">
+      <span>Model <strong>49.4%</strong></span>
+      <span>Book <strong>46.5%</strong></span>
+      <span>Win <strong class="good">+$230</strong></span>
+      <span>Lose <strong class="bad">-$200</strong></span>
+    </div>
+  </div>
+</div>
+<div class="day-header" data-date="2026-04-28"><span>Tue Apr 28</span><small>2 picks</small></div>
+<div class="pick-card strong" id="pick-8" data-date="2026-04-28">
+  <div class="pick-summary" onclick="toggleDetails(8)">
+    <div class="rank">#5</div>
+    <div class="pick-main">
+      <div class="pick-title">Inter Milan Win <span class="badge strong">STRONG</span></div>
+      <div class="pick-meta">Inter Milan vs Juventus · <span>2026-04-28 20:45</span> · SerieA</div>
+    </div>
+    <div class="numbers">
+      <div><strong>@2.20</strong><span>Odds</span></div>
+      <div><strong class="good">+32.4%</strong><span>Edge</span></div>
+      <div><strong>$200</strong><span>Stake</span></div>
+    </div>
+    <div class="result" id="result-8">pending</div>
+    <div class="actions">
+      <button class="win" onclick="event.stopPropagation(); markPick('D', 8, 'win')">WIN</button>
+      <button class="loss" onclick="event.stopPropagation(); markPick('D', 8, 'loss')">LOSS</button>
+      <button onclick="event.stopPropagation(); markPick('D', 8, 'push')">PUSH</button>
+      <button onclick="event.stopPropagation(); markPick('D', 8, 'pending')">RST</button>
+    </div>
+  </div>
+  <div class="pick-details" id="details-8">
+    <div class="reasoning">Model prices this at 60.2% versus bookmaker implied 45.5%, creating +32.4% edge. 1X2 value should be manually checked against injuries, motivation, and likely rotation. Range D candidate by odds profile.<br><br><strong>Risk:</strong> Check team news and odds movement before kickoff.</div>
+    <div class="metrics">
+      <span>Model <strong>60.2%</strong></span>
+      <span>Book <strong>45.5%</strong></span>
+      <span>Win <strong class="good">+$240</strong></span>
+      <span>Lose <strong class="bad">-$200</strong></span>
+    </div>
+  </div>
+</div>
+
+<div class="pick-card keep" id="pick-9" data-date="2026-04-28">
+  <div class="pick-summary" onclick="toggleDetails(9)">
+    <div class="rank">#6</div>
+    <div class="pick-main">
+      <div class="pick-title">Under 2.5 <span class="badge keep">KEEP</span></div>
+      <div class="pick-meta">Inter Milan vs Juventus · <span>2026-04-28 20:45</span> · SerieA</div>
+    </div>
+    <div class="numbers">
+      <div><strong>@1.80</strong><span>Odds</span></div>
+      <div><strong class="good">+20.8%</strong><span>Edge</span></div>
+      <div><strong>$200</strong><span>Stake</span></div>
+    </div>
+    <div class="result" id="result-9">pending</div>
+    <div class="actions">
+      <button class="win" onclick="event.stopPropagation(); markPick('D', 9, 'win')">WIN</button>
+      <button class="loss" onclick="event.stopPropagation(); markPick('D', 9, 'loss')">LOSS</button>
+      <button onclick="event.stopPropagation(); markPick('D', 9, 'push')">PUSH</button>
+      <button onclick="event.stopPropagation(); markPick('D', 9, 'pending')">RST</button>
+    </div>
+  </div>
+  <div class="pick-details" id="details-9">
+    <div class="reasoning">Model prices this at 67.1% versus bookmaker implied 55.6%, creating +20.8% edge. Goals market should be manually checked against fatigue, tactical setup, and recent scoring profiles. Range D candidate by odds profile.<br><br><strong>Risk:</strong> Check lineup and fatigue news before kickoff.</div>
+    <div class="metrics">
+      <span>Model <strong>67.1%</strong></span>
+      <span>Book <strong>55.6%</strong></span>
+      <span>Win <strong class="good">+$160</strong></span>
+      <span>Lose <strong class="bad">-$200</strong></span>
+    </div>
+  </div>
+</div>
+<div class="day-header" data-date="2026-04-29"><span>Wed Apr 29</span><small>2 picks</small></div>
+<div class="pick-card keep" id="pick-10" data-date="2026-04-29">
+  <div class="pick-summary" onclick="toggleDetails(10)">
+    <div class="rank">#7</div>
+    <div class="pick-main">
+      <div class="pick-title">Under 2.5 <span class="badge keep">KEEP</span></div>
+      <div class="pick-meta">Real Madrid vs Barcelona · <span>2026-04-29 21:00</span> · LaLiga</div>
+    </div>
+    <div class="numbers">
+      <div><strong>@2.25</strong><span>Odds</span></div>
+      <div><strong class="good">+21.7%</strong><span>Edge</span></div>
+      <div><strong>$200</strong><span>Stake</span></div>
+    </div>
+    <div class="result" id="result-10">pending</div>
+    <div class="actions">
+      <button class="win" onclick="event.stopPropagation(); markPick('D', 10, 'win')">WIN</button>
+      <button class="loss" onclick="event.stopPropagation(); markPick('D', 10, 'loss')">LOSS</button>
+      <button onclick="event.stopPropagation(); markPick('D', 10, 'push')">PUSH</button>
+      <button onclick="event.stopPropagation(); markPick('D', 10, 'pending')">RST</button>
+    </div>
+  </div>
+  <div class="pick-details" id="details-10">
+    <div class="reasoning">Model prices this at 54.1% versus bookmaker implied 44.4%, creating +21.7% edge. Goals market should be manually checked against fatigue, tactical setup, and recent scoring profiles. Range D candidate by odds profile.<br><br><strong>Risk:</strong> Check lineup and fatigue news before kickoff.</div>
+    <div class="metrics">
+      <span>Model <strong>54.1%</strong></span>
+      <span>Book <strong>44.4%</strong></span>
+      <span>Win <strong class="good">+$250</strong></span>
+      <span>Lose <strong class="bad">-$200</strong></span>
+    </div>
+  </div>
+</div>
+
+<div class="pick-card keep" id="pick-11" data-date="2026-04-29">
+  <div class="pick-summary" onclick="toggleDetails(11)">
+    <div class="rank">#8</div>
+    <div class="pick-main">
+      <div class="pick-title">Real Madrid Win <span class="badge keep">KEEP</span></div>
+      <div class="pick-meta">Real Madrid vs Barcelona · <span>2026-04-29 21:00</span> · LaLiga</div>
+    </div>
+    <div class="numbers">
+      <div><strong>@2.40</strong><span>Odds</span></div>
+      <div><strong class="good">+11.6%</strong><span>Edge</span></div>
+      <div><strong>$200</strong><span>Stake</span></div>
+    </div>
+    <div class="result" id="result-11">pending</div>
+    <div class="actions">
+      <button class="win" onclick="event.stopPropagation(); markPick('D', 11, 'win')">WIN</button>
+      <button class="loss" onclick="event.stopPropagation(); markPick('D', 11, 'loss')">LOSS</button>
+      <button onclick="event.stopPropagation(); markPick('D', 11, 'push')">PUSH</button>
+      <button onclick="event.stopPropagation(); markPick('D', 11, 'pending')">RST</button>
+    </div>
+  </div>
+  <div class="pick-details" id="details-11">
+    <div class="reasoning">Model prices this at 46.5% versus bookmaker implied 41.7%, creating +11.6% edge. 1X2 value should be manually checked against injuries, motivation, and likely rotation. Range D candidate by odds profile.<br><br><strong>Risk:</strong> Check team news and odds movement before kickoff.</div>
+    <div class="metrics">
+      <span>Model <strong>46.5%</strong></span>
+      <span>Book <strong>41.7%</strong></span>
+      <span>Win <strong class="good">+$280</strong></span>
       <span>Lose <strong class="bad">-$200</strong></span>
     </div>
   </div>
@@ -259,7 +507,7 @@ button.loss { color:var(--bad); border-color:rgba(239,68,68,.35); }
 </main>
 <script>
 const KEY = 'rollo-range-results-v1';
-const PICKS = {"C": [], "D": [{"id": 1, "odds": 1.7, "stake": 200.0, "status": "pending"}, {"id": 2, "odds": 2.1, "stake": 200.0, "status": "pending"}, {"id": 3, "odds": 1.85, "stake": 200.0, "status": "pending"}]};
+const PICKS = {"C": [{"id": 1, "odds": 3.4, "stake": 200.0, "status": "pending"}, {"id": 2, "odds": 3.4, "stake": 200.0, "status": "pending"}, {"id": 3, "odds": 3.5, "stake": 200.0, "status": "pending"}], "D": [{"id": 4, "odds": 2.1, "stake": 200.0, "status": "pending"}, {"id": 5, "odds": 1.85, "stake": 200.0, "status": "pending"}, {"id": 6, "odds": 1.9, "stake": 200.0, "status": "pending"}, {"id": 7, "odds": 2.15, "stake": 200.0, "status": "pending"}, {"id": 8, "odds": 2.2, "stake": 200.0, "status": "pending"}, {"id": 9, "odds": 1.8, "stake": 200.0, "status": "pending"}, {"id": 10, "odds": 2.25, "stake": 200.0, "status": "pending"}, {"id": 11, "odds": 2.4, "stake": 200.0, "status": "pending"}]};
 const BANK = {"C": 10000.0, "D": 10000.0};
 let state = JSON.parse(localStorage.getItem(KEY) || '{}');
 

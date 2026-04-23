@@ -6,12 +6,13 @@ Gets upcoming matches from API-Football (free tier available).
 import requests
 import sqlite3
 import sys
-from typing import List, Dict
+from typing import List, Dict, Optional
 from datetime import datetime, timedelta
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from config.paths import DB_PATH
+from config.settings import load_settings
 
 # API-Football configuration
 # Free tier: 100 requests/day
@@ -34,16 +35,43 @@ class FixturesFetcher:
     Falls back to demo data if API key not available.
     """
     
-    def __init__(self, api_key: str = None):
+    def __init__(
+        self,
+        api_key: str = None,
+        days_ahead: int = 7,
+        timezone: str = "Asia/Macau",
+        season: Optional[int] = None,
+        use_rapidapi: bool = False,
+        fallback_to_demo: bool = True,
+    ):
         self.api_key = api_key or API_FOOTBALL_KEY
+        self.days_ahead = days_ahead
+        self.timezone = timezone
+        self.season = season
+        self.use_rapidapi = use_rapidapi
+        self.fallback_to_demo = fallback_to_demo
         self.session = requests.Session()
         if self.api_key:
-            self.session.headers.update({
-                'x-rapidapi-key': self.api_key,
-                'x-rapidapi-host': 'v3.football.api-sports.io'
-            })
+            if self.use_rapidapi:
+                self.session.headers.update({
+                    'x-rapidapi-key': self.api_key,
+                    'x-rapidapi-host': 'v3.football.api-sports.io'
+                })
+            else:
+                self.session.headers.update({'x-apisports-key': self.api_key})
+
+    def _fallback(self, league: str) -> List[Dict]:
+        if self.fallback_to_demo:
+            return self._get_demo_fixtures(league)
+        return []
+
+    def _season(self) -> int:
+        if self.season:
+            return int(self.season)
+        now = datetime.now()
+        return now.year if now.month >= 7 else now.year - 1
     
-    def fetch_upcoming(self, league: str, days: int = 7) -> List[Dict]:
+    def fetch_upcoming(self, league: str, days: int = None) -> List[Dict]:
         """
         Fetch upcoming fixtures for a league.
         
@@ -54,17 +82,17 @@ class FixturesFetcher:
         Returns:
             List of fixture dictionaries
         """
+        days = days or self.days_ahead
         if not self.api_key:
             print("No API key - using demo fixtures")
-            return self._get_demo_fixtures(league)
+            return self._fallback(league)
         
         if league not in LEAGUE_IDS:
             print(f"Unknown league: {league}")
             return []
         
         league_id = LEAGUE_IDS[league]
-        now = datetime.now()
-        season = now.year if now.month >= 7 else now.year - 1
+        season = self._season()
         
         # Date range
         from_date = datetime.now().strftime('%Y-%m-%d')
@@ -78,24 +106,31 @@ class FixturesFetcher:
                 'from': from_date,
                 'to': to_date,
             }
+            if self.timezone:
+                params['timezone'] = self.timezone
             
-            print(f"Fetching {league} fixtures...")
+            print(f"Fetching {league} fixtures from API-Football...")
             response = self.session.get(url, params=params, timeout=30)
+            response.raise_for_status()
             data = response.json()
+            remaining = response.headers.get('x-ratelimit-requests-remaining')
+            if remaining is not None:
+                print(f"  API requests remaining today: {remaining}")
             
             if data.get('errors'):
                 print(f"API Error: {data['errors']}")
-                return self._get_demo_fixtures(league)
+                return self._fallback(league)
             
             fixtures = []
             for fixture in data.get('response', []):
+                status = fixture['fixture']['status']['short']
                 match = {
                     'match_id': f"{fixture['fixture']['id']}",
                     'home_team': fixture['teams']['home']['name'],
                     'away_team': fixture['teams']['away']['name'],
                     'league': league,
                     'kickoff': fixture['fixture']['date'][:16].replace('T', ' '),
-                    'status': 'scheduled'
+                    'status': 'scheduled' if status in {'TBD', 'NS'} else status.lower()
                 }
                 fixtures.append(match)
             
@@ -104,7 +139,7 @@ class FixturesFetcher:
             
         except Exception as e:
             print(f"Error fetching fixtures: {e}")
-            return self._get_demo_fixtures(league)
+            return self._fallback(league)
     
     def _get_demo_fixtures(self, league: str) -> List[Dict]:
         """Return demo fixtures when API is unavailable."""
@@ -135,26 +170,52 @@ class FixturesFetcher:
     
     def save_fixtures(self, fixtures: List[Dict]):
         """Save fixtures to database."""
+        if not fixtures:
+            print("Saved 0 fixtures to database")
+            return
+
         conn = sqlite3.connect(DB_PATH)
         c = conn.cursor()
+        league = fixtures[0]['league']
+        current_ids = [fixture['match_id'] for fixture in fixtures]
+
+        placeholders = ','.join('?' for _ in current_ids)
+        c.execute(
+            f'''
+            UPDATE matches
+            SET status = 'stale'
+            WHERE league = ?
+              AND status = 'scheduled'
+              AND match_id NOT IN ({placeholders})
+            ''',
+            [league] + current_ids
+        )
         
+        saved = 0
         for fixture in fixtures:
             c.execute('''
-                INSERT OR IGNORE INTO matches 
+                INSERT INTO matches
                 (match_id, home_team, away_team, league, kickoff, status)
                 VALUES (?, ?, ?, ?, ?, ?)
+                ON CONFLICT(match_id) DO UPDATE SET
+                    home_team = excluded.home_team,
+                    away_team = excluded.away_team,
+                    league = excluded.league,
+                    kickoff = excluded.kickoff,
+                    status = excluded.status
             ''', (
                 fixture['match_id'],
                 fixture['home_team'],
                 fixture['away_team'],
                 fixture['league'],
                 fixture['kickoff'],
-                'scheduled'
+                fixture.get('status', 'scheduled')
             ))
+            saved += 1
         
         conn.commit()
         conn.close()
-        print(f"Saved {len(fixtures)} fixtures to database")
+        print(f"Saved {saved} fixtures to database")
     
     def get_all_upcoming(self, leagues: List[str] = None) -> List[Dict]:
         """Fetch and save upcoming fixtures for all leagues."""
@@ -170,7 +231,14 @@ class FixturesFetcher:
         return all_fixtures
 
 if __name__ == '__main__':
-    fetcher = FixturesFetcher()
+    settings = load_settings()
+    fetcher = FixturesFetcher(
+        api_key=settings.get('api_football_key'),
+        days_ahead=int(settings.get('fixture_days_ahead', 7)),
+        timezone=settings.get('fixture_timezone', 'Asia/Macau'),
+        season=settings.get('fixture_season'),
+        use_rapidapi=bool(settings.get('api_football_use_rapidapi', False)),
+    )
     
     # Test fetching fixtures
     fixtures = fetcher.get_all_upcoming()
