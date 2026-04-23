@@ -93,14 +93,14 @@ def parse_csv_format(text: str) -> list:
     return odds
 
 
-def find_match_id(home_team: str, away_team: str) -> str:
-    """Find match_id for a scheduled fixture."""
+def find_match(home_team: str, away_team: str):
+    """Find a scheduled fixture and return match_id plus DB team names."""
     conn = sqlite3.connect(DB_PATH)
     c = conn.cursor()
     
     # Try exact match
     c.execute('''
-        SELECT match_id FROM matches
+        SELECT match_id, home_team, away_team FROM matches
         WHERE status = 'scheduled'
         AND home_team = ? AND away_team = ?
     ''', (home_team, away_team))
@@ -108,7 +108,7 @@ def find_match_id(home_team: str, away_team: str) -> str:
     
     if row:
         conn.close()
-        return row[0]
+        return row
     
     # Try fuzzy match
     c.execute('''
@@ -120,10 +120,16 @@ def find_match_id(home_team: str, away_team: str) -> str:
         if (home_team.lower() in db_home.lower() or db_home.lower() in home_team.lower()) and \
            (away_team.lower() in db_away.lower() or db_away.lower() in away_team.lower()):
             conn.close()
-            return match_id
+            return match_id, db_home, db_away
     
     conn.close()
     return None
+
+
+def find_match_id(home_team: str, away_team: str) -> str:
+    """Find match_id for a scheduled fixture."""
+    match = find_match(home_team, away_team)
+    return match[0] if match else None
 
 
 def save_odds(odds: list, overwrite: bool = False):
@@ -136,18 +142,26 @@ def save_odds(odds: list, overwrite: bool = False):
     not_found = []
     
     for entry in odds:
-        match_id = find_match_id(entry['home_team'], entry['away_team'])
+        match = find_match(entry['home_team'], entry['away_team'])
         
-        if not match_id:
+        if not match:
             not_found.append(f"{entry['home_team']} vs {entry['away_team']}")
             continue
+
+        match_id, db_home, db_away = match
         
         # Save each selection as separate row
         selections = [
-            ('1X2', 'Home', entry['home_odds']),
+            ('1X2', f'{db_home} Win', entry['home_odds']),
             ('1X2', 'Draw', entry.get('draw_odds', 0)),
-            ('1X2', 'Away', entry['away_odds'])
+            ('1X2', f'{db_away} Win', entry['away_odds'])
         ]
+
+        if overwrite:
+            c.execute('''
+                DELETE FROM odds
+                WHERE match_id = ? AND market = '1X2' AND bookmaker = 'manual'
+            ''', (match_id,))
         
         for market, selection, odd in selections:
             if not odd or odd <= 0:
@@ -163,12 +177,6 @@ def save_odds(odds: list, overwrite: bool = False):
             if existing and not overwrite:
                 skipped += 1
                 continue
-            
-            if existing and overwrite:
-                c.execute('''
-                    DELETE FROM odds 
-                    WHERE match_id = ? AND market = ? AND selection = ?
-                ''', (match_id, market, selection))
             
             implied = 1.0 / odd if odd > 0 else 0
             
