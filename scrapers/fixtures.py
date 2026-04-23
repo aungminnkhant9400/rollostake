@@ -5,10 +5,13 @@ Gets upcoming matches from API-Football (free tier available).
 
 import requests
 import sqlite3
+import sys
 from typing import List, Dict
 from datetime import datetime, timedelta
+from pathlib import Path
 
-DB_PATH = '/home/ubuntu/rollo-stake-model/data/rollo_stake.db'
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from config.paths import DB_PATH
 
 # API-Football configuration
 # Free tier: 100 requests/day
@@ -60,7 +63,8 @@ class FixturesFetcher:
             return []
         
         league_id = LEAGUE_IDS[league]
-        season = 2024  # Current season
+        now = datetime.now()
+        season = now.year if now.month >= 7 else now.year - 1
         
         # Date range
         from_date = datetime.now().strftime('%Y-%m-%d')
@@ -104,24 +108,26 @@ class FixturesFetcher:
     
     def _get_demo_fixtures(self, league: str) -> List[Dict]:
         """Return demo fixtures when API is unavailable."""
-        # Demo fixtures for testing (dates near end of 2024-25 season)
+        # Demo fixtures for testing, dated from the current run date.
+        base = datetime.now() + timedelta(days=2)
+        dates = [(base + timedelta(days=i)).strftime('%Y-%m-%d') for i in range(5)]
         fixtures = {
             'EPL': [
-                {'match_id': 'epl_1', 'home_team': 'Man City', 'away_team': 'Liverpool', 'league': 'EPL', 'kickoff': '2025-05-25 15:00', 'status': 'scheduled'},
-                {'match_id': 'epl_2', 'home_team': 'Arsenal', 'away_team': 'Chelsea', 'league': 'EPL', 'kickoff': '2025-05-25 17:30', 'status': 'scheduled'},
-                {'match_id': 'epl_3', 'home_team': 'Man United', 'away_team': 'Tottenham', 'league': 'EPL', 'kickoff': '2025-05-26 14:00', 'status': 'scheduled'},
+                {'match_id': 'epl_1', 'home_team': 'Man City', 'away_team': 'Liverpool', 'league': 'EPL', 'kickoff': f'{dates[0]} 15:00', 'status': 'scheduled'},
+                {'match_id': 'epl_2', 'home_team': 'Arsenal', 'away_team': 'Chelsea', 'league': 'EPL', 'kickoff': f'{dates[0]} 17:30', 'status': 'scheduled'},
+                {'match_id': 'epl_3', 'home_team': 'Man United', 'away_team': 'Tottenham', 'league': 'EPL', 'kickoff': f'{dates[1]} 14:00', 'status': 'scheduled'},
             ],
             'L1': [
-                {'match_id': 'l1_1', 'home_team': 'PSG', 'away_team': 'Marseille', 'league': 'L1', 'kickoff': '2025-05-25 20:00', 'status': 'scheduled'},
+                {'match_id': 'l1_1', 'home_team': 'PSG', 'away_team': 'Marseille', 'league': 'L1', 'kickoff': f'{dates[1]} 20:00', 'status': 'scheduled'},
             ],
             'Bundesliga': [
-                {'match_id': 'bund_1', 'home_team': 'Bayern Munich', 'away_team': 'Dortmund', 'league': 'Bundesliga', 'kickoff': '2025-05-25 18:30', 'status': 'scheduled'},
+                {'match_id': 'bund_1', 'home_team': 'Bayern Munich', 'away_team': 'Dortmund', 'league': 'Bundesliga', 'kickoff': f'{dates[2]} 18:30', 'status': 'scheduled'},
             ],
             'SerieA': [
-                {'match_id': 'sa_1', 'home_team': 'Inter Milan', 'away_team': 'Juventus', 'league': 'SerieA', 'kickoff': '2025-05-26 20:45', 'status': 'scheduled'},
+                {'match_id': 'sa_1', 'home_team': 'Inter Milan', 'away_team': 'Juventus', 'league': 'SerieA', 'kickoff': f'{dates[3]} 20:45', 'status': 'scheduled'},
             ],
             'LaLiga': [
-                {'match_id': 'll_1', 'home_team': 'Real Madrid', 'away_team': 'Barcelona', 'league': 'LaLiga', 'kickoff': '2025-05-26 21:00', 'status': 'scheduled'},
+                {'match_id': 'll_1', 'home_team': 'Real Madrid', 'away_team': 'Barcelona', 'league': 'LaLiga', 'kickoff': f'{dates[4]} 21:00', 'status': 'scheduled'},
             ],
         }
         

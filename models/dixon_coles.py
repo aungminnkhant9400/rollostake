@@ -9,8 +9,11 @@ from scipy.stats import poisson
 from typing import List, Tuple, Dict
 from dataclasses import dataclass
 import sqlite3
+import sys
+from pathlib import Path
 
-DB_PATH = '/home/ubuntu/rollo-stake-model/data/rollo_stake.db'
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from config.paths import DB_PATH
 
 @dataclass
 class MatchResult:
@@ -146,9 +149,11 @@ class DixonColesModel:
         Returns dict with lambda values and outcome probabilities.
         """
         if not self.params:
-            raise ValueError("Model not fitted yet. Call fit() first.")
-        
-        team_index = self.params['team_index']
+            team_index = {}
+            rho = self.rho
+        else:
+            team_index = self.params['team_index']
+            rho = self.params['rho']
         
         if home_team not in team_index or away_team not in team_index:
             # Teams not in training data - use league averages
@@ -173,7 +178,7 @@ class DixonColesModel:
         for h in range(max_goals + 1):
             for a in range(max_goals + 1):
                 base = (poisson.pmf(h, lambda_h) * poisson.pmf(a, lambda_a))
-                correction = self._dc_correction(h, a, lambda_h, lambda_a, self.params['rho'])
+                correction = self._dc_correction(h, a, lambda_h, lambda_a, rho)
                 probs[h, a] = base * correction
         
         # Normalize
@@ -186,8 +191,9 @@ class DixonColesModel:
         
         # Over/Under probabilities
         prob_over_1_5 = 1 - probs[0, 0] - probs[1, 0] - probs[0, 1]
-        prob_over_2_5 = 1 - np.sum(probs[:3, :3])
-        prob_under_2_5 = np.sum(probs[:3, :3])
+        under_2_5_mask = np.fromfunction(lambda h, a: (h + a) <= 2, probs.shape)
+        prob_under_2_5 = probs[under_2_5_mask].sum()
+        prob_over_2_5 = 1 - prob_under_2_5
         
         # BTTS
         btts_matrix = probs.copy()

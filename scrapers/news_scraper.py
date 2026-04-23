@@ -7,11 +7,14 @@ Fetches injury/team news from free sources and applies to model.
 import requests
 import sqlite3
 import re
+import sys
 from typing import List, Dict, Optional
 from datetime import datetime
 import time
+from pathlib import Path
 
-DB_PATH = '/home/ubuntu/rollo-stake-model/data/rollo_stake.db'
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from config.paths import DB_PATH
 
 class TeamNewsScraper:
     """

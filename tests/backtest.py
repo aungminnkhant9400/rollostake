@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+﻿#!/usr/bin/env python3
 """
 Backtesting Framework
 Tests the model on historical data to validate performance.
@@ -6,15 +6,16 @@ Tests the model on historical data to validate performance.
 
 import sqlite3
 import sys
-sys.path.insert(0, '/home/ubuntu/rollo-stake-model')
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from typing import List, Dict, Tuple
 from datetime import datetime
 from models.dixon_coles import DixonColesModel, MatchResult
 from analysis.edge_calculator import EdgeCalculator
 from analysis.fatigue import FatigueAnalyzer
-
-DB_PATH = '/home/ubuntu/rollo-stake-model/data/rollo_stake.db'
+from config.paths import DB_PATH
 
 class Backtester:
     """
@@ -209,14 +210,14 @@ class Backtester:
         print(f"Total staked: ${results['total_staked']:,.2f}")
         print(f"Total P&L: ${results['total_pnl']:+,}")
         print(f"ROI: {results['roi']:+.2f}%")
-        print(f"Bankroll: ${results['initial_bankroll']:,.0f} → ${results['final_bankroll']:,.2f}")
+        print(f"Bankroll: ${results['initial_bankroll']:,.0f} -> ${results['final_bankroll']:,.2f}")
         print("="*60)
         
         if results['results']:
             print("\nRecent picks:")
             for r in results['results'][-10:]:
-                status = "✅" if r['result'] == 'win' else "❌"
-                print(f"  {status} {r['match']} - {r['selection']} @ {r['odds']} ({r['edge']}% edge) → {r['result']} ${r['pnl']:+.0f}")
+                status = "WIN" if r['result'] == 'win' else "LOSS"
+                print(f"  {status} {r['match']} - {r['selection']} @ {r['odds']} ({r['edge']}% edge) -> {r['result']} ${r['pnl']:+.0f}")
 
 if __name__ == '__main__':
     # First load sample data if needed

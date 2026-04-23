@@ -6,12 +6,13 @@ One-liner interface for adjusting predictions with team news.
 
 import sys
 import sqlite3
-sys.path.insert(0, '/home/ubuntu/rollo-stake-model')
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from analysis.team_news import TeamNewsAdjuster
 from models.dixon_coles import save_prediction
-
-DB_PATH = '/home/ubuntu/rollo-stake-model/data/rollo_stake.db'
+from config.paths import DB_PATH
 
 def quick_adjust():
     """Quick interactive adjustment for upcoming matches."""

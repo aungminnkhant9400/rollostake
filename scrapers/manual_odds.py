@@ -6,9 +6,10 @@ Paste odds from Stake (or any bookmaker), get edges calculated.
 
 import sqlite3
 import sys
-sys.path.insert(0, '/home/ubuntu/rollo-stake-model')
+from pathlib import Path
 
-DB_PATH = '/home/ubuntu/rollo-stake-model/data/rollo_stake.db'
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from config.paths import DB_PATH
 
 def add_manual_odds(match_id: str, market: str, selection: str, odds: float):
     """Add manually entered odds to database."""

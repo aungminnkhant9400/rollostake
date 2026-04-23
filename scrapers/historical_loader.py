@@ -11,8 +11,11 @@ import io
 from typing import List, Dict, Optional
 from datetime import datetime
 import os
+import sys
+from pathlib import Path
 
-DB_PATH = '/home/ubuntu/rollo-stake-model/data/rollo_stake.db'
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from config.paths import DB_PATH
 
 # Football-Data.co.uk CSV URLs for major leagues
 FOOTBALL_DATA_URLS = {

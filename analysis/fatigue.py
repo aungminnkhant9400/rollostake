@@ -4,11 +4,14 @@ Analyzes team fatigue based on fixture congestion, rotation, and travel.
 """
 
 import sqlite3
+import sys
 from typing import List, Dict, Optional
 from datetime import datetime, timedelta
 from collections import defaultdict
+from pathlib import Path
 
-DB_PATH = '/home/ubuntu/rollo-stake-model/data/rollo_stake.db'
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from config.paths import DB_PATH
 
 class FatigueAnalyzer:
     """

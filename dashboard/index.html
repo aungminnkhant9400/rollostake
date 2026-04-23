@@ -2,905 +2,356 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Rollo Stake Model</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Rollo Stake Model - Range C/D</title>
 <style>
 :root {
-    --bg: #1a1a18;
-    --panel: #2a2a26;
-    --panel-hover: #353530;
-    --panel-deep: #1e1e1c;
-    --ink: #f5efe4;
-    --muted: #a8a090;
-    --accent: #d77b46;
-    --line: rgba(245, 239, 228, 0.1);
-    --green: #22c55e;
-    --green-dim: rgba(34, 197, 94, 0.15);
-    --orange: #f97316;
-    --orange-dim: rgba(249, 115, 22, 0.15);
-    --yellow: #eab308;
-    --yellow-dim: rgba(234, 179, 8, 0.15);
+  --bg:#0a0a0a; --panel:#141414; --panel2:#1f1f1f; --border:#2d2d2d;
+  --text:#e5e5e5; --muted:#8a8a8a; --dim:#585858; --accent:#e07a3a;
+  --good:#22c55e; --bad:#ef4444; --warn:#fbbf24; --blue:#60a5fa;
 }
-*{box-sizing:border-box;margin:0;padding:0}
-body{
-    font-family: Georgia, 'Times New Roman', serif;
-    background: var(--bg);
-    color: var(--ink);
-    line-height: 1.6;
-    min-height: 100vh;
-}
-.container{
-    max-width: 1100px;
-    margin: 0 auto;
-    padding: 24px 16px;
-}
-
-/* Header */
-header{
-    margin-bottom: 24px;
-    padding-bottom: 16px;
-    border-bottom: 1px solid var(--line);
-}
-h1{
-    font-size: 1.75rem;
-    font-weight: 700;
-    color: var(--ink);
-}
-h1 em{
-    color: var(--accent);
-    font-style: normal;
-}
-.sub{
-    color: var(--muted);
-    font-size: 0.875rem;
-    margin-top: 4px;
-}
-.date{
-    color: var(--muted);
-    font-size: 0.75rem;
-    margin-top: 8px;
-}
-
-/* Stats Bar */
-.stats-bar{
-    display: flex;
-    gap: 12px;
-    margin-bottom: 24px;
-    flex-wrap: wrap;
-}
-.stat-pill{
-    background: var(--panel);
-    border: 1px solid var(--line);
-    border-radius: 10px;
-    padding: 12px 16px;
-    min-width: 90px;
-    text-align: center;
-}
-.stat-pill.strong{border-color: var(--green); background: var(--green-dim);}
-.stat-pill.keep{border-color: var(--orange); background: var(--orange-dim);}
-.stat-pill.caution{border-color: var(--yellow); background: var(--yellow-dim);}
-.stat-label{
-    font-size: 0.65rem;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    color: var(--muted);
-    margin-bottom: 4px;
-}
-.stat-val{
-    font-size: 1.25rem;
-    font-weight: 700;
-    color: var(--ink);
-}
-.stat-val.accent{color: var(--accent);}
-.stat-val.green{color: var(--green);}
-
-/* Date Section */
-.date-section{
-    margin-bottom: 20px;
-    padding: 12px 16px;
-    background: var(--panel);
-    border-radius: 10px;
-    border-left: 3px solid var(--accent);
-}
-.date-title{
-    font-size: 1rem;
-    font-weight: 600;
-    color: var(--accent);
-}
-.date-sub{
-    font-size: 0.8rem;
-    color: var(--muted);
-    margin-top: 2px;
-}
-
-/* Pick Cards */
-.pick-card{
-    background: var(--panel);
-    border: 1px solid var(--line);
-    border-radius: 12px;
-    margin-bottom: 10px;
-    overflow: hidden;
-    cursor: pointer;
-    transition: all 0.2s;
-}
-.pick-card:hover{
-    background: var(--panel-hover);
-    border-color: var(--accent);
-}
-.pick-card.strong{border-left: 3px solid var(--green);}
-.pick-card.keep{border-left: 3px solid var(--orange);}
-.pick-card.caution{border-left: 3px solid var(--yellow);}
-
-.pick-summary{
-    padding: 14px 18px;
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    flex-wrap: wrap;
-}
-.pick-rank{
-    font-size: 1.25rem;
-    font-weight: 800;
-    color: var(--accent);
-    min-width: 30px;
-}
-.pick-main{
-    flex: 1;
-    min-width: 200px;
-}
-.pick-title{
-    font-size: 1rem;
-    font-weight: 600;
-    color: var(--ink);
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    flex-wrap: wrap;
-}
-.quality-badge{
-    padding: 2px 8px;
-    border-radius: 999px;
-    font-size: 0.65rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-}
-.quality-badge.strong{background: var(--green-dim); color: var(--green);}
-.quality-badge.keep{background: var(--orange-dim); color: var(--orange);}
-.quality-badge.caution{background: var(--yellow-dim); color: var(--yellow);}
-.pick-meta{
-    font-size: 0.8rem;
-    color: var(--muted);
-    margin-top: 3px;
-}
-.pick-meta .kickoff{color: var(--accent); font-weight: 600;}
-
-.pick-nums{
-    display: flex;
-    gap: 16px;
-}
-.num{
-    text-align: center;
-}
-.num-val{
-    font-size: 0.95rem;
-    font-weight: 700;
-    color: var(--ink);
-}
-.num-val.accent{color: var(--accent);}
-.num-val.green{color: var(--green);}
-.num-label{
-    font-size: 0.6rem;
-    color: var(--muted);
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-}
-
-/* Expanded Details */
-.pick-details{
-    display: none;
-    padding: 0 18px 16px 62px;
-    border-top: 1px solid var(--line);
-}
-.pick-details.open{
-    display: block;
-}
-
-/* Reasoning Section */
-.reasoning-box{
-    background: var(--panel-deep);
-    border: 1px solid var(--line);
-    border-radius: 10px;
-    padding: 14px 16px;
-    margin-top: 10px;
-}
-.reasoning-title{
-    font-size: 0.75rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    color: var(--accent);
-    margin-bottom: 10px;
-}
-.reasoning-text{
-    font-size: 0.85rem;
-    color: var(--muted);
-    line-height: 1.7;
-}
-.reasoning-text strong{
-    color: var(--ink);
-    font-weight: 600;
-}
-
-/* Metrics Grid */
-.metrics-grid{
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-    gap: 10px;
-    margin-bottom: 12px;
-}
-.metric-box{
-    background: rgba(0,0,0,0.2);
-    padding: 10px 12px;
-    border-radius: 8px;
-}
-.metric-label{
-    font-size: 0.6rem;
-    color: var(--muted);
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-}
-.metric-value{
-    font-size: 0.9rem;
-    font-weight: 600;
-    color: var(--ink);
-    margin-top: 2px;
+* { box-sizing:border-box; margin:0; padding:0; }
+body { background:var(--bg); color:var(--text); font-family:Inter,Segoe UI,Arial,sans-serif; font-size:13px; }
+header { position:sticky; top:0; z-index:10; background:rgba(10,10,10,.96); border-bottom:1px solid var(--border); padding:0 24px; height:58px; display:flex; align-items:center; justify-content:space-between; }
+.logo { font-weight:900; letter-spacing:.02em; }
+.logo em { color:var(--accent); font-style:normal; }
+.header-meta { color:var(--muted); font-size:11px; }
+.shell { max-width:1120px; margin:0 auto; padding:18px 20px 64px; }
+.tabs { display:flex; gap:6px; margin-bottom:14px; }
+.tab { background:var(--panel); border:1px solid var(--border); color:var(--muted); border-radius:8px; padding:10px 24px; font-size:11px; font-weight:800; letter-spacing:.08em; cursor:pointer; }
+.tab.on { color:var(--accent); border-color:rgba(224,122,58,.45); background:rgba(224,122,58,.08); }
+.intro { background:var(--panel); border:1px solid var(--border); border-radius:8px; padding:15px 18px; line-height:1.65; margin-bottom:14px; color:#cfcfcf; }
+.intro strong { color:#fff; }
+.quality-summary { display:grid; grid-template-columns:repeat(3,minmax(140px,1fr)); gap:8px; margin:0 0 14px; }
+.quality-summary div { background:var(--panel); border:1px solid var(--border); border-radius:8px; padding:12px 14px; }
+.quality-summary span { display:block; color:var(--dim); font-size:9px; font-weight:900; text-transform:uppercase; letter-spacing:.08em; margin-bottom:4px; }
+.quality-summary strong { display:block; color:#fff; font-size:16px; }
+.quality-summary small { color:var(--muted); font-size:11px; }
+.range { display:none; }
+.range.on { display:block; }
+.pnl-bar { display:grid; grid-template-columns:repeat(10,minmax(82px,1fr)); border:1px solid var(--border); border-radius:8px; overflow:hidden; margin-bottom:10px; }
+.pnl-bar div { background:var(--panel); border-right:1px solid var(--border); padding:11px 10px; text-align:center; min-height:58px; }
+.pnl-bar div:last-child { border-right:0; }
+.pnl-bar span { display:block; color:var(--dim); font-size:9px; font-weight:800; text-transform:uppercase; letter-spacing:.08em; margin-bottom:5px; }
+.pnl-bar strong { font-size:15px; color:#fff; }
+.good { color:var(--good)!important; }
+.bad { color:var(--bad)!important; }
+.warn { color:var(--warn)!important; }
+.range-note { color:var(--muted); margin:10px 0 14px; font-size:12px; }
+.filter-bar { display:flex; gap:12px; align-items:center; background:var(--panel); border:1px solid var(--border); border-radius:8px; padding:10px 14px; margin-bottom:12px; }
+.filter-bar label { color:var(--dim); font-size:10px; font-weight:900; text-transform:uppercase; letter-spacing:.08em; }
+.filter-select { background:var(--panel2); border:1px solid var(--border); color:var(--text); border-radius:6px; padding:7px 12px; min-width:160px; }
+.filter-count { margin-left:auto; color:var(--muted); font-size:11px; }
+.filter-count span { color:var(--accent); font-weight:900; }
+.day-header { display:flex; justify-content:space-between; align-items:center; border-left:3px solid var(--accent); background:linear-gradient(180deg,rgba(224,122,58,.07),transparent); padding:10px 14px; margin:18px 0 7px; border-radius:4px; }
+.day-header small { color:var(--dim); text-transform:uppercase; font-weight:800; letter-spacing:.08em; }
+.pick-card { background:var(--panel); border:1px solid var(--border); border-radius:8px; margin-bottom:8px; overflow:hidden; }
+.pick-card.strong { border-color:rgba(34,197,94,.45); box-shadow:0 0 16px rgba(34,197,94,.06); }
+.pick-card.win { border-color:rgba(34,197,94,.55); background:rgba(34,197,94,.03); }
+.pick-card.loss { border-color:rgba(239,68,68,.55); background:rgba(239,68,68,.03); }
+.pick-card.push { border-color:rgba(148,163,184,.45); }
+.pick-summary { display:flex; gap:14px; align-items:center; padding:13px 16px; cursor:pointer; }
+.pick-summary:hover { background:var(--panel2); }
+.rank { color:var(--accent); font-size:22px; font-weight:900; min-width:40px; }
+.pick-main { flex:1; min-width:190px; }
+.pick-title { color:#fff; font-weight:800; font-size:15px; }
+.pick-meta { color:var(--muted); font-size:11px; margin-top:3px; }
+.badge { display:inline-block; margin-left:6px; border-radius:4px; padding:2px 6px; font-size:9px; font-weight:900; letter-spacing:.05em; }
+.badge.strong { color:var(--good); background:rgba(34,197,94,.12); }
+.badge.keep { color:var(--blue); background:rgba(96,165,250,.12); }
+.badge.caution { color:var(--warn); background:rgba(251,191,36,.12); }
+.numbers { display:flex; gap:14px; text-align:center; }
+.numbers div { min-width:54px; }
+.numbers strong { display:block; font-size:14px; color:#fff; }
+.numbers span { display:block; color:var(--dim); font-size:8px; text-transform:uppercase; letter-spacing:.08em; margin-top:2px; }
+.result { min-width:78px; text-align:center; color:var(--muted); font-size:11px; font-weight:800; }
+.actions { display:flex; gap:4px; flex-wrap:wrap; justify-content:flex-end; }
+button { background:var(--panel2); border:1px solid var(--border); color:var(--muted); border-radius:6px; padding:6px 10px; font-size:9px; font-weight:900; cursor:pointer; }
+button.win { color:var(--good); border-color:rgba(34,197,94,.35); }
+button.loss { color:var(--bad); border-color:rgba(239,68,68,.35); }
+.pick-details { display:none; border-top:1px solid var(--border); padding:15px 20px 16px 70px; }
+.pick-details.open { display:block; }
+.reasoning { color:#cfcfcf; line-height:1.7; margin-bottom:12px; }
+.reasoning strong { color:#fff; }
+.metrics { display:flex; gap:18px; flex-wrap:wrap; color:var(--muted); }
+.metrics strong { color:#fff; }
+.hidden { display:none!important; }
+.empty { background:var(--panel); border:1px solid var(--border); border-radius:8px; padding:28px; color:var(--muted); text-align:center; }
+.history { background:var(--panel); border:1px solid var(--border); border-radius:8px; margin-top:18px; overflow:auto; }
+.history h2 { font-size:13px; padding:14px 16px; border-bottom:1px solid var(--border); }
+.history table { width:100%; border-collapse:collapse; min-width:780px; }
+.history th,.history td { padding:10px 12px; border-bottom:1px solid var(--border); text-align:left; font-size:11px; color:var(--muted); }
+.history th { color:var(--dim); text-transform:uppercase; letter-spacing:.08em; font-size:9px; }
+.empty-history { padding:18px; color:var(--muted); }
+@media (max-width:900px) {
+  header { height:auto; gap:8px; align-items:flex-start; flex-direction:column; padding:12px 16px; }
+  .pnl-bar { grid-template-columns:repeat(2,minmax(120px,1fr)); }
+  .quality-summary { grid-template-columns:1fr; }
+  .pick-summary { align-items:flex-start; flex-direction:column; }
+  .numbers { width:100%; justify-content:space-between; }
+  .actions { width:100%; justify-content:flex-start; }
+  .pick-details { padding:14px 16px; }
 }
 </style>
 </head>
 <body>
-<div class="container">
 <header>
-<h1>Rollo Stake Model <em>v1.0</em></h1>
-<div class="sub">Value betting with Dixon-Coles modeling</div>
-<div class="date">Week 1 · Generated: Thursday, April 23, 2026 at 18:03</div>
+  <div class="logo">ROLLO STAKE MODEL <em>Range C/D</em></div>
+  <div class="header-meta">3 picks · generated Thursday, April 23, 2026 at 19:33</div>
 </header>
+<main class="shell">
+  <div class="tabs">
+    <button class="tab on" onclick="switchRange('C')">RANGE C</button>
+    <button class="tab" onclick="switchRange('D')">RANGE D</button>
+  </div>
+  <div class="intro">
+    <strong>Range C/D mode.</strong> Picks are split by odds band, use flat $200 staking, and avoid duplicate exact selection exposure across ranges. Result buttons update this static dashboard in your browser local storage; database settlement can still be handled from the Python CLI.
+  </div>
+  <div class="quality-summary"><div><span>STRONG</span><strong>0W-0L</strong><small>0.0% · $+0</small></div><div><span>KEEP</span><strong>0W-0L</strong><small>0.0% · $+0</small></div><div><span>CAUTION</span><strong>0W-0L</strong><small>0.0% · $+0</small></div></div>
 
-<div class="stats-bar">
-<div class="stat-pill">
-<div class="stat-label">Bankroll</div>
-<div class="stat-val accent">$1,000</div>
-</div>
-<div class="stat-pill">
-<div class="stat-label">Staked</div>
-<div class="stat-val">$460</div>
-</div>
-<div class="stat-pill strong">
-<div class="stat-label">Strong</div>
-<div class="stat-val green">9</div>
-</div>
-<div class="stat-pill keep">
-<div class="stat-label">Keep</div>
-<div class="stat-val">3</div>
-</div>
-<div class="stat-pill caution">
-<div class="stat-label">Caution</div>
-<div class="stat-val">0</div>
-</div>
-</div>
+<section class="range on" id="range-C">
+  <div class="pnl-bar">
+    <div><span>Base Bank</span><strong>$10,000</strong></div>
+    <div><span>Flat Stake</span><strong>$200</strong></div>
+    <div><span>Odds Band</span><strong>2.50-5.00</strong></div>
+    <div><span>Strong</span><strong class="good">0</strong></div>
+    <div><span>Caution</span><strong class="warn">0</strong></div>
+    <div><span>Record</span><strong id="C-record">-</strong></div>
+    <div><span>Staked</span><strong id="C-staked">$0</strong></div>
+    <div><span>P&amp;L</span><strong id="C-pnl">$0</strong></div>
+    <div><span>ROI</span><strong id="C-roi">-</strong></div>
+    <div><span>Bank</span><strong id="C-bank">$10,000</strong></div>
+  </div>
+  <div class="range-note">0 picks · planned stake $0 · no duplicate selection exposure across ranges.</div>
 
-<div class="date-section">
-<div class="date-title">Matchday Thursday, April 23</div>
-<div class="date-sub">12 predictions generated · Kelly criterion active · $1,000 bankroll</div>
-</div>
-
-<div class="pick-card strong" onclick="toggleDetails(this)">
-<div class="pick-summary">
-<div class="pick-rank">#1</div>
-<div class="pick-main">
-<div class="pick-title">
-Inter Milan Win
-<span class="quality-badge strong">STRONG</span>
-</div>
-<div class="pick-meta">Inter Milan vs Juventus · <span class="kickoff">2025-05-26 20:45</span></div>
-</div>
-<div class="pick-nums">
-<div class="num"><div class="num-val accent">@2.2</div><div class="num-label">Odds</div></div>
-<div class="num"><div class="num-val green">+91.2%</div><div class="num-label">Edge</div></div>
-<div class="num"><div class="num-val">$50</div><div class="num-label">Stake</div></div>
-</div>
-</div>
-<div class="pick-details">
-<div class="metrics-grid">
-<div class="metric-box">
-<div class="metric-label">Model Probability</div>
-<div class="metric-value">86.9%</div>
-</div>
-<div class="metric-box">
-<div class="metric-label">Book Implied</div>
-<div class="metric-value">45.5%</div>
-</div>
-<div class="metric-box">
-<div class="metric-label">Value Edge</div>
-<div class="metric-value">+91.2%</div>
-</div>
-<div class="metric-box">
-<div class="metric-label">Kelly Stake</div>
-<div class="metric-value">$50.00</div>
-</div>
-<div class="metric-box">
-<div class="metric-label">Market</div>
-<div class="metric-value">1X2</div>
-</div>
-<div class="metric-box">
-<div class="metric-label">League</div>
-<div class="metric-value">SerieA</div>
-</div>
-</div>
-<div class="reasoning-box">
-<div class="reasoning-title">Why This Pick?</div>
-<div class="reasoning-text"><strong>Massive value:</strong> Model sees 86.9% chance but bookmaker only prices it at 45.5% — that's a <strong>+91.2% edge</strong>, which is exceptional.<br><br><strong>Home advantage:</strong> Home teams historically win ~45% of matches, and this team benefits from familiar conditions.<br><br><strong>Fatigue advantage:</strong> Inter Milan is fresher (fatigue score: 0.0) compared to Juventus (40.0), supporting this pick.<br><br><strong>Kelly stake $50:</strong> Moderate position size based on edge size and bankroll.</div>
-</div>
-</div>
+<div class="filter-bar">
+  <label for="C-filter">Filter by kickoff</label>
+  <select id="C-filter" class="filter-select" onchange="filterRange('C', this.value)">
+    <option value="all">All dates</option>
+  </select>
+  <div class="filter-count">Showing <span id="C-visible">0</span> of 0 picks</div>
 </div>
 
-<div class="pick-card strong" onclick="toggleDetails(this)">
-<div class="pick-summary">
-<div class="pick-rank">#2</div>
-<div class="pick-main">
-<div class="pick-title">
-Liverpool Win
-<span class="quality-badge strong">STRONG</span>
-</div>
-<div class="pick-meta">Man City vs Liverpool · <span class="kickoff">2025-05-25 15:00</span></div>
-</div>
-<div class="pick-nums">
-<div class="num"><div class="num-val accent">@3.1</div><div class="num-label">Odds</div></div>
-<div class="num"><div class="num-val green">+62.7%</div><div class="num-label">Edge</div></div>
-<div class="num"><div class="num-val">$45</div><div class="num-label">Stake</div></div>
-</div>
-</div>
-<div class="pick-details">
-<div class="metrics-grid">
-<div class="metric-box">
-<div class="metric-label">Model Probability</div>
-<div class="metric-value">52.5%</div>
-</div>
-<div class="metric-box">
-<div class="metric-label">Book Implied</div>
-<div class="metric-value">32.3%</div>
-</div>
-<div class="metric-box">
-<div class="metric-label">Value Edge</div>
-<div class="metric-value">+62.7%</div>
-</div>
-<div class="metric-box">
-<div class="metric-label">Kelly Stake</div>
-<div class="metric-value">$44.82</div>
-</div>
-<div class="metric-box">
-<div class="metric-label">Market</div>
-<div class="metric-value">1X2</div>
-</div>
-<div class="metric-box">
-<div class="metric-label">League</div>
-<div class="metric-value">EPL</div>
-</div>
-</div>
-<div class="reasoning-box">
-<div class="reasoning-title">Why This Pick?</div>
-<div class="reasoning-text"><strong>Massive value:</strong> Model sees 52.5% chance but bookmaker only prices it at 32.3% — that's a <strong>+62.7% edge</strong>, which is exceptional.<br><br><strong>Away value:</strong> Bookmakers often overprice home teams. Model identifies this away team as undervalued.<br><br><strong>Fatigue advantage:</strong> Liverpool is fresher (fatigue score: 0.0) compared to Man City (20.0), supporting this pick.<br><br><strong>Kelly stake $45:</strong> Conservative position due to lower edge or higher odds variance.</div>
-</div>
-</div>
+  <div class="empty">No picks generated for this range yet.</div>
+</section>
+
+
+<section class="range " id="range-D">
+  <div class="pnl-bar">
+    <div><span>Base Bank</span><strong>$10,000</strong></div>
+    <div><span>Flat Stake</span><strong>$200</strong></div>
+    <div><span>Odds Band</span><strong>1.70-2.70</strong></div>
+    <div><span>Strong</span><strong class="good">0</strong></div>
+    <div><span>Caution</span><strong class="warn">2</strong></div>
+    <div><span>Record</span><strong id="D-record">-</strong></div>
+    <div><span>Staked</span><strong id="D-staked">$0</strong></div>
+    <div><span>P&amp;L</span><strong id="D-pnl">$0</strong></div>
+    <div><span>ROI</span><strong id="D-roi">-</strong></div>
+    <div><span>Bank</span><strong id="D-bank">$10,000</strong></div>
+  </div>
+  <div class="range-note">3 picks · planned stake $600 · no duplicate selection exposure across ranges.</div>
+
+<div class="filter-bar">
+  <label for="D-filter">Filter by kickoff</label>
+  <select id="D-filter" class="filter-select" onchange="filterRange('D', this.value)">
+    <option value="all">All dates</option><option value="2026-04-25">Sat Apr 25</option>
+  </select>
+  <div class="filter-count">Showing <span id="D-visible">3</span> of 3 picks</div>
 </div>
 
-<div class="pick-card strong" onclick="toggleDetails(this)">
-<div class="pick-summary">
-<div class="pick-rank">#3</div>
-<div class="pick-main">
-<div class="pick-title">
-Under 2.5
-<span class="quality-badge strong">STRONG</span>
-</div>
-<div class="pick-meta">Man United vs Tottenham · <span class="kickoff">2025-05-26 14:00</span></div>
-</div>
-<div class="pick-nums">
-<div class="num"><div class="num-val accent">@2.15</div><div class="num-label">Odds</div></div>
-<div class="num"><div class="num-val green">+51.4%</div><div class="num-label">Edge</div></div>
-<div class="num"><div class="num-val">$50</div><div class="num-label">Stake</div></div>
-</div>
-</div>
-<div class="pick-details">
-<div class="metrics-grid">
-<div class="metric-box">
-<div class="metric-label">Model Probability</div>
-<div class="metric-value">70.4%</div>
-</div>
-<div class="metric-box">
-<div class="metric-label">Book Implied</div>
-<div class="metric-value">46.5%</div>
-</div>
-<div class="metric-box">
-<div class="metric-label">Value Edge</div>
-<div class="metric-value">+51.4%</div>
-</div>
-<div class="metric-box">
-<div class="metric-label">Kelly Stake</div>
-<div class="metric-value">$50.00</div>
-</div>
-<div class="metric-box">
-<div class="metric-label">Market</div>
-<div class="metric-value">OU</div>
-</div>
-<div class="metric-box">
-<div class="metric-label">League</div>
-<div class="metric-value">EPL</div>
-</div>
-</div>
-<div class="reasoning-box">
-<div class="reasoning-title">Why This Pick?</div>
-<div class="reasoning-text"><strong>Massive value:</strong> Model sees 70.4% chance but bookmaker only prices it at 46.5% — that's a <strong>+51.4% edge</strong>, which is exceptional.<br><br><strong>Low scoring expected:</strong> Model predicts fewer goals than the bookmaker threshold. Both teams show defensive tendencies or attacking struggles in recent data.<br><br><strong>Note:</strong> Man United is fresher, but model still finds value in this pick despite that.<br><br><strong>Kelly stake $50:</strong> Moderate position size based on edge size and bankroll.</div>
-</div>
-</div>
+  <div class="day-header" data-date="2026-04-25"><span>Sat Apr 25</span><small>3 picks</small></div>
+<div class="pick-card keep" id="pick-1" data-date="2026-04-25">
+  <div class="pick-summary" onclick="toggleDetails(1)">
+    <div class="rank">#1</div>
+    <div class="pick-main">
+      <div class="pick-title">BTTS Yes <span class="badge keep">KEEP</span></div>
+      <div class="pick-meta">Man City vs Liverpool · <span>2026-04-25 15:00</span> · EPL</div>
+    </div>
+    <div class="numbers">
+      <div><strong>@1.70</strong><span>Odds</span></div>
+      <div><strong class="good">+10.5%</strong><span>Edge</span></div>
+      <div><strong>$200</strong><span>Stake</span></div>
+    </div>
+    <div class="result" id="result-1">pending</div>
+    <div class="actions">
+      <button class="win" onclick="event.stopPropagation(); markPick('D', 1, 'win')">WIN</button>
+      <button class="loss" onclick="event.stopPropagation(); markPick('D', 1, 'loss')">LOSS</button>
+      <button onclick="event.stopPropagation(); markPick('D', 1, 'push')">PUSH</button>
+      <button onclick="event.stopPropagation(); markPick('D', 1, 'pending')">RST</button>
+    </div>
+  </div>
+  <div class="pick-details" id="details-1">
+    <div class="reasoning">Model prices this at 65.0% versus bookmaker implied 58.8%, creating +10.5% edge. BTTS value should be manually checked against both teams&#x27; scoring and clean-sheet trends. Range D candidate by odds profile.<br><br><strong>Risk:</strong> Check lineup and fatigue news before kickoff.</div>
+    <div class="metrics">
+      <span>Model <strong>65.0%</strong></span>
+      <span>Book <strong>58.8%</strong></span>
+      <span>Win <strong class="good">+$140</strong></span>
+      <span>Lose <strong class="bad">-$200</strong></span>
+    </div>
+  </div>
 </div>
 
-<div class="pick-card strong" onclick="toggleDetails(this)">
-<div class="pick-summary">
-<div class="pick-rank">#4</div>
-<div class="pick-main">
-<div class="pick-title">
-Under 2.5
-<span class="quality-badge strong">STRONG</span>
-</div>
-<div class="pick-meta">Inter Milan vs Juventus · <span class="kickoff">2025-05-26 20:45</span></div>
-</div>
-<div class="pick-nums">
-<div class="num"><div class="num-val accent">@1.8</div><div class="num-label">Odds</div></div>
-<div class="num"><div class="num-val green">+42.0%</div><div class="num-label">Edge</div></div>
-<div class="num"><div class="num-val">$50</div><div class="num-label">Stake</div></div>
-</div>
-</div>
-<div class="pick-details">
-<div class="metrics-grid">
-<div class="metric-box">
-<div class="metric-label">Model Probability</div>
-<div class="metric-value">78.9%</div>
-</div>
-<div class="metric-box">
-<div class="metric-label">Book Implied</div>
-<div class="metric-value">55.6%</div>
-</div>
-<div class="metric-box">
-<div class="metric-label">Value Edge</div>
-<div class="metric-value">+42.0%</div>
-</div>
-<div class="metric-box">
-<div class="metric-label">Kelly Stake</div>
-<div class="metric-value">$50.00</div>
-</div>
-<div class="metric-box">
-<div class="metric-label">Market</div>
-<div class="metric-value">OU</div>
-</div>
-<div class="metric-box">
-<div class="metric-label">League</div>
-<div class="metric-value">SerieA</div>
-</div>
-</div>
-<div class="reasoning-box">
-<div class="reasoning-title">Why This Pick?</div>
-<div class="reasoning-text"><strong>Strong value:</strong> Model gives 78.9% vs bookmaker's 55.6%, creating a <strong>+42.0% edge</strong>.<br><br><strong>Low scoring expected:</strong> Model predicts fewer goals than the bookmaker threshold. Both teams show defensive tendencies or attacking struggles in recent data.<br><br><strong>Note:</strong> Inter Milan is fresher, but model still finds value in this pick despite that.<br><br><strong>Kelly stake $50:</strong> Moderate position size based on edge size and bankroll.</div>
-</div>
-</div>
+<div class="pick-card caution" id="pick-2" data-date="2026-04-25">
+  <div class="pick-summary" onclick="toggleDetails(2)">
+    <div class="rank">#2</div>
+    <div class="pick-main">
+      <div class="pick-title">Man City Win <span class="badge caution">CAUTION</span></div>
+      <div class="pick-meta">Man City vs Liverpool · <span>2026-04-25 15:00</span> · EPL</div>
+    </div>
+    <div class="numbers">
+      <div><strong>@2.10</strong><span>Odds</span></div>
+      <div><strong class="good">+9.2%</strong><span>Edge</span></div>
+      <div><strong>$200</strong><span>Stake</span></div>
+    </div>
+    <div class="result" id="result-2">pending</div>
+    <div class="actions">
+      <button class="win" onclick="event.stopPropagation(); markPick('D', 2, 'win')">WIN</button>
+      <button class="loss" onclick="event.stopPropagation(); markPick('D', 2, 'loss')">LOSS</button>
+      <button onclick="event.stopPropagation(); markPick('D', 2, 'push')">PUSH</button>
+      <button onclick="event.stopPropagation(); markPick('D', 2, 'pending')">RST</button>
+    </div>
+  </div>
+  <div class="pick-details" id="details-2">
+    <div class="reasoning">Model prices this at 52.0% versus bookmaker implied 47.6%, creating +9.2% edge. 1X2 value should be manually checked against injuries, motivation, and likely rotation. Range D candidate by odds profile.<br><br><strong>Risk:</strong> Check team news and odds movement before kickoff.</div>
+    <div class="metrics">
+      <span>Model <strong>52.0%</strong></span>
+      <span>Book <strong>47.6%</strong></span>
+      <span>Win <strong class="good">+$220</strong></span>
+      <span>Lose <strong class="bad">-$200</strong></span>
+    </div>
+  </div>
 </div>
 
-<div class="pick-card strong" onclick="toggleDetails(this)">
-<div class="pick-summary">
-<div class="pick-rank">#5</div>
-<div class="pick-main">
-<div class="pick-title">
-Barcelona Win
-<span class="quality-badge strong">STRONG</span>
-</div>
-<div class="pick-meta">Real Madrid vs Barcelona · <span class="kickoff">2025-05-26 21:00</span></div>
-</div>
-<div class="pick-nums">
-<div class="num"><div class="num-val accent">@2.8</div><div class="num-label">Odds</div></div>
-<div class="num"><div class="num-val green">+39.2%</div><div class="num-label">Edge</div></div>
-<div class="num"><div class="num-val">$33</div><div class="num-label">Stake</div></div>
-</div>
-</div>
-<div class="pick-details">
-<div class="metrics-grid">
-<div class="metric-box">
-<div class="metric-label">Model Probability</div>
-<div class="metric-value">49.7%</div>
-</div>
-<div class="metric-box">
-<div class="metric-label">Book Implied</div>
-<div class="metric-value">35.7%</div>
-</div>
-<div class="metric-box">
-<div class="metric-label">Value Edge</div>
-<div class="metric-value">+39.2%</div>
-</div>
-<div class="metric-box">
-<div class="metric-label">Kelly Stake</div>
-<div class="metric-value">$32.63</div>
-</div>
-<div class="metric-box">
-<div class="metric-label">Market</div>
-<div class="metric-value">1X2</div>
-</div>
-<div class="metric-box">
-<div class="metric-label">League</div>
-<div class="metric-value">LaLiga</div>
-</div>
-</div>
-<div class="reasoning-box">
-<div class="reasoning-title">Why This Pick?</div>
-<div class="reasoning-text"><strong>Strong value:</strong> Model gives 49.7% vs bookmaker's 35.7%, creating a <strong>+39.2% edge</strong>.<br><br><strong>Away value:</strong> Bookmakers often overprice home teams. Model identifies this away team as undervalued.<br><br><strong>Kelly stake $33:</strong> Conservative position due to lower edge or higher odds variance.</div>
-</div>
-</div>
+<div class="pick-card caution" id="pick-3" data-date="2026-04-25">
+  <div class="pick-summary" onclick="toggleDetails(3)">
+    <div class="rank">#3</div>
+    <div class="pick-main">
+      <div class="pick-title">Over 2.5 <span class="badge caution">CAUTION</span></div>
+      <div class="pick-meta">Man City vs Liverpool · <span>2026-04-25 15:00</span> · EPL</div>
+    </div>
+    <div class="numbers">
+      <div><strong>@1.85</strong><span>Odds</span></div>
+      <div><strong class="good">+7.3%</strong><span>Edge</span></div>
+      <div><strong>$200</strong><span>Stake</span></div>
+    </div>
+    <div class="result" id="result-3">pending</div>
+    <div class="actions">
+      <button class="win" onclick="event.stopPropagation(); markPick('D', 3, 'win')">WIN</button>
+      <button class="loss" onclick="event.stopPropagation(); markPick('D', 3, 'loss')">LOSS</button>
+      <button onclick="event.stopPropagation(); markPick('D', 3, 'push')">PUSH</button>
+      <button onclick="event.stopPropagation(); markPick('D', 3, 'pending')">RST</button>
+    </div>
+  </div>
+  <div class="pick-details" id="details-3">
+    <div class="reasoning">Model prices this at 58.0% versus bookmaker implied 54.0%, creating +7.3% edge. Goals market should be manually checked against fatigue, tactical setup, and recent scoring profiles. Range D candidate by odds profile.<br><br><strong>Risk:</strong> Check lineup and fatigue news before kickoff.</div>
+    <div class="metrics">
+      <span>Model <strong>58.0%</strong></span>
+      <span>Book <strong>54.0%</strong></span>
+      <span>Win <strong class="good">+$170</strong></span>
+      <span>Lose <strong class="bad">-$200</strong></span>
+    </div>
+  </div>
 </div>
 
-<div class="pick-card strong" onclick="toggleDetails(this)">
-<div class="pick-summary">
-<div class="pick-rank">#6</div>
-<div class="pick-main">
-<div class="pick-title">
-Under 2.5
-<span class="quality-badge strong">STRONG</span>
-</div>
-<div class="pick-meta">Bayern Munich vs Dortmund · <span class="kickoff">2025-05-25 18:30</span></div>
-</div>
-<div class="pick-nums">
-<div class="num"><div class="num-val accent">@2.6</div><div class="num-label">Odds</div></div>
-<div class="num"><div class="num-val green">+37.8%</div><div class="num-label">Edge</div></div>
-<div class="num"><div class="num-val">$35</div><div class="num-label">Stake</div></div>
-</div>
-</div>
-<div class="pick-details">
-<div class="metrics-grid">
-<div class="metric-box">
-<div class="metric-label">Model Probability</div>
-<div class="metric-value">53.0%</div>
-</div>
-<div class="metric-box">
-<div class="metric-label">Book Implied</div>
-<div class="metric-value">38.5%</div>
-</div>
-<div class="metric-box">
-<div class="metric-label">Value Edge</div>
-<div class="metric-value">+37.8%</div>
-</div>
-<div class="metric-box">
-<div class="metric-label">Kelly Stake</div>
-<div class="metric-value">$35.44</div>
-</div>
-<div class="metric-box">
-<div class="metric-label">Market</div>
-<div class="metric-value">OU</div>
-</div>
-<div class="metric-box">
-<div class="metric-label">League</div>
-<div class="metric-value">Bundesliga</div>
-</div>
-</div>
-<div class="reasoning-box">
-<div class="reasoning-title">Why This Pick?</div>
-<div class="reasoning-text"><strong>Strong value:</strong> Model gives 53.0% vs bookmaker's 38.5%, creating a <strong>+37.8% edge</strong>.<br><br><strong>Low scoring expected:</strong> Model predicts fewer goals than the bookmaker threshold. Both teams show defensive tendencies or attacking struggles in recent data.<br><br><strong>Kelly stake $35:</strong> Conservative position due to lower edge or higher odds variance.</div>
-</div>
-</div>
-</div>
+</section>
 
-<div class="pick-card strong" onclick="toggleDetails(this)">
-<div class="pick-summary">
-<div class="pick-rank">#7</div>
-<div class="pick-main">
-<div class="pick-title">
-Under 2.5
-<span class="quality-badge strong">STRONG</span>
-</div>
-<div class="pick-meta">Man City vs Liverpool · <span class="kickoff">2025-05-25 15:00</span></div>
-</div>
-<div class="pick-nums">
-<div class="num"><div class="num-val accent">@2.1</div><div class="num-label">Odds</div></div>
-<div class="num"><div class="num-val green">+36.9%</div><div class="num-label">Edge</div></div>
-<div class="num"><div class="num-val">$50</div><div class="num-label">Stake</div></div>
-</div>
-</div>
-<div class="pick-details">
-<div class="metrics-grid">
-<div class="metric-box">
-<div class="metric-label">Model Probability</div>
-<div class="metric-value">65.2%</div>
-</div>
-<div class="metric-box">
-<div class="metric-label">Book Implied</div>
-<div class="metric-value">47.6%</div>
-</div>
-<div class="metric-box">
-<div class="metric-label">Value Edge</div>
-<div class="metric-value">+36.9%</div>
-</div>
-<div class="metric-box">
-<div class="metric-label">Kelly Stake</div>
-<div class="metric-value">$50.00</div>
-</div>
-<div class="metric-box">
-<div class="metric-label">Market</div>
-<div class="metric-value">OU</div>
-</div>
-<div class="metric-box">
-<div class="metric-label">League</div>
-<div class="metric-value">EPL</div>
-</div>
-</div>
-<div class="reasoning-box">
-<div class="reasoning-title">Why This Pick?</div>
-<div class="reasoning-text"><strong>Strong value:</strong> Model gives 65.2% vs bookmaker's 47.6%, creating a <strong>+36.9% edge</strong>.<br><br><strong>Low scoring expected:</strong> Model predicts fewer goals than the bookmaker threshold. Both teams show defensive tendencies or attacking struggles in recent data.<br><br><strong>Note:</strong> Liverpool is fresher, but model still finds value in this pick despite that.<br><br><strong>Kelly stake $50:</strong> Moderate position size based on edge size and bankroll.</div>
-</div>
-</div>
-</div>
-
-<div class="pick-card strong" onclick="toggleDetails(this)">
-<div class="pick-summary">
-<div class="pick-rank">#8</div>
-<div class="pick-main">
-<div class="pick-title">
-Under 2.5
-<span class="quality-badge strong">STRONG</span>
-</div>
-<div class="pick-meta">Arsenal vs Chelsea · <span class="kickoff">2025-05-25 17:30</span></div>
-</div>
-<div class="pick-nums">
-<div class="num"><div class="num-val accent">@1.95</div><div class="num-label">Odds</div></div>
-<div class="num"><div class="num-val green">+31.0%</div><div class="num-label">Edge</div></div>
-<div class="num"><div class="num-val">$49</div><div class="num-label">Stake</div></div>
-</div>
-</div>
-<div class="pick-details">
-<div class="metrics-grid">
-<div class="metric-box">
-<div class="metric-label">Model Probability</div>
-<div class="metric-value">67.2%</div>
-</div>
-<div class="metric-box">
-<div class="metric-label">Book Implied</div>
-<div class="metric-value">51.3%</div>
-</div>
-<div class="metric-box">
-<div class="metric-label">Value Edge</div>
-<div class="metric-value">+31.0%</div>
-</div>
-<div class="metric-box">
-<div class="metric-label">Kelly Stake</div>
-<div class="metric-value">$49.01</div>
-</div>
-<div class="metric-box">
-<div class="metric-label">Market</div>
-<div class="metric-value">OU</div>
-</div>
-<div class="metric-box">
-<div class="metric-label">League</div>
-<div class="metric-value">EPL</div>
-</div>
-</div>
-<div class="reasoning-box">
-<div class="reasoning-title">Why This Pick?</div>
-<div class="reasoning-text"><strong>Strong value:</strong> Model gives 67.2% vs bookmaker's 51.3%, creating a <strong>+31.0% edge</strong>.<br><br><strong>Low scoring expected:</strong> Model predicts fewer goals than the bookmaker threshold. Both teams show defensive tendencies or attacking struggles in recent data.<br><br><strong>Kelly stake $49:</strong> Conservative position due to lower edge or higher odds variance.</div>
-</div>
-</div>
-</div>
-
-<div class="pick-card strong" onclick="toggleDetails(this)">
-<div class="pick-summary">
-<div class="pick-rank">#9</div>
-<div class="pick-main">
-<div class="pick-title">
-Under 2.5
-<span class="quality-badge strong">STRONG</span>
-</div>
-<div class="pick-meta">PSG vs Marseille · <span class="kickoff">2025-05-25 20:00</span></div>
-</div>
-<div class="pick-nums">
-<div class="num"><div class="num-val accent">@2.4</div><div class="num-label">Odds</div></div>
-<div class="num"><div class="num-val green">+25.3%</div><div class="num-label">Edge</div></div>
-<div class="num"><div class="num-val">$27</div><div class="num-label">Stake</div></div>
-</div>
-</div>
-<div class="pick-details">
-<div class="metrics-grid">
-<div class="metric-box">
-<div class="metric-label">Model Probability</div>
-<div class="metric-value">52.2%</div>
-</div>
-<div class="metric-box">
-<div class="metric-label">Book Implied</div>
-<div class="metric-value">41.7%</div>
-</div>
-<div class="metric-box">
-<div class="metric-label">Value Edge</div>
-<div class="metric-value">+25.3%</div>
-</div>
-<div class="metric-box">
-<div class="metric-label">Kelly Stake</div>
-<div class="metric-value">$27.09</div>
-</div>
-<div class="metric-box">
-<div class="metric-label">Market</div>
-<div class="metric-value">OU</div>
-</div>
-<div class="metric-box">
-<div class="metric-label">League</div>
-<div class="metric-value">L1</div>
-</div>
-</div>
-<div class="reasoning-box">
-<div class="reasoning-title">Why This Pick?</div>
-<div class="reasoning-text"><strong>Strong value:</strong> Model gives 52.2% vs bookmaker's 41.7%, creating a <strong>+25.3% edge</strong>.<br><br><strong>Low scoring expected:</strong> Model predicts fewer goals than the bookmaker threshold. Both teams show defensive tendencies or attacking struggles in recent data.<br><br><strong>Kelly stake $27:</strong> Conservative position due to lower edge or higher odds variance.</div>
-</div>
-</div>
-</div>
-
-<div class="pick-card keep" onclick="toggleDetails(this)">
-<div class="pick-summary">
-<div class="pick-rank">#10</div>
-<div class="pick-main">
-<div class="pick-title">
-PSG Win
-<span class="quality-badge keep">KEEP</span>
-</div>
-<div class="pick-meta">PSG vs Marseille · <span class="kickoff">2025-05-25 20:00</span></div>
-</div>
-<div class="pick-nums">
-<div class="num"><div class="num-val accent">@1.45</div><div class="num-label">Odds</div></div>
-<div class="num"><div class="num-val green">+23.2%</div><div class="num-label">Edge</div></div>
-<div class="num"><div class="num-val">$35</div><div class="num-label">Stake</div></div>
-</div>
-</div>
-<div class="pick-details">
-<div class="metrics-grid">
-<div class="metric-box">
-<div class="metric-label">Model Probability</div>
-<div class="metric-value">85.0%</div>
-</div>
-<div class="metric-box">
-<div class="metric-label">Book Implied</div>
-<div class="metric-value">69.0%</div>
-</div>
-<div class="metric-box">
-<div class="metric-label">Value Edge</div>
-<div class="metric-value">+23.2%</div>
-</div>
-<div class="metric-box">
-<div class="metric-label">Kelly Stake</div>
-<div class="metric-value">$35.00</div>
-</div>
-<div class="metric-box">
-<div class="metric-label">Market</div>
-<div class="metric-value">1X2</div>
-</div>
-<div class="metric-box">
-<div class="metric-label">League</div>
-<div class="metric-value">L1</div>
-</div>
-</div>
-<div class="reasoning-box">
-<div class="reasoning-title">Why This Pick?</div>
-<div class="reasoning-text"><strong>Solid value:</strong> Model probability (85.0%) exceeds bookmaker implied (69.0%) by <strong>+23.2%</strong>.<br><br><strong>Home advantage:</strong> Home teams historically win ~45% of matches, and this team benefits from familiar conditions.<br><br><strong>Kelly stake $35:</strong> Conservative position due to lower edge or higher odds variance.</div>
-</div>
-</div>
-</div>
-
-<div class="pick-card keep" onclick="toggleDetails(this)">
-<div class="pick-summary">
-<div class="pick-rank">#11</div>
-<div class="pick-main">
-<div class="pick-title">
-Arsenal Win
-<span class="quality-badge keep">KEEP</span>
-</div>
-<div class="pick-meta">Arsenal vs Chelsea · <span class="kickoff">2025-05-25 17:30</span></div>
-</div>
-<div class="pick-nums">
-<div class="num"><div class="num-val accent">@1.85</div><div class="num-label">Odds</div></div>
-<div class="num"><div class="num-val green">+18.6%</div><div class="num-label">Edge</div></div>
-<div class="num"><div class="num-val">$23</div><div class="num-label">Stake</div></div>
-</div>
-</div>
-<div class="pick-details">
-<div class="metrics-grid">
-<div class="metric-box">
-<div class="metric-label">Model Probability</div>
-<div class="metric-value">64.1%</div>
-</div>
-<div class="metric-box">
-<div class="metric-label">Book Implied</div>
-<div class="metric-value">54.0%</div>
-</div>
-<div class="metric-box">
-<div class="metric-label">Value Edge</div>
-<div class="metric-value">+18.6%</div>
-</div>
-<div class="metric-box">
-<div class="metric-label">Kelly Stake</div>
-<div class="metric-value">$22.96</div>
-</div>
-<div class="metric-box">
-<div class="metric-label">Market</div>
-<div class="metric-value">1X2</div>
-</div>
-<div class="metric-box">
-<div class="metric-label">League</div>
-<div class="metric-value">EPL</div>
-</div>
-</div>
-<div class="reasoning-box">
-<div class="reasoning-title">Why This Pick?</div>
-<div class="reasoning-text"><strong>Solid value:</strong> Model probability (64.1%) exceeds bookmaker implied (54.0%) by <strong>+18.6%</strong>.<br><br><strong>Home advantage:</strong> Home teams historically win ~45% of matches, and this team benefits from familiar conditions.<br><br><strong>Kelly stake $23:</strong> Conservative position due to lower edge or higher odds variance.</div>
-</div>
-</div>
-</div>
-
-<div class="pick-card keep" onclick="toggleDetails(this)">
-<div class="pick-summary">
-<div class="pick-rank">#12</div>
-<div class="pick-main">
-<div class="pick-title">
-Under 2.5
-<span class="quality-badge keep">KEEP</span>
-</div>
-<div class="pick-meta">Real Madrid vs Barcelona · <span class="kickoff">2025-05-26 21:00</span></div>
-</div>
-<div class="pick-nums">
-<div class="num"><div class="num-val accent">@2.25</div><div class="num-label">Odds</div></div>
-<div class="num"><div class="num-val green">+15.7%</div><div class="num-label">Edge</div></div>
-<div class="num"><div class="num-val">$13</div><div class="num-label">Stake</div></div>
-</div>
-</div>
-<div class="pick-details">
-<div class="metrics-grid">
-<div class="metric-box">
-<div class="metric-label">Model Probability</div>
-<div class="metric-value">51.4%</div>
-</div>
-<div class="metric-box">
-<div class="metric-label">Book Implied</div>
-<div class="metric-value">44.4%</div>
-</div>
-<div class="metric-box">
-<div class="metric-label">Value Edge</div>
-<div class="metric-value">+15.7%</div>
-</div>
-<div class="metric-box">
-<div class="metric-label">Kelly Stake</div>
-<div class="metric-value">$13.15</div>
-</div>
-<div class="metric-box">
-<div class="metric-label">Market</div>
-<div class="metric-value">OU</div>
-</div>
-<div class="metric-box">
-<div class="metric-label">League</div>
-<div class="metric-value">LaLiga</div>
-</div>
-</div>
-<div class="reasoning-box">
-<div class="reasoning-title">Why This Pick?</div>
-<div class="reasoning-text"><strong>Solid value:</strong> Model probability (51.4%) exceeds bookmaker implied (44.4%) by <strong>+15.7%</strong>.<br><br><strong>Low scoring expected:</strong> Model predicts fewer goals than the bookmaker threshold. Both teams show defensive tendencies or attacking struggles in recent data.<br><br><strong>Kelly stake $13:</strong> Conservative position due to lower edge or higher odds variance.</div>
-</div>
-</div>
-</div>
-
-</div>
-
+  <div class="history empty-history">No settled picks yet.</div>
+</main>
 <script>
-function toggleDetails(card) {
-    const details = card.querySelector('.pick-details');
-    details.classList.toggle('open');
+const KEY = 'rollo-range-results-v1';
+const PICKS = {"C": [], "D": [{"id": 1, "odds": 1.7, "stake": 200.0, "status": "pending"}, {"id": 2, "odds": 2.1, "stake": 200.0, "status": "pending"}, {"id": 3, "odds": 1.85, "stake": 200.0, "status": "pending"}]};
+const BANK = {"C": 10000.0, "D": 10000.0};
+let state = JSON.parse(localStorage.getItem(KEY) || '{}');
+
+function switchRange(code) {
+  document.querySelectorAll('.tab').forEach((tab, index) => {
+    tab.classList.toggle('on', ['C', 'D'][index] === code);
+  });
+  document.querySelectorAll('.range').forEach(range => range.classList.remove('on'));
+  document.getElementById('range-' + code).classList.add('on');
 }
+
+function toggleDetails(id) {
+  document.getElementById('details-' + id).classList.toggle('open');
+}
+
+function currentStatus(pick) {
+  return (state[pick.id] || pick.status || 'pending').toLowerCase();
+}
+
+function markPick(range, id, status) {
+  state[id] = status;
+  localStorage.setItem(KEY, JSON.stringify(state));
+  updateRange(range);
+}
+
+function filterRange(range, date) {
+  const root = document.getElementById('range-' + range);
+  let visible = 0;
+  root.querySelectorAll('.pick-card').forEach(card => {
+    const show = date === 'all' || card.dataset.date === date;
+    card.classList.toggle('hidden', !show);
+    if (show) visible++;
+  });
+  root.querySelectorAll('.day-header').forEach(header => {
+    header.classList.toggle('hidden', !(date === 'all' || header.dataset.date === date));
+  });
+  document.getElementById(range + '-visible').textContent = visible;
+}
+
+function updateRange(range) {
+  let wins = 0, losses = 0, pushes = 0, pnl = 0, staked = 0;
+  PICKS[range].forEach(pick => {
+    const status = currentStatus(pick);
+    const card = document.getElementById('pick-' + pick.id);
+    card.classList.remove('win', 'loss', 'push');
+    if (['win', 'loss', 'push'].includes(status)) card.classList.add(status);
+
+    const result = document.getElementById('result-' + pick.id);
+    if (status === 'win') {
+      wins++;
+      staked += pick.stake;
+      const profit = Math.round(pick.stake * (pick.odds - 1));
+      pnl += profit;
+      result.innerHTML = '<span class="good">+$' + profit.toLocaleString() + '</span>';
+    } else if (status === 'loss') {
+      losses++;
+      staked += pick.stake;
+      pnl -= pick.stake;
+      result.innerHTML = '<span class="bad">-$' + pick.stake.toLocaleString() + '</span>';
+    } else if (status === 'push') {
+      pushes++;
+      result.innerHTML = '<span>PUSH</span>';
+    } else {
+      result.textContent = 'pending';
+    }
+  });
+
+  const record = wins + losses + pushes === 0 ? '-' : wins + 'W-' + losses + 'L' + (pushes ? '-' + pushes + 'P' : '');
+  document.getElementById(range + '-record').textContent = record;
+  document.getElementById(range + '-staked').textContent = '$' + staked.toLocaleString();
+
+  const pnlEl = document.getElementById(range + '-pnl');
+  pnlEl.textContent = (pnl >= 0 ? '+$' : '-$') + Math.abs(pnl).toLocaleString();
+  pnlEl.className = pnl >= 0 ? 'good' : 'bad';
+
+  const roiEl = document.getElementById(range + '-roi');
+  if (staked > 0) {
+    const roi = Math.round((pnl / staked) * 1000) / 10;
+    roiEl.textContent = (roi >= 0 ? '+' : '') + roi + '%';
+    roiEl.className = roi >= 0 ? 'good' : 'bad';
+  } else {
+    roiEl.textContent = '-';
+    roiEl.className = '';
+  }
+
+  const bankEl = document.getElementById(range + '-bank');
+  const bank = BANK[range] + pnl;
+  bankEl.textContent = '$' + bank.toLocaleString();
+  bankEl.className = pnl >= 0 ? 'good' : 'bad';
+}
+
+['C', 'D'].forEach(updateRange);
 </script>
 </body>
 </html>

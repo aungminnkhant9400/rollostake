@@ -2,15 +2,17 @@
 """Populate sample data for dashboard demo."""
 
 import sys
-sys.path.insert(0, '/home/ubuntu/rollo-stake-model')
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 import sqlite3
 
+from models.core import init_db
 from models.dixon_coles import save_prediction
 from analysis.edge_calculator import EdgeCalculator
 from dashboard.generator import DashboardGenerator
-
-DB_PATH = '/home/ubuntu/rollo-stake-model/data/rollo_stake.db'
+from config.paths import DB_PATH, ensure_runtime_dirs
 
 def add_sample_matches():
     conn = sqlite3.connect(DB_PATH)
@@ -136,6 +138,8 @@ def generate_and_show():
     print(f"Open: file://{path}")
 
 if __name__ == '__main__':
+    ensure_runtime_dirs()
+    init_db()
     add_sample_matches()
     add_sample_odds()
     add_sample_predictions()

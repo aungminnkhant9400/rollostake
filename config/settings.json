@@ -4,6 +4,29 @@
   "stake_proxy": null,
   "leagues": ["EPL", "L1", "Bundesliga", "SerieA", "LaLiga"],
   "bankroll": 1000,
+  "staking_mode": "flat",
+  "flat_stake": 200,
+  "use_ranges": true,
+  "ranges": {
+    "C": {
+      "name": "Range C",
+      "bankroll": 10000,
+      "flat_stake": 200,
+      "min_odds": 2.5,
+      "max_odds": 5.0,
+      "max_picks": 12,
+      "min_edge": 0.05
+    },
+    "D": {
+      "name": "Range D",
+      "bankroll": 10000,
+      "flat_stake": 200,
+      "min_odds": 1.7,
+      "max_odds": 2.7,
+      "max_picks": 12,
+      "min_edge": 0.05
+    }
+  },
   "base_stake": 50,
   "strong_stake": 75,
   "min_edge": 0.05,

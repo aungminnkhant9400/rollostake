@@ -10,8 +10,11 @@ from datetime import datetime
 from typing import List, Dict, Optional
 from dataclasses import dataclass
 import sqlite3
+import sys
+from pathlib import Path
 
-DB_PATH = '/home/ubuntu/rollo-stake-model/data/rollo_stake.db'
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from config.paths import DB_PATH
 
 @dataclass
 class OddsData:

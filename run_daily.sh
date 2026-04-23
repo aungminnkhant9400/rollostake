@@ -2,8 +2,12 @@
 # Daily run script for Rollo Stake Model
 # Run this daily to generate fresh predictions
 
-cd /home/ubuntu/rollo-stake-model
-source .venv/bin/activate
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+cd "$SCRIPT_DIR"
+
+if [ -f ".venv/bin/activate" ]; then
+  source .venv/bin/activate
+fi
 
 echo "=========================================="
 echo "Rollo Stake Model - Daily Run"

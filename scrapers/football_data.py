@@ -7,10 +7,13 @@ import requests
 import csv
 import io
 import sqlite3
+import sys
 from typing import List, Dict
 from datetime import datetime
+from pathlib import Path
 
-DB_PATH = '/home/ubuntu/rollo-stake-model/data/rollo_stake.db'
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from config.paths import DB_PATH
 
 # Football-Data.co.uk CSV URLs
 # Season format: 2425 = 2024-25 season

@@ -2,25 +2,26 @@
 # Systematic value-betting engine for soccer
 # Separation of concerns: each module does ONE thing
 
-import json
-import os
 import sqlite3
-from datetime import datetime, timedelta
-from dataclasses import dataclass, asdict
-from typing import List, Optional, Dict, Tuple
-import requests
-from bs4 import BeautifulSoup
-import numpy as np
-from scipy.optimize import minimize
-from scipy.stats import poisson
+import sys
+from pathlib import Path
 
-# Config
-DATA_DIR = os.path.join(os.path.dirname(__file__), '..', 'data')
-DB_PATH = os.path.join(DATA_DIR, 'rollo_stake.db')
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from config.paths import DB_PATH, ensure_runtime_dirs
+
+def _table_columns(cursor, table: str) -> set:
+    cursor.execute(f"PRAGMA table_info({table})")
+    return {col[1] for col in cursor.fetchall()}
+
+
+def _add_column_if_missing(cursor, table: str, column: str, definition: str):
+    columns = _table_columns(cursor, table)
+    if column not in columns:
+        cursor.execute(f"ALTER TABLE {table} ADD COLUMN {column} {definition}")
 
 def init_db():
     """Initialize SQLite database for persistence."""
-    os.makedirs(DATA_DIR, exist_ok=True)
+    ensure_runtime_dirs()
     conn = sqlite3.connect(DB_PATH)
     c = conn.cursor()
     
@@ -36,6 +37,9 @@ def init_db():
             home_goals INTEGER,
             away_goals INTEGER,
             status TEXT DEFAULT 'scheduled',
+            home_fatigue_score REAL,
+            away_fatigue_score REAL,
+            fatigue_advantage TEXT,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
     ''')
@@ -69,6 +73,10 @@ def init_db():
             prob_over_2_5 REAL,
             prob_under_2_5 REAL,
             prob_btts_yes REAL,
+            adj_prob_home REAL,
+            adj_prob_draw REAL,
+            adj_prob_away REAL,
+            adjustment_note TEXT,
             calculated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             FOREIGN KEY (match_id) REFERENCES matches(match_id)
         )
@@ -86,10 +94,15 @@ def init_db():
             edge_pct REAL,
             odds REAL,
             stake REAL DEFAULT 200,
+            range_code TEXT DEFAULT 'D',
             quality TEXT,
+            reasoning TEXT,
+            risk_note TEXT,
+            payout REAL DEFAULT 0,
             status TEXT DEFAULT 'pending',
             result TEXT,
             pnl REAL,
+            settled_at TIMESTAMP,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             FOREIGN KEY (match_id) REFERENCES matches(match_id)
         )
@@ -99,6 +112,7 @@ def init_db():
     c.execute('''
         CREATE TABLE IF NOT EXISTS bankroll (
             id INTEGER PRIMARY KEY,
+            range_code TEXT DEFAULT 'D',
             week INTEGER,
             starting_bank REAL,
             total_staked REAL,
@@ -109,6 +123,43 @@ def init_db():
             updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
     ''')
+
+    # Settled match/pick results. Picks also keep denormalized result fields for
+    # dashboard speed, while this table provides an audit trail.
+    c.execute('''
+        CREATE TABLE IF NOT EXISTS results (
+            id INTEGER PRIMARY KEY,
+            pick_id INTEGER,
+            match_id TEXT,
+            range_code TEXT,
+            quality TEXT,
+            result TEXT,
+            home_goals INTEGER,
+            away_goals INTEGER,
+            stake REAL,
+            odds REAL,
+            payout REAL,
+            pnl REAL,
+            settled_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (pick_id) REFERENCES picks(id),
+            FOREIGN KEY (match_id) REFERENCES matches(match_id)
+        )
+    ''')
+
+    # Lightweight migrations for databases created before the Range C/D work.
+    _add_column_if_missing(c, 'matches', 'home_fatigue_score', 'REAL')
+    _add_column_if_missing(c, 'matches', 'away_fatigue_score', 'REAL')
+    _add_column_if_missing(c, 'matches', 'fatigue_advantage', 'TEXT')
+    _add_column_if_missing(c, 'predictions', 'adj_prob_home', 'REAL')
+    _add_column_if_missing(c, 'predictions', 'adj_prob_draw', 'REAL')
+    _add_column_if_missing(c, 'predictions', 'adj_prob_away', 'REAL')
+    _add_column_if_missing(c, 'predictions', 'adjustment_note', 'TEXT')
+    _add_column_if_missing(c, 'picks', 'range_code', "TEXT DEFAULT 'D'")
+    _add_column_if_missing(c, 'picks', 'reasoning', 'TEXT')
+    _add_column_if_missing(c, 'picks', 'risk_note', 'TEXT')
+    _add_column_if_missing(c, 'picks', 'payout', 'REAL DEFAULT 0')
+    _add_column_if_missing(c, 'picks', 'settled_at', 'TIMESTAMP')
+    _add_column_if_missing(c, 'bankroll', 'range_code', "TEXT DEFAULT 'D'")
     
     conn.commit()
     conn.close()

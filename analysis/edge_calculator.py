@@ -4,11 +4,14 @@ Finds value bets by comparing model probabilities to bookmaker odds.
 """
 
 import sqlite3
+import sys
 from typing import List, Dict, Optional, Tuple
 from dataclasses import dataclass
 from datetime import datetime
+from pathlib import Path
 
-DB_PATH = '/home/ubuntu/rollo-stake-model/data/rollo_stake.db'
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from config.paths import DB_PATH
 
 @dataclass
 class Pick:
@@ -24,8 +27,23 @@ class Pick:
     edge_pct: float
     odds: float
     stake: float = 200.0
+    range_code: str = 'D'
     quality: str = 'KEEP'
+    reasoning: str = ''
+    risk_note: str = ''
     status: str = 'pending'
+
+
+@dataclass(frozen=True)
+class RangeConfig:
+    code: str
+    name: str
+    bankroll: float
+    flat_stake: float
+    min_odds: float
+    max_odds: float
+    max_picks: int
+    min_edge: float
 
 class EdgeCalculator:
     """
@@ -53,9 +71,28 @@ class EdgeCalculator:
     KELLY_FRACTION = 0.15  # 15% Kelly for safety (was 25%)
     MAX_KELLY_PCT = 0.05   # Max 5% of bankroll per bet (was $500 fixed)
     MIN_KELLY_STAKE = 50.0
-    
-    def __init__(self):
-        pass
+
+    DEFAULT_RANGES = {
+        'C': RangeConfig('C', 'Range C', 10000.0, 200.0, 2.50, 5.00, 12, 0.05),
+        'D': RangeConfig('D', 'Range D', 10000.0, 200.0, 1.70, 2.70, 12, 0.05),
+    }
+
+    @staticmethod
+    def range_configs_from_settings(settings: Dict) -> Dict[str, RangeConfig]:
+        """Build RangeConfig objects from settings.json."""
+        configs = {}
+        for code, raw in settings.get('ranges', {}).items():
+            configs[code.upper()] = RangeConfig(
+                code=code.upper(),
+                name=raw.get('name', f'Range {code.upper()}'),
+                bankroll=float(raw.get('bankroll', 10000.0)),
+                flat_stake=float(raw.get('flat_stake', settings.get('flat_stake', 200.0))),
+                min_odds=float(raw.get('min_odds', 1.0)),
+                max_odds=float(raw.get('max_odds', 999.0)),
+                max_picks=int(raw.get('max_picks', settings.get('max_picks', 12))),
+                min_edge=float(raw.get('min_edge', settings.get('min_edge', 0.05))),
+            )
+        return configs or EdgeCalculator.DEFAULT_RANGES
     
     def calculate_edge(self, model_prob: float, book_odds: float) -> Tuple[float, float]:
         """
@@ -70,9 +107,21 @@ class EdgeCalculator:
         
         return round(edge_pct, 4), round(book_prob, 4)
     
-    def __init__(self, bankroll: float = 10000.0, use_kelly: bool = True):
+    def __init__(
+        self,
+        bankroll: float = 10000.0,
+        use_kelly: bool = True,
+        use_ranges: bool = False,
+        staking_mode: str = None,
+        flat_stake: float = 200.0,
+        range_configs: Dict[str, RangeConfig] = None,
+    ):
         self.bankroll = bankroll
-        self.use_kelly = use_kelly
+        self.staking_mode = (staking_mode or ('kelly' if use_kelly else 'flat')).lower()
+        self.use_kelly = self.staking_mode == 'kelly'
+        self.use_ranges = use_ranges
+        self.flat_stake = flat_stake
+        self.range_configs = range_configs or self.DEFAULT_RANGES
         
     def kelly_stake(self, edge_pct: float, odds: float, model_prob: float) -> float:
         """
@@ -121,9 +170,11 @@ class EdgeCalculator:
     
     def determine_stake(self, edge_pct: float, odds: float, model_prob: float, quality: str) -> float:
         """
-        Determine stake size using Kelly criterion for ALL picks.
-        Caps at 5% of bankroll per bet, $10 minimum.
+        Determine stake size from configured staking mode.
         """
+        if self.staking_mode == 'flat':
+            return round(self.flat_stake, 2)
+
         b = odds - 1  # Decimal odds minus 1
         p = model_prob
         q = 1 - p
@@ -149,6 +200,10 @@ class EdgeCalculator:
             stake *= 0.5  # 50% of Kelly for CAUTION
         
         return round(stake, 2)
+
+    def flat_range_stake(self, range_config: RangeConfig) -> float:
+        """Return the flat stake used by the C/D range model."""
+        return range_config.flat_stake
     
     def generate_picks(self, league: str = None, min_edge: float = 0.05) -> List[Pick]:
         """
@@ -169,7 +224,9 @@ class EdgeCalculator:
         query = '''
             SELECT 
                 m.match_id, m.home_team, m.away_team, m.league, m.kickoff,
-                p.prob_home_win, p.prob_draw, p.prob_away_win,
+                COALESCE(p.adj_prob_home, p.prob_home_win) AS prob_home_win,
+                COALESCE(p.adj_prob_draw, p.prob_draw) AS prob_draw,
+                COALESCE(p.adj_prob_away, p.prob_away_win) AS prob_away_win,
                 p.prob_over_1_5, p.prob_over_2_5, p.prob_under_2_5, p.prob_btts_yes,
                 o.market, o.selection, o.odds, o.implied_prob
             FROM matches m
@@ -178,10 +235,12 @@ class EdgeCalculator:
             WHERE m.status = 'scheduled'
         '''
         
+        params = []
         if league:
-            query += f" AND m.league = '{league}'"
+            query += " AND m.league = ?"
+            params.append(league)
         
-        c.execute(query)
+        c.execute(query, params)
         rows = c.fetchall()
         conn.close()
         
@@ -213,7 +272,9 @@ class EdgeCalculator:
                     edge_pct=round(edge_pct * 100, 1),  # Convert to percentage
                     odds=row['odds'],
                     stake=stake,
-                    quality=quality
+                    quality=quality,
+                    reasoning=self._build_reasoning(row, model_prob, book_prob, edge_pct),
+                    risk_note=self._build_risk_note(row)
                 )
                 
                 picks.append(pick)
@@ -222,6 +283,38 @@ class EdgeCalculator:
         picks.sort(key=lambda x: x.edge_pct, reverse=True)
         
         return picks
+
+    def generate_range_picks(self, league: str = None) -> List[Pick]:
+        """Generate Range C and Range D picks using flat staking and odds bands."""
+        all_candidates = self.generate_picks(league=league, min_edge=0.0)
+        selected = []
+        exposure = set()
+
+        for code, config in self.range_configs.items():
+            range_candidates = [
+                p for p in all_candidates
+                if config.min_odds <= p.odds <= config.max_odds and p.edge_pct / 100 >= config.min_edge
+            ]
+            range_candidates.sort(key=lambda p: (p.edge_pct, p.model_prob), reverse=True)
+
+            count = 0
+            for pick in range_candidates:
+                exposure_key = (pick.home_team, pick.away_team, pick.market, pick.selection)
+                if exposure_key in exposure:
+                    continue
+
+                pick.range_code = code
+                pick.stake = self.flat_range_stake(config)
+                pick.reasoning = pick.reasoning or self._build_reasoning_from_pick(pick)
+                selected.append(pick)
+                exposure.add(exposure_key)
+                count += 1
+
+                if count >= config.max_picks:
+                    break
+
+        selected.sort(key=lambda p: (p.range_code, p.kickoff, -p.edge_pct))
+        return selected
     
     def _get_model_prob(self, row) -> Optional[float]:
         """
@@ -254,8 +347,44 @@ class EdgeCalculator:
             return row['prob_btts_yes']
         
         return None
+
+    def _build_reasoning(self, row, model_prob: float, book_prob: float, edge_pct: float) -> str:
+        """Create a short model explanation suitable for manual review."""
+        edge_display = edge_pct * 100
+        notes = [
+            f"Model prices this at {model_prob:.1%} versus bookmaker implied {book_prob:.1%}, creating +{edge_display:.1f}% edge."
+        ]
+
+        market = row['market']
+        selection = row['selection']
+        if market == '1X2':
+            notes.append("1X2 value should be manually checked against injuries, motivation, and likely rotation.")
+        elif market == 'OU':
+            notes.append("Goals market should be manually checked against fatigue, tactical setup, and recent scoring profiles.")
+        elif market == 'BTTS':
+            notes.append("BTTS value should be manually checked against both teams' scoring and clean-sheet trends.")
+
+        if row['odds'] >= 2.5:
+            notes.append("Range C candidate by odds profile.")
+        elif row['odds'] >= 1.7:
+            notes.append("Range D candidate by odds profile.")
+
+        return " ".join(notes)
+
+    def _build_reasoning_from_pick(self, pick: Pick) -> str:
+        return (
+            f"Model prices {pick.selection} at {pick.model_prob:.1%} versus "
+            f"{pick.book_prob:.1%} book implied, giving +{pick.edge_pct:.1f}% edge."
+        )
+
+    def _build_risk_note(self, row) -> str:
+        if row['odds'] >= 3.0:
+            return "High-odds pick: require manual verification before staking."
+        if row['market'] in ('OU', 'BTTS'):
+            return "Check lineup and fatigue news before kickoff."
+        return "Check team news and odds movement before kickoff."
     
-    def save_picks(self, picks: List[Pick]) -> List[Pick]:
+    def save_picks(self, picks: List[Pick], max_picks: int = 12, scale_to_bankroll: bool = True) -> List[Pick]:
         """Save picks to database with bankroll-aware staking."""
         # Deduplicate: keep only highest edge per match/selection
         seen = {}
@@ -266,16 +395,16 @@ class EdgeCalculator:
                 seen[key] = pick
         
         unique_picks = list(seen.values())
-        # Sort by edge and take top 12 (reduce count to stay under bankroll)
+        # Sort by edge and take top picks (reduce count to stay under bankroll)
         unique_picks.sort(key=lambda x: x.edge_pct, reverse=True)
-        top_picks = unique_picks[:12]
+        top_picks = unique_picks[:max_picks]
         
         # Calculate total stake (ALL qualities)
         total_stake = sum(p.stake for p in top_picks)
         
         # If total exceeds 50% of bankroll, scale down proportionally
         max_total = self.bankroll * 0.5
-        if total_stake > max_total:
+        if scale_to_bankroll and total_stake > max_total:
             scale = max_total / total_stake
             for pick in top_picks:
                 pick.stake = round(pick.stake * scale, 2)
@@ -290,12 +419,13 @@ class EdgeCalculator:
             c.execute('''
                 INSERT INTO picks 
                 (match_id, selection, market, model_prob, book_prob, edge_pct, 
-                 odds, stake, quality, status)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                 odds, stake, range_code, quality, reasoning, risk_note, status)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             ''', (
                 pick.match_id, pick.selection, pick.market,
                 pick.model_prob, pick.book_prob, pick.edge_pct,
-                pick.odds, pick.stake, pick.quality, pick.status
+                pick.odds, pick.stake, pick.range_code, pick.quality,
+                pick.reasoning, pick.risk_note, pick.status
             ))
         
         conn.commit()
@@ -303,6 +433,30 @@ class EdgeCalculator:
         print(f"Saved {len(top_picks)} unique picks (cleared old, top 12 by edge)")
         
         return top_picks
+
+    def save_range_picks(self, picks: List[Pick]) -> List[Pick]:
+        """Save Range C/D picks without bankroll scaling."""
+        conn = sqlite3.connect(DB_PATH)
+        c = conn.cursor()
+        c.execute("DELETE FROM picks WHERE status = 'pending'")
+
+        for pick in picks:
+            c.execute('''
+                INSERT INTO picks
+                (match_id, selection, market, model_prob, book_prob, edge_pct,
+                 odds, stake, range_code, quality, reasoning, risk_note, status)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ''', (
+                pick.match_id, pick.selection, pick.market,
+                pick.model_prob, pick.book_prob, pick.edge_pct,
+                pick.odds, pick.stake, pick.range_code, pick.quality,
+                pick.reasoning, pick.risk_note, pick.status
+            ))
+
+        conn.commit()
+        conn.close()
+        print(f"Saved {len(picks)} Range C/D picks")
+        return picks
 
 if __name__ == '__main__':
     calc = EdgeCalculator(use_kelly=True)
