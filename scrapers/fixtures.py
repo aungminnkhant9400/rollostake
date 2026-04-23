@@ -13,6 +13,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from config.paths import DB_PATH
 from config.settings import load_settings
+from utils.team_normalizer import normalize_team_name
 
 # API-Football configuration
 # Free tier: 100 requests/day
@@ -126,8 +127,8 @@ class FixturesFetcher:
                 status = fixture['fixture']['status']['short']
                 match = {
                     'match_id': f"{fixture['fixture']['id']}",
-                    'home_team': fixture['teams']['home']['name'],
-                    'away_team': fixture['teams']['away']['name'],
+                    'home_team': normalize_team_name(fixture['teams']['home']['name']),
+                    'away_team': normalize_team_name(fixture['teams']['away']['name']),
                     'league': league,
                     'kickoff': fixture['fixture']['date'][:16].replace('T', ' '),
                     'status': 'scheduled' if status in {'TBD', 'NS'} else status.lower()

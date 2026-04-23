@@ -16,6 +16,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from config.paths import DB_PATH
+from utils.team_normalizer import normalize_team_name
 
 # Football-Data.co.uk CSV URLs for major leagues
 FOOTBALL_DATA_URLS = {
@@ -94,8 +95,8 @@ class HistoricalDataLoader:
                         date = date_str
                     
                     match = {
-                        'home_team': row['HomeTeam'].strip(),
-                        'away_team': row['AwayTeam'].strip(),
+                        'home_team': normalize_team_name(row['HomeTeam'].strip()),
+                        'away_team': normalize_team_name(row['AwayTeam'].strip()),
                         'home_goals': int(row['FTHG']),
                         'away_goals': int(row['FTAG']),
                         'date': date,
@@ -116,13 +117,17 @@ class HistoricalDataLoader:
             return []
     
     def save_matches(self, matches: List[Dict]):
-        """Save matches to database."""
+        """Save matches to database with normalized team names."""
         conn = sqlite3.connect(DB_PATH)
         c = conn.cursor()
         
         count = 0
         for match in matches:
-            match_id = f"{match['home_team']}_vs_{match['away_team']}_{match['date']}"
+            # Normalize team names before saving
+            home_team = normalize_team_name(match['home_team'])
+            away_team = normalize_team_name(match['away_team'])
+            
+            match_id = f"{home_team}_vs_{away_team}_{match['date']}"
             
             c.execute('''
                 INSERT INTO matches
@@ -134,8 +139,8 @@ class HistoricalDataLoader:
                     status = 'completed'
             ''', (
                 match_id,
-                match['home_team'],
-                match['away_team'],
+                home_team,
+                away_team,
                 match['league'],
                 match['date'],
                 match['home_goals'],

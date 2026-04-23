@@ -11,6 +11,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from config.paths import DB_PATH, ensure_runtime_dirs
 from models.core import init_db
+from utils.team_normalizer import normalize_team_name
 
 
 def make_match_id(home_team: str, away_team: str, league: str, kickoff: str) -> str:
@@ -35,6 +36,10 @@ def add_fixture(home_team: str, away_team: str, league: str, kickoff: str, match
     ensure_runtime_dirs()
     init_db()
 
+    # Normalize team names
+    home_team = normalize_team_name(home_team.strip())
+    away_team = normalize_team_name(away_team.strip())
+    
     kickoff = normalize_kickoff(kickoff)
     match_id = match_id or make_match_id(home_team, away_team, league, kickoff)
 
