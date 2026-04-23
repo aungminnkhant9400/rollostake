@@ -14,7 +14,7 @@ def load_settings():
     defaults = {
         "api_football_key": None,
         "api_football_use_rapidapi": False,
-        "fixture_source": "api_football",
+        "fixture_source": "manual",
         "fixture_days_ahead": 7,
         "fixture_timezone": "Asia/Macau",
         "fixture_season": None,

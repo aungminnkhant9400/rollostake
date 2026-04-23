@@ -1,7 +1,7 @@
 {
-  "api_football_key": "bb627e6d02d0f0ddacf5b791cb528960",
+  "api_football_key": null,
   "api_football_use_rapidapi": false,
-  "fixture_source": "api_football",
+  "fixture_source": "manual",
   "fixture_days_ahead": 7,
   "fixture_timezone": "Asia/Macau",
   "fixture_season": null,

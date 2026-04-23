@@ -74,15 +74,25 @@ def run_pipeline(leagues=None, skip_scrape=False, use_fatigue=True):
     
     # Step 2b: Load upcoming fixtures
     print("\n[2b/8] Loading upcoming fixtures...")
-    from scrapers.fixtures import FixturesFetcher
-    fetcher = FixturesFetcher(
-        api_key=settings.get('api_football_key'),
-        days_ahead=int(settings.get('fixture_days_ahead', 7)),
-        timezone=settings.get('fixture_timezone', 'Asia/Macau'),
-        season=settings.get('fixture_season'),
-        use_rapidapi=bool(settings.get('api_football_use_rapidapi', False)),
-    )
-    upcoming = fetcher.get_all_upcoming(configured_leagues)
+    fixture_source = settings.get('fixture_source', 'manual')
+    if fixture_source == 'manual':
+        upcoming = get_upcoming_matches()
+        if configured_leagues:
+            upcoming = [m for m in upcoming if m['league'] in configured_leagues]
+        if not upcoming:
+            print("No manual fixtures found. Add fixtures with:")
+            print("  python3 scrapers/manual_fixtures.py --interactive")
+            return []
+    else:
+        from scrapers.fixtures import FixturesFetcher
+        fetcher = FixturesFetcher(
+            api_key=settings.get('api_football_key'),
+            days_ahead=int(settings.get('fixture_days_ahead', 7)),
+            timezone=settings.get('fixture_timezone', 'Asia/Macau'),
+            season=settings.get('fixture_season'),
+            use_rapidapi=bool(settings.get('api_football_use_rapidapi', False)),
+        )
+        upcoming = fetcher.get_all_upcoming(configured_leagues)
     
     if not upcoming:
         print("No upcoming matches found - using demo data")
