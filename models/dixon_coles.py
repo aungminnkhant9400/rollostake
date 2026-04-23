@@ -143,6 +143,106 @@ class DixonColesModel:
         print(f"Model fitted. Final log-likelihood: {-result.fun:.2f}")
         return self
     
+    def predict_goals_distribution(self, home_team: str, away_team: str, max_goals: int = 5) -> Dict[Tuple[int, int], float]:
+        """Predict probability distribution of goal scores."""
+        lambda_h = self.avg_goals_home
+        lambda_a = self.avg_goals_away
+        
+        if self.params:
+            team_index = self.params['team_index']
+            if home_team in team_index and away_team in team_index:
+                i = team_index[home_team]
+                j = team_index[away_team]
+                attack = self.params['attack']
+                defense = self.params['defense']
+                home_adv = self.params['home_advantage']
+                lambda_h = attack[i] * defense[j] * home_adv
+                lambda_a = attack[j] * defense[i]
+        
+        distribution = {}
+        for h in range(max_goals + 1):
+            for a in range(max_goals + 1):
+                prob = poisson.pmf(h, lambda_h) * poisson.pmf(a, lambda_a)
+                
+                # Apply Dixon-Coles correction
+                if h <= 1 and a <= 1:
+                    correction = self._dc_correction(h, a, lambda_h, lambda_a, self.rho)
+                    prob *= correction
+                
+                distribution[(h, a)] = prob
+        
+        # Normalize
+        total = sum(distribution.values())
+        if total > 0:
+            for key in distribution:
+                distribution[key] /= total
+        
+        return distribution
+    
+    def predict_total_goals(self, home_team: str, away_team: str, line: float) -> Dict[str, float]:
+        """Predict Over/Under probability for a given line."""
+        dist = self.predict_goals_distribution(home_team, away_team, max_goals=8)
+        
+        prob_over = 0
+        prob_under = 0
+        
+        for (h, a), prob in dist.items():
+            total = h + a
+            if total > line:
+                prob_over += prob
+            elif total < line:
+                prob_under += prob
+        
+        # Add tail probability approximation
+        tail_prob = 1 - sum(dist.values())
+        if tail_prob > 0:
+            lambda_h = self.avg_goals_home * self.home_advantage
+            lambda_a = self.avg_goals_away
+            if self.params:
+                team_index = self.params['team_index']
+                if home_team in team_index and away_team in team_index:
+                    i = team_index[home_team]
+                    j = team_index[away_team]
+                    attack = self.params['attack']
+                    defense = self.params['defense']
+                    home_adv = self.params['home_advantage']
+                    lambda_h = attack[i] * defense[j] * home_adv
+                    lambda_a = attack[j] * defense[i]
+            
+            avg_goals = lambda_h + lambda_a
+            if avg_goals > line:
+                prob_over += tail_prob * 0.7
+                prob_under += tail_prob * 0.3
+            else:
+                prob_over += tail_prob * 0.3
+                prob_under += tail_prob * 0.7
+        
+        return {
+            'over': prob_over,
+            'under': prob_under,
+        }
+    
+    def predict_handicap(self, home_team: str, away_team: str, handicap: float) -> Dict[str, float]:
+        """Predict Asian Handicap probability."""
+        dist = self.predict_goals_distribution(home_team, away_team, max_goals=8)
+        
+        prob_home = 0  # Home team covers handicap
+        prob_away = 0  # Away team covers handicap
+        
+        for (h, a), prob in dist.items():
+            adjusted_h = h + handicap
+            
+            if adjusted_h > a:
+                prob_home += prob
+            elif adjusted_h < a:
+                prob_away += prob
+            # If exactly equal = push, ignore for Asian handicap
+        
+        return {
+            'home': prob_home,
+            'away': prob_away,
+        }
+    
     def predict(self, home_team: str, away_team: str) -> Dict:
         """
         Predict match outcome probabilities.

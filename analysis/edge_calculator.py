@@ -339,12 +339,16 @@ class EdgeCalculator:
             return row['prob_over_1_5']
         if 'Over 2.5' in selection:
             return row['prob_over_2_5']
+        if 'Under 1.5' in selection:
+            return 1 - row['prob_over_1_5'] if row['prob_over_1_5'] else None
         if 'Under 2.5' in selection:
             return row['prob_under_2_5']
         
         # BTTS
         if 'BTTS Yes' in selection or 'Both Teams To Score' in selection:
             return row['prob_btts_yes']
+        if 'BTTS No' in selection:
+            return 1 - row['prob_btts_yes'] if row['prob_btts_yes'] else None
         
         return None
 

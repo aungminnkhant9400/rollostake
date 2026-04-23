@@ -124,7 +124,19 @@ def import_weekly_slate(path: str, overwrite: bool = True) -> dict:
                     ("1X2", f"{home_team} Win", _float_or_none(row.get("home_odds"))),
                     ("1X2", "Draw", _float_or_none(row.get("draw_odds"))),
                     ("1X2", f"{away_team} Win", _float_or_none(row.get("away_odds"))),
+                    ("OU", "Over 1.5", _float_or_none(row.get("over_1_5_odds"))),
+                    ("OU", "Under 1.5", _float_or_none(row.get("under_1_5_odds"))),
+                    ("OU", "Over 2.5", _float_or_none(row.get("over_2_5_odds"))),
+                    ("OU", "Under 2.5", _float_or_none(row.get("under_2_5_odds"))),
+                    ("BTTS", "BTTS Yes", _float_or_none(row.get("btts_yes_odds"))),
+                    ("BTTS", "BTTS No", _float_or_none(row.get("btts_no_odds"))),
                 ]
+                
+                # Handicap
+                handicap_line = _field(row, "handicap_line")
+                if handicap_line:
+                    selections.append(("AH", f"{home_team} AH {handicap_line}", _float_or_none(row.get("handicap_home_odds"))))
+                    selections.append(("AH", f"{away_team} AH {handicap_line}", _float_or_none(row.get("handicap_away_odds"))))
             else:
                 market = _field(row, "market") or "1X2"
                 selection = _field(row, "selection")
@@ -140,8 +152,7 @@ def import_weekly_slate(path: str, overwrite: bool = True) -> dict:
                 selections = [(market, selection, odds_value)]
 
             for market, selection, odds in selections:
-                if not selection:
-                    odds_skipped += 1
+                if not selection or odds is None:
                     continue
                 if _insert_odds(match_id, market, selection, odds, overwrite):
                     odds_saved += 1
