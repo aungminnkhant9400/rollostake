@@ -1,0 +1,35 @@
+Generate a weekly football betting slate CSV for my prediction model.
+
+**What I need:**
+Upcoming fixtures for next 7 days across these 5 leagues: EPL, Ligue 1, Bundesliga, Serie A, La Liga.
+
+**CSV format:**
+```csv
+home_team,away_team,league,kickoff,home_odds,draw_odds,away_odds
+```
+
+**Where to get data:**
+- Fixtures: Check BBC Sport, ESPN, or official league schedules for matches in the next 7 days
+- Odds: Use typical/reasonable bookmaker odds (or if you have access, real odds from Stake/Bet365)
+
+**League codes:**
+- EPL = English Premier League
+- L1 = Ligue 1 (France)
+- Bundesliga = German Bundesliga
+- SerieA = Serie A (Italy)
+- LaLiga = La Liga (Spain)
+
+**Date format:** YYYY-MM-DD HH:MM (24-hour format)
+
+**Output:**
+Just give me the raw CSV content. No explanations. I'll save it to a file and import it.
+
+**Example:**
+```csv
+home_team,away_team,league,kickoff,home_odds,draw_odds,away_odds
+Liverpool,Arsenal,EPL,2025-04-26 15:00,2.10,3.40,2.80
+Man City,Chelsea,EPL,2025-04-26 17:30,1.75,3.60,3.90
+PSG,Marseille,L1,2025-04-26 20:00,1.55,4.00,5.20
+```
+
+Generate the CSV for matches happening in the next 7 days only. Include ALL matches from the 5 leagues, not just the big ones.

@@ -105,35 +105,57 @@ def run_pipeline(leagues=None, skip_scrape=False, use_fatigue=True):
     
     print(f"Upcoming matches: {len(upcoming)}")
     
-    # Step 3: Fit model (only on teams in upcoming fixtures)
-    print("\n[3/8] Fitting Dixon-Coles model...")
+    # Step 3: Fit model PER LEAGUE (only on teams in upcoming fixtures)
+    print("\n[3/8] Fitting Dixon-Coles model per league...")
     
-    # Get teams in upcoming fixtures
-    fixture_teams = set()
+    # Group upcoming fixtures by league
+    upcoming_by_league = {}
     for match in upcoming:
-        fixture_teams.add(match['home_team'])
-        fixture_teams.add(match['away_team'])
+        league = match.get('league', 'EPL')
+        if league not in upcoming_by_league:
+            upcoming_by_league[league] = []
+        upcoming_by_league[league].append(match)
     
-    # Filter historical matches to relevant teams only
-    relevant_matches = []
-    for m in historical:
-        if m.get('home_team') in fixture_teams and m.get('away_team') in fixture_teams:
-            if m.get('home_goals') is not None and m.get('away_goals') is not None:
-                relevant_matches.append(MatchResult(
+    # Fit one model per league
+    league_models = {}
+    for league, league_fixtures in upcoming_by_league.items():
+        # Get teams in this league's fixtures
+        league_teams = set()
+        for match in league_fixtures:
+            league_teams.add(match['home_team'])
+            league_teams.add(match['away_team'])
+        
+        # Filter historical matches to this league's teams
+        league_matches = []
+        for m in historical:
+            if (m.get('home_team') in league_teams and 
+                m.get('away_team') in league_teams and
+                m.get('home_goals') is not None and 
+                m.get('away_goals') is not None):
+                league_matches.append(MatchResult(
                     home_team=m['home_team'],
                     away_team=m['away_team'],
                     home_goals=m['home_goals'],
                     away_goals=m['away_goals'],
                     date=m.get('date', '2025-01-01'),
-                    league=m.get('league', 'EPL')
+                    league=league
                 ))
+        
+        if len(league_matches) >= 5:
+            model = DixonColesModel()
+            try:
+                model.fit(league_matches)
+                league_models[league] = model
+                print(f"  {league}: Model fitted with {len(league_matches)} matches ({len(league_teams)} teams)")
+            except Exception as e:
+                print(f"  {league}: Model fit failed ({e}), using defaults")
+                league_models[league] = DixonColesModel()  # Use defaults
+        else:
+            print(f"  {league}: Only {len(league_matches)} matches, using defaults")
+            league_models[league] = DixonColesModel()
     
-    model = DixonColesModel()
-    if len(relevant_matches) >= 10:
-        model.fit(relevant_matches)
-        print(f"Model fitted with {len(relevant_matches)} relevant matches")
-    else:
-        print("Not enough data - using default parameters")
+    # Use the first model as default
+    default_model = list(league_models.values())[0] if league_models else DixonColesModel()
     
     # Step 4: Scrape odds
     if not skip_scrape:
@@ -147,9 +169,11 @@ def run_pipeline(leagues=None, skip_scrape=False, use_fatigue=True):
     else:
         print("\n[4/8] Skipping scrape (using existing data)")
     
-    # Step 5: Generate predictions before fatigue/manual adjustments
+    # Step 5: Generate predictions using per-league models
     print("\n[5/8] Generating predictions...")
     for match in upcoming:
+        league = match.get('league', 'EPL')
+        model = league_models.get(league, default_model)
         preds = model.predict(match['home_team'], match['away_team'])
         save_prediction(match['match_id'], preds)
 
