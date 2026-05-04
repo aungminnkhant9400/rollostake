@@ -363,7 +363,7 @@ class DashboardGenerator:
     <div><span>ROI</span><strong id="{code}-roi">-</strong></div>
     <div><span>Bank</span><strong id="{code}-bank">${config.bankroll:,.0f}</strong></div>
   </div>
-  <div class="range-note">{len(picks)} picks · planned stake ${total_stake:,.0f} · no duplicate selection exposure across ranges.</div>
+  <div class="range-note">{len(picks)} picks · planned stake ${total_stake:,.0f} · correlated same-match exposure is flagged in each pick's risk note.</div>
   {self._render_filter(code, picks)}
   {''.join(cards)}
 </section>
@@ -515,7 +515,7 @@ button.loss {{ color:var(--bad); border-color:rgba(239,68,68,.35); }}
     <button class="tab" onclick="switchRange('D')">RANGE D</button>
   </div>
   <div class="intro">
-    <strong>Range C/D mode.</strong> Picks are split by odds band, use flat $200 staking, and avoid duplicate exact selection exposure across ranges. Result buttons update this static dashboard in your browser local storage; database settlement can still be handled from the Python CLI.
+    <strong>Range C/D mode.</strong> Picks are split by odds band, use flat $200 staking, and flag same-match correlated exposure. Result buttons update this static dashboard in your browser local storage; database settlement can still be handled from the Python CLI.
   </div>
   {self._quality_summary(picks)}
   {self._render_range('C', by_range['C'], True)}

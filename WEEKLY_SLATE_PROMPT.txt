@@ -5,16 +5,17 @@ Upcoming fixtures for next 7 days across these 5 leagues: EPL, Ligue 1, Bundesli
 
 **CSV format (include ALL these columns):**
 ```csv
-home_team,away_team,league,kickoff,home_odds,draw_odds,away_odds,over_1_5_odds,under_1_5_odds,over_2_5_odds,under_2_5_odds,btts_yes_odds,btts_no_odds,handicap_line,handicap_home_odds,handicap_away_odds
+home_team,away_team,league,kickoff,home_odds,draw_odds,away_odds,over_0_5_odds,under_0_5_odds,over_1_5_odds,under_1_5_odds,over_2_5_odds,under_2_5_odds,over_3_0_odds,under_3_0_odds,over_3_5_odds,under_3_5_odds,btts_yes_odds,btts_no_odds,home_over_0_5_odds,home_under_0_5_odds,home_over_1_5_odds,home_under_1_5_odds,home_over_2_5_odds,home_under_2_5_odds,away_over_0_5_odds,away_under_0_5_odds,away_over_1_5_odds,away_under_1_5_odds,away_over_2_5_odds,away_under_2_5_odds,handicap_line,handicap_home_odds,handicap_away_odds
 ```
 
 **Markets explained:**
 - `home_odds/draw_odds/away_odds` = 1X2 (match winner)
-- `over_1.5/under_1.5` = Total goals over/under 1.5
-- `over_2.5/under_2.5` = Total goals over/under 2.5
+- `over_0.5/under_0.5`, `over_1.5/under_1.5`, `over_2.5/under_2.5`, `over_3.0/under_3.0`, `over_3.5/under_3.5` = match total goals
 - `btts_yes/no` = Both Teams To Score
+- `home_over_0.5/home_under_0.5`, `home_over_1.5/home_under_1.5`, etc. = home team total goals
+- `away_over_0.5/away_under_0.5`, `away_over_1.5/away_under_1.5`, etc. = away team total goals
 - `handicap_line` = Asian handicap line (e.g., "-0.5", "+0.5", "0")
-- `handicap_home_odds/away_odds` = Odds for home/away team with handicap
+- `handicap_home_odds/handicap_away_odds` = odds for home side on `handicap_line`; away side is the opposite line
 
 **Where to get data:**
 - Fixtures: Check BBC Sport, ESPN, or official league schedules for matches in the next 7 days
@@ -34,9 +35,9 @@ Just give me the raw CSV content. No explanations. I'll save it to a file and im
 
 **Example:**
 ```csv
-home_team,away_team,league,kickoff,home_odds,draw_odds,away_odds,over_1_5_odds,under_1_5_odds,over_2_5_odds,under_2_5_odds,btts_yes_odds,btts_no_odds,handicap_line,handicap_home_odds,handicap_away_odds
-Liverpool,Arsenal,EPL,2025-04-26 15:00,2.10,3.40,2.80,1.25,3.75,1.75,2.10,1.65,2.20,0,1.90,1.90
-Man City,Chelsea,EPL,2025-04-26 17:30,1.75,3.60,3.90,1.20,4.50,1.55,2.45,1.55,2.40,-0.5,2.05,1.75
+home_team,away_team,league,kickoff,home_odds,draw_odds,away_odds,over_0_5_odds,under_0_5_odds,over_1_5_odds,under_1_5_odds,over_2_5_odds,under_2_5_odds,over_3_0_odds,under_3_0_odds,over_3_5_odds,under_3_5_odds,btts_yes_odds,btts_no_odds,home_over_0_5_odds,home_under_0_5_odds,home_over_1_5_odds,home_under_1_5_odds,home_over_2_5_odds,home_under_2_5_odds,away_over_0_5_odds,away_under_0_5_odds,away_over_1_5_odds,away_under_1_5_odds,away_over_2_5_odds,away_under_2_5_odds,handicap_line,handicap_home_odds,handicap_away_odds
+Liverpool,Arsenal,EPL,2025-04-26 15:00,2.10,3.40,2.80,1.05,8.00,1.25,3.75,1.75,2.10,2.20,1.65,2.90,1.42,1.65,2.20,1.18,4.50,1.95,1.80,4.00,1.22,1.20,4.20,2.05,1.72,4.20,1.20,0,1.90,1.90
+Man City,Chelsea,EPL,2025-04-26 17:30,1.75,3.60,3.90,1.04,9.00,1.20,4.50,1.55,2.45,1.95,1.82,2.55,1.50,1.55,2.40,1.12,5.50,1.70,2.10,3.25,1.32,1.28,3.55,2.30,1.58,5.00,1.14,-0.5,2.05,1.75
 ```
 
 Generate the CSV for matches happening in the next 7 days only. Include ALL matches from the 5 leagues, not just the big ones.

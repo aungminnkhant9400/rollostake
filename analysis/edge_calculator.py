@@ -3,6 +3,8 @@ Edge Calculator & Pick Classifier
 Finds value bets by comparing model probabilities to bookmaker odds.
 """
 
+import math
+import re
 import sqlite3
 import sys
 from typing import List, Dict, Optional, Tuple
@@ -227,6 +229,7 @@ class EdgeCalculator:
                 COALESCE(p.adj_prob_home, p.prob_home_win) AS prob_home_win,
                 COALESCE(p.adj_prob_draw, p.prob_draw) AS prob_draw,
                 COALESCE(p.adj_prob_away, p.prob_away_win) AS prob_away_win,
+                p.lambda_h, p.lambda_a,
                 p.prob_over_1_5, p.prob_over_2_5, p.prob_under_2_5, p.prob_btts_yes,
                 o.market, o.selection, o.odds, o.implied_prob
             FROM matches m
@@ -313,6 +316,7 @@ class EdgeCalculator:
                 if count >= config.max_picks:
                     break
 
+        self._annotate_correlated_exposure(selected)
         selected.sort(key=lambda p: (p.range_code, p.kickoff, -p.edge_pct))
         return selected
     
@@ -334,15 +338,22 @@ class EdgeCalculator:
         if selection == 'Draw':
             return row['prob_draw']
         
-        # Over/Under markets
-        if 'Over 1.5' in selection:
-            return row['prob_over_1_5']
-        if 'Over 2.5' in selection:
-            return row['prob_over_2_5']
-        if 'Under 1.5' in selection:
-            return 1 - row['prob_over_1_5'] if row['prob_over_1_5'] else None
-        if 'Under 2.5' in selection:
-            return row['prob_under_2_5']
+        # Team total goals markets. Supports "Team O1.5", "Team U0.5",
+        # "Team Over 1.5", and "Team Under 1.5".
+        team_total_prob = self._team_total_prob(row, selection)
+        if team_total_prob is not None:
+            return team_total_prob
+
+        # Match total goals markets. Supports Over/Under 0.5, 1.5, 2.5, 3.0, 3.5, etc.
+        total_prob = self._match_total_prob(row, selection)
+        if total_prob is not None:
+            return total_prob
+
+        # Asian Handicap markets. The line is interpreted as the handicap attached
+        # to the named team, e.g. "Chelsea AH -0.5" or "Forest AH +0.5".
+        handicap_prob = self._asian_handicap_prob(row, selection)
+        if handicap_prob is not None:
+            return handicap_prob
         
         # BTTS
         if 'BTTS Yes' in selection or 'Both Teams To Score' in selection:
@@ -351,6 +362,172 @@ class EdgeCalculator:
             return 1 - row['prob_btts_yes'] if row['prob_btts_yes'] else None
         
         return None
+
+    def _lambda_pair(self, row) -> Optional[Tuple[float, float]]:
+        lambda_h = row['lambda_h'] if 'lambda_h' in row.keys() else None
+        lambda_a = row['lambda_a'] if 'lambda_a' in row.keys() else None
+        if lambda_h is None or lambda_a is None:
+            return None
+        return max(float(lambda_h), 0.01), max(float(lambda_a), 0.01)
+
+    def _poisson_pmf(self, goals: int, expected: float) -> float:
+        return math.exp(-expected) * (expected ** goals) / math.factorial(goals)
+
+    def _score_distribution(self, row, max_goals: int = 10) -> Optional[Dict[Tuple[int, int], float]]:
+        lambdas = self._lambda_pair(row)
+        if not lambdas:
+            return None
+        lambda_h, lambda_a = lambdas
+        dist = {}
+        for home_goals in range(max_goals + 1):
+            home_prob = self._poisson_pmf(home_goals, lambda_h)
+            for away_goals in range(max_goals + 1):
+                dist[(home_goals, away_goals)] = home_prob * self._poisson_pmf(away_goals, lambda_a)
+        total = sum(dist.values())
+        if total <= 0:
+            return None
+        return {score: prob / total for score, prob in dist.items()}
+
+    def _decision_prob(self, win_prob: float, loss_prob: float) -> Optional[float]:
+        decision_total = win_prob + loss_prob
+        if decision_total <= 0:
+            return None
+        return win_prob / decision_total
+
+    def _match_total_prob(self, row, selection: str) -> Optional[float]:
+        match = re.search(r'\b(Over|Under)\s+(\d+(?:\.\d+)?)\b', selection, re.IGNORECASE)
+        if not match:
+            return None
+        direction = match.group(1).lower()
+        line = float(match.group(2))
+        dist = self._score_distribution(row)
+        if not dist:
+            return None
+
+        win_prob = 0.0
+        loss_prob = 0.0
+        for (home_goals, away_goals), prob in dist.items():
+            total_goals = home_goals + away_goals
+            if direction == 'over':
+                if total_goals > line:
+                    win_prob += prob
+                elif total_goals < line:
+                    loss_prob += prob
+            else:
+                if total_goals < line:
+                    win_prob += prob
+                elif total_goals > line:
+                    loss_prob += prob
+        return self._decision_prob(win_prob, loss_prob)
+
+    def _team_total_prob(self, row, selection: str) -> Optional[float]:
+        match = re.search(r'\b(O|U|Over|Under)\s*(\d+(?:\.\d+)?)\b', selection, re.IGNORECASE)
+        if not match:
+            return None
+
+        home_team = row['home_team']
+        away_team = row['away_team']
+        team = None
+        if home_team in selection:
+            team = 'home'
+        elif away_team in selection:
+            team = 'away'
+        if team is None:
+            return None
+
+        direction = match.group(1).lower()
+        line = float(match.group(2))
+        dist = self._score_distribution(row)
+        if not dist:
+            return None
+
+        win_prob = 0.0
+        loss_prob = 0.0
+        for (home_goals, away_goals), prob in dist.items():
+            team_goals = home_goals if team == 'home' else away_goals
+            if direction in ('o', 'over'):
+                if team_goals > line:
+                    win_prob += prob
+                elif team_goals < line:
+                    loss_prob += prob
+            else:
+                if team_goals < line:
+                    win_prob += prob
+                elif team_goals > line:
+                    loss_prob += prob
+        return self._decision_prob(win_prob, loss_prob)
+
+    def _asian_handicap_prob(self, row, selection: str) -> Optional[float]:
+        match = re.search(r'\bAH\s*([+-]?\d+(?:\.\d+)?)\b', selection, re.IGNORECASE)
+        if not match:
+            return None
+
+        home_team = row['home_team']
+        away_team = row['away_team']
+        team = None
+        if home_team in selection:
+            team = 'home'
+        elif away_team in selection:
+            team = 'away'
+        if team is None:
+            return None
+
+        handicap = float(match.group(1))
+        dist = self._score_distribution(row)
+        if not dist:
+            return None
+
+        win_prob = 0.0
+        loss_prob = 0.0
+        for (home_goals, away_goals), prob in dist.items():
+            if team == 'home':
+                margin = home_goals + handicap - away_goals
+            else:
+                margin = away_goals + handicap - home_goals
+            if margin > 0:
+                win_prob += prob
+            elif margin < 0:
+                loss_prob += prob
+        return self._decision_prob(win_prob, loss_prob)
+
+    def _exposure_family(self, pick: Pick) -> str:
+        selection = pick.selection
+        if pick.market == '1X2':
+            if selection == 'Draw':
+                return 'draw'
+            if pick.home_team in selection:
+                return 'home-positive'
+            if pick.away_team in selection:
+                return 'away-positive'
+        if pick.market in ('OU', 'TT', 'BTTS'):
+            if any(token in selection for token in ('Under', ' U', 'BTTS No')):
+                return 'low-goals'
+            if any(token in selection for token in ('Over', ' O', 'BTTS Yes')):
+                return 'high-goals'
+        if pick.market == 'AH':
+            if pick.home_team in selection:
+                return 'home-positive'
+            if pick.away_team in selection:
+                return 'away-positive'
+        return pick.market.lower()
+
+    def _annotate_correlated_exposure(self, picks: List[Pick]) -> None:
+        by_match = {}
+        for pick in picks:
+            by_match.setdefault(pick.match_id, []).append(pick)
+
+        for match_picks in by_match.values():
+            if len(match_picks) <= 1:
+                continue
+            labels = [f"{p.range_code}:{p.selection}" for p in match_picks]
+            families = sorted({self._exposure_family(p) for p in match_picks})
+            note = (
+                "Correlated exposure: same match also has "
+                + ", ".join(labels)
+                + f". Exposure families: {', '.join(families)}."
+            )
+            for pick in match_picks:
+                pick.risk_note = f"{pick.risk_note} {note}".strip()
 
     def _build_reasoning(self, row, model_prob: float, book_prob: float, edge_pct: float) -> str:
         """Create a short model explanation suitable for manual review."""
@@ -363,10 +540,12 @@ class EdgeCalculator:
         selection = row['selection']
         if market == '1X2':
             notes.append("1X2 value should be manually checked against injuries, motivation, and likely rotation.")
-        elif market == 'OU':
+        elif market in ('OU', 'TT'):
             notes.append("Goals market should be manually checked against fatigue, tactical setup, and recent scoring profiles.")
         elif market == 'BTTS':
             notes.append("BTTS value should be manually checked against both teams' scoring and clean-sheet trends.")
+        elif market == 'AH':
+            notes.append("Asian handicap value should be checked for push rules, lineup strength, and game-state risk.")
 
         if row['odds'] >= 2.5:
             notes.append("Range C candidate by odds profile.")
@@ -384,8 +563,10 @@ class EdgeCalculator:
     def _build_risk_note(self, row) -> str:
         if row['odds'] >= 3.0:
             return "High-odds pick: require manual verification before staking."
-        if row['market'] in ('OU', 'BTTS'):
+        if row['market'] in ('OU', 'TT', 'BTTS'):
             return "Check lineup and fatigue news before kickoff."
+        if row['market'] == 'AH':
+            return "Check exact handicap line, push rules, and team news before kickoff."
         return "Check team news and odds movement before kickoff."
     
     def save_picks(self, picks: List[Pick], max_picks: int = 12, scale_to_bankroll: bool = True) -> List[Pick]:

@@ -17,6 +17,8 @@ from utils.team_normalizer import normalize_team_name
 REQUIRED_FIXTURE_COLUMNS = {"home_team", "away_team", "league", "kickoff"}
 WIDE_ODDS_COLUMNS = {"home_odds", "draw_odds", "away_odds"}
 LONG_ODDS_COLUMNS = {"market", "selection", "odds"}
+TOTAL_LINES = ("0_5", "1_5", "2_5", "3_0", "3_5")
+TEAM_TOTAL_LINES = ("0_5", "1_5", "2_5")
 
 
 def _field(row: dict, *names: str) -> str:
@@ -31,6 +33,17 @@ def _float_or_none(value: str):
     if value is None or str(value).strip() == "":
         return None
     return float(str(value).strip())
+
+
+def _display_line(line_key: str) -> str:
+    return line_key.replace("_", ".")
+
+
+def _opposite_handicap(line: str) -> str:
+    value = -float(line)
+    if value > 0:
+        return f"+{value:g}"
+    return f"{value:g}"
 
 
 def _insert_odds(match_id: str, market: str, selection: str, odds: float, overwrite: bool) -> bool:
@@ -124,19 +137,29 @@ def import_weekly_slate(path: str, overwrite: bool = True) -> dict:
                     ("1X2", f"{home_team} Win", _float_or_none(row.get("home_odds"))),
                     ("1X2", "Draw", _float_or_none(row.get("draw_odds"))),
                     ("1X2", f"{away_team} Win", _float_or_none(row.get("away_odds"))),
-                    ("OU", "Over 1.5", _float_or_none(row.get("over_1_5_odds"))),
-                    ("OU", "Under 1.5", _float_or_none(row.get("under_1_5_odds"))),
-                    ("OU", "Over 2.5", _float_or_none(row.get("over_2_5_odds"))),
-                    ("OU", "Under 2.5", _float_or_none(row.get("under_2_5_odds"))),
                     ("BTTS", "BTTS Yes", _float_or_none(row.get("btts_yes_odds"))),
                     ("BTTS", "BTTS No", _float_or_none(row.get("btts_no_odds"))),
                 ]
+
+                for line in TOTAL_LINES:
+                    display_line = _display_line(line)
+                    selections.append(("OU", f"Over {display_line}", _float_or_none(row.get(f"over_{line}_odds"))))
+                    selections.append(("OU", f"Under {display_line}", _float_or_none(row.get(f"under_{line}_odds"))))
+
+                for line in TEAM_TOTAL_LINES:
+                    display_line = _display_line(line)
+                    selections.extend([
+                        ("TT", f"{home_team} O{display_line}", _float_or_none(row.get(f"home_over_{line}_odds"))),
+                        ("TT", f"{home_team} U{display_line}", _float_or_none(row.get(f"home_under_{line}_odds"))),
+                        ("TT", f"{away_team} O{display_line}", _float_or_none(row.get(f"away_over_{line}_odds"))),
+                        ("TT", f"{away_team} U{display_line}", _float_or_none(row.get(f"away_under_{line}_odds"))),
+                    ])
                 
                 # Handicap
                 handicap_line = _field(row, "handicap_line")
                 if handicap_line:
                     selections.append(("AH", f"{home_team} AH {handicap_line}", _float_or_none(row.get("handicap_home_odds"))))
-                    selections.append(("AH", f"{away_team} AH {handicap_line}", _float_or_none(row.get("handicap_away_odds"))))
+                    selections.append(("AH", f"{away_team} AH {_opposite_handicap(handicap_line)}", _float_or_none(row.get("handicap_away_odds"))))
             else:
                 market = _field(row, "market") or "1X2"
                 selection = _field(row, "selection")
@@ -148,6 +171,19 @@ def import_weekly_slate(path: str, overwrite: bool = True) -> dict:
                     selection = f"{away_team} Win"
                 elif market == "1X2" and selection.lower() in {"draw", "x"}:
                     selection = "Draw"
+                elif market == "AH" and selection.lower() in {"home", "1"}:
+                    selection = f"{home_team} AH {_field(row, 'handicap_line') or '0'}"
+                elif market == "AH" and selection.lower() in {"away", "2"}:
+                    line = _field(row, "handicap_line") or "0"
+                    selection = f"{away_team} AH {_opposite_handicap(line)}"
+                elif market == "TT":
+                    line = _field(row, "line") or _field(row, "total_line")
+                    direction = _field(row, "direction").lower()
+                    team_ref = selection.lower()
+                    if line and direction in {"over", "under", "o", "u"} and team_ref in {"home", "away"}:
+                        team = home_team if team_ref == "home" else away_team
+                        short = "O" if direction in {"over", "o"} else "U"
+                        selection = f"{team} {short}{line}"
 
                 selections = [(market, selection, odds_value)]
 
