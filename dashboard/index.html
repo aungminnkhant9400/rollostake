@@ -6,119 +6,192 @@
 <title>Rollo Stake Model - Range C/D</title>
 <style>
 :root {
-  --bg:#0a0a0a; --panel:#141414; --panel2:#1f1f1f; --border:#2d2d2d;
-  --text:#e5e5e5; --muted:#8a8a8a; --dim:#585858; --accent:#e07a3a;
-  --good:#22c55e; --bad:#ef4444; --warn:#fbbf24; --blue:#60a5fa;
+  --background:#f5efe4;
+  --panel:#fffaf2;
+  --panel-strong:#f1e4d0;
+  --ink:#20201c;
+  --muted:#68624e;
+  --accent:#a44b1a;
+  --accent-soft:#d77b46;
+  --line:#20201c1a;
+  --shadow:#0000000d;
+  --good:#15803d;
+  --bad:#b91c1c;
+  --warn:#b45309;
+  --blue:#2563eb;
+}
+[data-theme=dark] {
+  --background:#1a1a18;
+  --panel:#2a2a26;
+  --panel-strong:#3a3a34;
+  --ink:#f5efe4;
+  --muted:#a8a090;
+  --accent:#d77b46;
+  --accent-soft:#e89a6a;
+  --line:#f5efe41a;
+  --shadow:#0000004d;
+  --good:#86efac;
+  --bad:#fca5a5;
+  --warn:#fdba74;
+  --blue:#93c5fd;
 }
 * { box-sizing:border-box; margin:0; padding:0; }
-body { background:var(--bg); color:var(--text); font-family:Inter,Segoe UI,Arial,sans-serif; font-size:13px; }
-header { position:sticky; top:0; z-index:10; background:rgba(10,10,10,.96); border-bottom:1px solid var(--border); padding:0 24px; height:58px; display:flex; align-items:center; justify-content:space-between; }
-.logo { font-weight:900; letter-spacing:.02em; }
-.logo em { color:var(--accent); font-style:normal; }
-.header-meta { color:var(--muted); font-size:11px; }
-.shell { max-width:1120px; margin:0 auto; padding:18px 20px 64px; }
-.tabs { display:flex; gap:6px; margin-bottom:14px; }
-.tab { background:var(--panel); border:1px solid var(--border); color:var(--muted); border-radius:8px; padding:10px 24px; font-size:11px; font-weight:800; letter-spacing:.08em; cursor:pointer; }
-.tab.on { color:var(--accent); border-color:rgba(224,122,58,.45); background:rgba(224,122,58,.08); }
-.intro { background:var(--panel); border:1px solid var(--border); border-radius:8px; padding:15px 18px; line-height:1.65; margin-bottom:14px; color:#cfcfcf; }
-.intro strong { color:#fff; }
-.quality-summary { display:grid; grid-template-columns:repeat(3,minmax(140px,1fr)); gap:8px; margin:0 0 14px; }
-.quality-summary div { background:var(--panel); border:1px solid var(--border); border-radius:8px; padding:12px 14px; }
-.quality-summary span { display:block; color:var(--dim); font-size:9px; font-weight:900; text-transform:uppercase; letter-spacing:.08em; margin-bottom:4px; }
-.quality-summary strong { display:block; color:#fff; font-size:16px; }
-.quality-summary small { color:var(--muted); font-size:11px; }
+body { background:var(--background); color:var(--ink); min-height:100vh; font-family:Georgia,"Times New Roman",serif; font-size:14px; line-height:1.6; transition:background .25s,color .25s; }
+.shell { max-width:1200px; margin:0 auto; padding:24px 16px 64px; }
+.site-header { display:flex; justify-content:space-between; align-items:flex-start; gap:16px; margin:0 auto 28px; max-width:1200px; padding:24px 16px 0; }
+.brand h1 { color:var(--ink); font-size:2rem; line-height:1.1; font-weight:700; margin-bottom:8px; }
+.brand p { color:var(--muted); }
+.theme-toggle { border:1px solid var(--line); background:var(--panel); color:var(--ink); cursor:pointer; border-radius:9999px; align-items:center; gap:8px; padding:8px 16px; font-family:inherit; font-size:.875rem; transition:all .2s; display:flex; }
+.theme-toggle:hover { background:var(--panel-strong); border-color:var(--accent); }
+.theme-icon { width:16px; height:16px; display:inline-block; text-align:center; }
+.tabs { border-bottom:1px solid var(--line); display:flex; gap:4px; margin-bottom:24px; }
+.tab { background:transparent; border:0; color:var(--muted); border-radius:8px 8px 0 0; padding:12px 16px; font-family:inherit; font-size:1rem; cursor:pointer; transition:all .2s; }
+.tab:hover { color:var(--ink); background:var(--panel); }
+.tab.on { background:var(--panel); color:var(--accent); border-bottom:2px solid var(--accent); font-weight:600; }
+.intro { background:var(--panel); border:1px solid var(--line); border-radius:16px; box-shadow:0 1px 3px var(--shadow); padding:20px; line-height:1.65; margin-bottom:16px; color:var(--muted); }
+.intro strong { color:var(--ink); }
+.quality-summary { display:grid; grid-template-columns:repeat(3,minmax(140px,1fr)); gap:16px; margin:0 0 24px; }
+.quality-summary div { background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:16px; box-shadow:0 1px 3px var(--shadow); }
+.quality-summary span { display:block; color:var(--muted); font-size:.75rem; font-weight:700; text-transform:uppercase; letter-spacing:.05em; margin-bottom:4px; }
+.quality-summary strong { display:block; color:var(--ink); font-size:1.5rem; line-height:1.2; }
+.quality-summary small { color:var(--muted); font-size:.875rem; }
 .range { display:none; }
 .range.on { display:block; }
-.pnl-bar { display:grid; grid-template-columns:repeat(10,minmax(82px,1fr)); border:1px solid var(--border); border-radius:8px; overflow:hidden; margin-bottom:10px; }
-.pnl-bar div { background:var(--panel); border-right:1px solid var(--border); padding:11px 10px; text-align:center; min-height:58px; }
-.pnl-bar div:last-child { border-right:0; }
-.pnl-bar span { display:block; color:var(--dim); font-size:9px; font-weight:800; text-transform:uppercase; letter-spacing:.08em; margin-bottom:5px; }
-.pnl-bar strong { font-size:15px; color:#fff; }
+.pnl-bar { display:grid; grid-template-columns:repeat(5,minmax(110px,1fr)); gap:16px; margin-bottom:16px; }
+.pnl-bar div { background:var(--panel); border:1px solid var(--line); border-radius:12px; box-shadow:0 1px 3px var(--shadow); padding:16px; min-height:86px; }
+.pnl-bar span { display:block; color:var(--muted); font-size:.75rem; font-weight:700; text-transform:uppercase; letter-spacing:.05em; margin-bottom:4px; }
+.pnl-bar strong { font-size:1.5rem; color:var(--ink); line-height:1.2; }
 .good { color:var(--good)!important; }
 .bad { color:var(--bad)!important; }
 .warn { color:var(--warn)!important; }
-.range-note { color:var(--muted); margin:10px 0 14px; font-size:12px; }
-.filter-bar { display:flex; gap:12px; align-items:center; background:var(--panel); border:1px solid var(--border); border-radius:8px; padding:10px 14px; margin-bottom:12px; }
-.filter-bar label { color:var(--dim); font-size:10px; font-weight:900; text-transform:uppercase; letter-spacing:.08em; }
-.filter-select { background:var(--panel2); border:1px solid var(--border); color:var(--text); border-radius:6px; padding:7px 12px; min-width:160px; }
-.filter-count { margin-left:auto; color:var(--muted); font-size:11px; }
-.filter-count span { color:var(--accent); font-weight:900; }
-.day-header { display:flex; justify-content:space-between; align-items:center; border-left:3px solid var(--accent); background:linear-gradient(180deg,rgba(224,122,58,.07),transparent); padding:10px 14px; margin:18px 0 7px; border-radius:4px; }
-.day-header small { color:var(--dim); text-transform:uppercase; font-weight:800; letter-spacing:.08em; }
-.pick-card { background:var(--panel); border:1px solid var(--border); border-radius:8px; margin-bottom:8px; overflow:hidden; }
-.pick-card.strong { border-color:rgba(34,197,94,.45); box-shadow:0 0 16px rgba(34,197,94,.06); }
-.pick-card.win { border-color:rgba(34,197,94,.55); background:rgba(34,197,94,.03); }
-.pick-card.loss { border-color:rgba(239,68,68,.55); background:rgba(239,68,68,.03); }
-.pick-card.push { border-color:rgba(148,163,184,.45); }
-.pick-summary { display:flex; gap:14px; align-items:center; padding:13px 16px; cursor:pointer; }
-.pick-summary:hover { background:var(--panel2); }
-.rank { color:var(--accent); font-size:22px; font-weight:900; min-width:40px; }
+.range-note { color:var(--muted); margin:8px 0 16px; font-size:.875rem; }
+.filter-bar { display:flex; gap:12px; align-items:center; background:var(--panel); border:1px solid var(--line); border-radius:12px; box-shadow:0 1px 3px var(--shadow); padding:12px 16px; margin-bottom:16px; }
+.filter-bar label { color:var(--muted); font-size:.75rem; font-weight:700; text-transform:uppercase; letter-spacing:.05em; }
+.filter-select { background:var(--panel-strong); border:1px solid var(--line); color:var(--ink); border-radius:9999px; padding:8px 14px; min-width:160px; font-family:inherit; }
+.filter-select:focus { border-color:var(--accent); outline:none; box-shadow:0 0 0 3px #a44b1a1a; }
+.filter-count { margin-left:auto; color:var(--muted); font-size:.875rem; }
+.filter-count span { color:var(--accent); font-weight:700; }
+.day-header { display:flex; justify-content:space-between; align-items:center; color:var(--ink); padding:14px 4px 8px; margin-top:18px; border-bottom:1px solid var(--line); font-size:1.05rem; font-weight:600; }
+.day-header small { color:var(--muted); font-size:.75rem; text-transform:uppercase; font-weight:700; letter-spacing:.05em; }
+.pick-card { background:var(--panel); border:1px solid var(--line); border-radius:16px; box-shadow:0 1px 3px var(--shadow); margin:16px 0; overflow:hidden; transition:box-shadow .2s,border-color .2s,background .2s; }
+.pick-card:hover { box-shadow:0 4px 12px var(--shadow); }
+.pick-card.strong { border-color:#22c55e33; }
+.pick-card.win { border-color:#22c55e55; background:#22c55e0f; }
+.pick-card.loss { border-color:#ef444455; background:#ef44440f; }
+.pick-card.push { border-color:#9ca3af55; }
+.pick-summary { display:flex; gap:16px; align-items:center; padding:18px 20px; cursor:pointer; }
+.pick-summary:hover { background:var(--panel-strong); }
+.rank { color:var(--accent); font-size:1.6rem; font-weight:700; min-width:42px; }
 .pick-main { flex:1; min-width:190px; }
-.pick-title { color:#fff; font-weight:800; font-size:15px; }
-.pick-meta { color:var(--muted); font-size:11px; margin-top:3px; }
-.badge { display:inline-block; margin-left:6px; border-radius:4px; padding:2px 6px; font-size:9px; font-weight:900; letter-spacing:.05em; }
-.badge.strong { color:var(--good); background:rgba(34,197,94,.12); }
-.badge.keep { color:var(--blue); background:rgba(96,165,250,.12); }
-.badge.caution { color:var(--warn); background:rgba(251,191,36,.12); }
-.numbers { display:flex; gap:14px; text-align:center; }
-.numbers div { min-width:54px; }
-.numbers strong { display:block; font-size:14px; color:#fff; }
-.numbers span { display:block; color:var(--dim); font-size:8px; text-transform:uppercase; letter-spacing:.08em; margin-top:2px; }
-.result { min-width:78px; text-align:center; color:var(--muted); font-size:11px; font-weight:800; }
-.actions { display:flex; gap:4px; flex-wrap:wrap; justify-content:flex-end; }
-button { background:var(--panel2); border:1px solid var(--border); color:var(--muted); border-radius:6px; padding:6px 10px; font-size:9px; font-weight:900; cursor:pointer; }
-button.win { color:var(--good); border-color:rgba(34,197,94,.35); }
-button.loss { color:var(--bad); border-color:rgba(239,68,68,.35); }
-.pick-details { display:none; border-top:1px solid var(--border); padding:15px 20px 16px 70px; }
+.pick-title { color:var(--ink); font-weight:600; font-size:1.125rem; }
+.pick-meta { color:var(--muted); font-size:.875rem; margin-top:4px; }
+.badge { display:inline-block; margin-left:8px; border-radius:9999px; padding:4px 10px; font-size:.75rem; font-weight:600; vertical-align:middle; }
+.badge.strong { color:#166534; background:#dcfce7; }
+.badge.keep { color:#1d4ed8; background:#dbeafe; }
+.badge.caution { color:#9a3412; background:#ffedd5; }
+[data-theme=dark] .badge.strong { color:#86efac; background:#22c55e33; }
+[data-theme=dark] .badge.keep { color:#93c5fd; background:#3b82f633; }
+[data-theme=dark] .badge.caution { color:#fdba74; background:#f9731633; }
+.numbers { display:flex; gap:10px; text-align:center; flex-wrap:wrap; justify-content:flex-end; }
+.numbers div { min-width:62px; background:var(--panel-strong); border-radius:12px; padding:8px 10px; }
+.numbers strong { display:block; font-size:1rem; color:var(--ink); }
+.numbers span { display:block; color:var(--muted); font-size:.72rem; text-transform:uppercase; letter-spacing:.05em; margin-top:2px; }
+.result { min-width:86px; text-align:center; color:var(--muted); font-size:.875rem; font-weight:700; }
+.actions { display:flex; gap:6px; flex-wrap:wrap; justify-content:flex-end; max-width:148px; }
+button { background:var(--panel-strong); border:1px solid var(--line); color:var(--ink); border-radius:9999px; padding:6px 10px; font-family:inherit; font-size:.75rem; font-weight:700; cursor:pointer; transition:all .2s; }
+button:hover { border-color:var(--accent); color:var(--accent); }
+button.win { color:var(--good); border-color:#22c55e33; }
+button.loss { color:var(--bad); border-color:#ef444433; }
+.pick-details { display:none; border-top:1px solid var(--line); padding:18px 20px 20px 78px; }
 .pick-details.open { display:block; }
-.reasoning { color:#cfcfcf; line-height:1.7; margin-bottom:12px; }
-.reasoning strong { color:#fff; }
+.reasoning { color:var(--muted); line-height:1.7; margin-bottom:12px; }
+.reasoning strong { color:var(--ink); }
 .metrics { display:flex; gap:18px; flex-wrap:wrap; color:var(--muted); }
-.metrics strong { color:#fff; }
+.metrics strong { color:var(--ink); }
 .hidden { display:none!important; }
-.empty { background:var(--panel); border:1px solid var(--border); border-radius:8px; padding:28px; color:var(--muted); text-align:center; }
-.history { background:var(--panel); border:1px solid var(--border); border-radius:8px; margin-top:18px; overflow:auto; }
-.history h2 { font-size:13px; padding:14px 16px; border-bottom:1px solid var(--border); }
+.empty { background:var(--panel); border:1px solid var(--line); border-radius:16px; padding:48px; color:var(--muted); text-align:center; }
+.history { background:var(--panel); border:1px solid var(--line); border-radius:16px; box-shadow:0 1px 3px var(--shadow); margin-top:24px; overflow:auto; }
+.history h2 { font-size:1.25rem; font-weight:600; padding:16px 20px; border-bottom:1px solid var(--line); }
 .history table { width:100%; border-collapse:collapse; min-width:780px; }
-.history th,.history td { padding:10px 12px; border-bottom:1px solid var(--border); text-align:left; font-size:11px; color:var(--muted); }
-.history th { color:var(--dim); text-transform:uppercase; letter-spacing:.08em; font-size:9px; }
+.history th,.history td { padding:10px 12px; border-bottom:1px solid var(--line); text-align:left; font-size:.875rem; color:var(--muted); }
+.history th { color:var(--muted); text-transform:uppercase; letter-spacing:.05em; font-size:.75rem; }
 .empty-history { padding:18px; color:var(--muted); }
 .h2h { margin-top:12px; margin-bottom:12px; }
-.h2h h3 { font-size:11px; color:var(--dim); text-transform:uppercase; letter-spacing:.08em; margin-bottom:8px; }
-.h2h table { width:100%; border-collapse:collapse; font-size:11px; }
-.h2h th,.h2h td { padding:6px 8px; border-bottom:1px solid var(--border); color:var(--muted); text-align:left; }
-.h2h th { color:var(--dim); font-size:9px; text-transform:uppercase; }
+.h2h h3 { font-size:.75rem; color:var(--muted); text-transform:uppercase; letter-spacing:.05em; margin-bottom:8px; }
+.h2h table { width:100%; border-collapse:collapse; font-size:.875rem; }
+.h2h th,.h2h td { padding:6px 8px; border-bottom:1px solid var(--line); color:var(--muted); text-align:left; }
+.h2h th { color:var(--muted); font-size:.75rem; text-transform:uppercase; }
 .recent-form { margin-top:12px; margin-bottom:12px; }
-.recent-form h3 { font-size:11px; color:var(--dim); text-transform:uppercase; letter-spacing:.08em; margin-bottom:8px; }
+.recent-form h3 { font-size:.75rem; color:var(--muted); text-transform:uppercase; letter-spacing:.05em; margin-bottom:8px; }
 .form-row { display:flex; gap:12px; align-items:center; flex-wrap:wrap; }
-.form-row span { display:inline-flex; align-items:center; justify-content:center; width:24px; height:24px; border-radius:4px; font-size:11px; font-weight:800; }
-.form-row .form-w { color:var(--good); background:rgba(34,197,94,.15); }
-.form-row .form-d { color:var(--warn); background:rgba(251,191,36,.15); }
-.form-row .form-l { color:var(--bad); background:rgba(239,68,68,.15); }
-.form-row small { color:var(--muted); font-size:10px; margin-left:2px; }
+.form-row span { display:inline-flex; align-items:center; justify-content:center; width:24px; height:24px; border-radius:9999px; font-size:.75rem; font-weight:700; }
+.form-row .form-w { color:#166534; background:#dcfce7; }
+.form-row .form-d { color:#9a3412; background:#ffedd5; }
+.form-row .form-l { color:#991b1b; background:#fee2e2; }
+[data-theme=dark] .form-row .form-w { color:#86efac; background:#22c55e33; }
+[data-theme=dark] .form-row .form-d { color:#fdba74; background:#f9731633; }
+[data-theme=dark] .form-row .form-l { color:#fca5a5; background:#ef444433; }
+.form-row small { color:var(--muted); font-size:.75rem; margin-left:2px; }
+::-webkit-scrollbar { width:8px; height:8px; }
+::-webkit-scrollbar-track { background:var(--panel); }
+::-webkit-scrollbar-thumb { background:var(--muted); border-radius:4px; }
+::-webkit-scrollbar-thumb:hover { background:var(--accent); }
 @media (max-width:900px) {
-  header { height:auto; gap:8px; align-items:flex-start; flex-direction:column; padding:12px 16px; }
-  .pnl-bar { grid-template-columns:repeat(2,minmax(120px,1fr)); }
+  .site-header { gap:12px; align-items:flex-start; flex-direction:column; }
+  .pnl-bar { grid-template-columns:repeat(2,minmax(120px,1fr)); gap:10px; }
   .quality-summary { grid-template-columns:1fr; }
   .pick-summary { align-items:flex-start; flex-direction:column; }
   .numbers { width:100%; justify-content:space-between; }
   .actions { width:100%; justify-content:flex-start; }
   .pick-details { padding:14px 16px; }
 }
+@media (max-width:520px) {
+  .shell { padding:20px 12px 48px; }
+  .site-header { padding:20px 16px 0; }
+  .brand h1 { font-size:2rem; }
+  .tabs { margin-left:-12px; margin-right:-12px; padding-left:12px; }
+  .tab { flex:1; justify-content:center; }
+  .intro { padding:18px; }
+  .pnl-bar { grid-template-columns:1fr; }
+  .filter-bar { align-items:stretch; flex-direction:column; }
+  .filter-select { width:100%; }
+  .filter-count { margin-left:0; }
+  .numbers { justify-content:flex-start; }
+  .numbers div { flex:1 1 88px; }
+  .result { text-align:left; }
+}
+@media (min-width:640px) {
+  .shell { padding:24px; }
+  .site-header { padding:24px 24px 0; }
+  .brand h1 { font-size:2.5rem; }
+}
+@media (min-width:1024px) {
+  .shell { padding:24px 32px 64px; }
+  .site-header { padding:24px 32px 0; }
+}
 </style>
 </head>
 <body>
-<header>
-  <div class="logo">ROLLO STAKE MODEL <em>Range C/D</em></div>
-  <div class="header-meta">24 picks · generated Thursday, April 23, 2026 at 23:39</div>
+<header class="site-header">
+  <div class="brand">
+    <h1>RolloStake</h1>
+    <p>Football edge intelligence &middot; 24 picks &middot; generated Monday, May 04, 2026 at 22:09</p>
+  </div>
+  <button class="theme-toggle" type="button" onclick="toggleTheme()" aria-label="Toggle theme">
+    <svg class="theme-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <circle cx="12" cy="12" r="4"></circle>
+      <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path>
+    </svg>
+    <span id="theme-label">Light</span>
+  </button>
 </header>
 <main class="shell">
   <div class="tabs">
-    <button class="tab on" onclick="switchRange('C')">RANGE C</button>
-    <button class="tab" onclick="switchRange('D')">RANGE D</button>
+    <button class="tab on" onclick="switchRange('C')">Range C</button>
+    <button class="tab" onclick="switchRange('D')">Range D</button>
   </div>
   <div class="intro">
-    <strong>Range C/D mode.</strong> Picks are split by odds band, use flat $200 staking, and avoid duplicate exact selection exposure across ranges. Result buttons update this static dashboard in your browser local storage; database settlement can still be handled from the Python CLI.
+    <strong>Range C/D workflow.</strong> Same betting concept: odds bands, flat $200 staking, quality flags, correlated-exposure notes, and browser-side result settlement. The presentation now follows the RolloForge visual system instead of your friend's dashboard skin.
   </div>
   <div class="quality-summary"><div><span>STRONG</span><strong>0W-0L</strong><small>0.0% · $+0</small></div><div><span>KEEP</span><strong>0W-0L</strong><small>0.0% · $+0</small></div><div><span>CAUTION</span><strong>0W-0L</strong><small>0.0% · $+0</small></div></div>
 
@@ -127,7 +200,7 @@ button.loss { color:var(--bad); border-color:rgba(239,68,68,.35); }
     <div><span>Base Bank</span><strong>$10,000</strong></div>
     <div><span>Flat Stake</span><strong>$200</strong></div>
     <div><span>Odds Band</span><strong>2.50-5.00</strong></div>
-    <div><span>Strong</span><strong class="good">11</strong></div>
+    <div><span>Strong</span><strong class="good">9</strong></div>
     <div><span>Caution</span><strong class="warn">0</strong></div>
     <div><span>Record</span><strong id="C-record">-</strong></div>
     <div><span>Staked</span><strong id="C-staked">$0</strong></div>
@@ -135,27 +208,27 @@ button.loss { color:var(--bad); border-color:rgba(239,68,68,.35); }
     <div><span>ROI</span><strong id="C-roi">-</strong></div>
     <div><span>Bank</span><strong id="C-bank">$10,000</strong></div>
   </div>
-  <div class="range-note">12 picks · planned stake $2,400 · no duplicate selection exposure across ranges.</div>
+  <div class="range-note">12 picks · planned stake $2,400 · correlated same-match exposure is flagged in each pick's risk note.</div>
 
 <div class="filter-bar">
   <label for="C-filter">Filter by kickoff</label>
   <select id="C-filter" class="filter-select" onchange="filterRange('C', this.value)">
-    <option value="all">All dates</option><option value="2026-04-24">Fri Apr 24</option><option value="2026-04-25">Sat Apr 25</option><option value="2026-04-26">Sun Apr 26</option><option value="2026-04-27">Mon Apr 27</option>
+    <option value="all">All dates</option><option value="2026-05-04">Mon May 04</option><option value="2026-05-05">Tue May 05</option><option value="2026-05-09">Sat May 09</option><option value="2026-05-10">Sun May 10</option><option value="2026-05-11">Mon May 11</option>
   </select>
   <div class="filter-count">Showing <span id="C-visible">12</span> of 12 picks</div>
 </div>
 
-  <div class="day-header" data-date="2026-04-24"><span>Fri Apr 24</span><small>1 picks</small></div>
-<div class="pick-card strong" id="pick-1" data-date="2026-04-24">
+  <div class="day-header" data-date="2026-05-04"><span>Mon May 04</span><small>1 picks</small></div>
+<div class="pick-card strong" id="pick-1" data-date="2026-05-04">
   <div class="pick-summary" onclick="toggleDetails(1)">
     <div class="rank">#1</div>
     <div class="pick-main">
-      <div class="pick-title">Real Betis Win <span class="badge strong">STRONG</span></div>
-      <div class="pick-meta">Real Betis vs Real Madrid · <span>2026-04-24 21:00</span> · LaLiga</div>
+      <div class="pick-title">Draw <span class="badge strong">STRONG</span></div>
+      <div class="pick-meta">Chelsea vs Nott&#x27;m Forest · <span>2026-05-04 22:00</span> · EPL</div>
     </div>
     <div class="numbers">
-      <div><strong>@3.30</strong><span>Odds</span></div>
-      <div><strong class="good">+53.4%</strong><span>Edge</span></div>
+      <div><strong>@4.90</strong><span>Odds</span></div>
+      <div><strong class="good">+66.1%</strong><span>Edge</span></div>
       <div><strong>$200</strong><span>Stake</span></div>
     </div>
     <div class="result" id="result-1">pending</div>
@@ -167,29 +240,29 @@ button.loss { color:var(--bad); border-color:rgba(239,68,68,.35); }
     </div>
   </div>
   <div class="pick-details" id="details-1">
-    <div class="reasoning">Model prices this at 46.5% versus bookmaker implied 30.3%, creating +53.4% edge. 1X2 value should be manually checked against injuries, motivation, and likely rotation. Range C candidate by odds profile.<br><br><strong>Risk:</strong> High-odds pick: require manual verification before staking.</div>
+    <div class="reasoning">Model prices this at 33.9% versus bookmaker implied 20.4%, creating +66.1% edge. 1X2 value should be manually checked against injuries, motivation, and likely rotation. Range C candidate by odds profile.<br><br><strong>Risk:</strong> High-odds pick: require manual verification before staking.</div>
     <div class="metrics">
-      <span>Model <strong>46.5%</strong></span>
-      <span>Book <strong>30.3%</strong></span>
-      <span>Win <strong class="good">+$460</strong></span>
+      <span>Model <strong>33.9%</strong></span>
+      <span>Book <strong>20.4%</strong></span>
+      <span>Win <strong class="good">+$780</strong></span>
       <span>Lose <strong class="bad">-$200</strong></span>
     </div>
-
-
-    <div class="recent-form"><h3>Recent Form</h3><div class="form-row"><span class="form-d">D</span><small>Girona 1-1</small><span class="form-l">L</span><small>Mallorca 1-2</small><span class="form-w">W</span><small>Ath Madrid 3-2</small><span class="form-w">W</span><small>Atletico Madrid 3-2</small><span class="form-w">W</span><small>Elche 4-1</small></div></div>
+    <div class="h2h"><h3>Head-to-Head</h3><table><thead><tr><th>Date</th><th>Match</th><th>W</th></tr></thead><tbody><tr><td>2025-10-18</td><td>Nott&#x27;m Forest 0-3 Chelsea</td><td>A</td></tr></tbody></table></div>
+    <div class="recent-form"><h3>Recent Form</h3><div class="form-row"><span class="form-l">L</span><small>Man United 0-1</small><span class="form-l">L</span><small>Man City 0-3</small><span class="form-l">L</span><small>Arsenal 1-2</small><span class="form-l">L</span><small>Everton 0-3</small><span class="form-l">L</span><small>Newcastle 0-1</small></div></div>
+    <div class="recent-form"><h3>Recent Form</h3><div class="form-row"><span class="form-w">W</span><small>Burnley 4-1</small><span class="form-d">D</span><small>Aston Villa 1-1</small><span class="form-w">W</span><small>Tottenham 3-0</small><span class="form-d">D</span><small>Fulham 0-0</small><span class="form-d">D</span><small>Man City 2-2</small></div></div>
   </div>
 </div>
-<div class="day-header" data-date="2026-04-25"><span>Sat Apr 25</span><small>6 picks</small></div>
-<div class="pick-card strong" id="pick-2" data-date="2026-04-25">
+<div class="day-header" data-date="2026-05-05"><span>Tue May 05</span><small>2 picks</small></div>
+<div class="pick-card strong" id="pick-2" data-date="2026-05-05">
   <div class="pick-summary" onclick="toggleDetails(2)">
     <div class="rank">#2</div>
     <div class="pick-main">
-      <div class="pick-title">Cologne Win <span class="badge strong">STRONG</span></div>
-      <div class="pick-meta">Cologne vs Leverkusen · <span>2026-04-25 15:30</span> · Bundesliga</div>
+      <div class="pick-title">Draw <span class="badge strong">STRONG</span></div>
+      <div class="pick-meta">Everton vs Man City · <span>2026-05-05 03:00</span> · EPL</div>
     </div>
     <div class="numbers">
-      <div><strong>@4.60</strong><span>Odds</span></div>
-      <div><strong class="good">+113.9%</strong><span>Edge</span></div>
+      <div><strong>@4.70</strong><span>Odds</span></div>
+      <div><strong class="good">+60.7%</strong><span>Edge</span></div>
       <div><strong>$200</strong><span>Stake</span></div>
     </div>
     <div class="result" id="result-2">pending</div>
@@ -201,29 +274,29 @@ button.loss { color:var(--bad); border-color:rgba(239,68,68,.35); }
     </div>
   </div>
   <div class="pick-details" id="details-2">
-    <div class="reasoning">Model prices this at 46.5% versus bookmaker implied 21.7%, creating +113.9% edge. 1X2 value should be manually checked against injuries, motivation, and likely rotation. Range C candidate by odds profile.<br><br><strong>Risk:</strong> High-odds pick: require manual verification before staking.</div>
+    <div class="reasoning">Model prices this at 34.2% versus bookmaker implied 21.3%, creating +60.7% edge. 1X2 value should be manually checked against injuries, motivation, and likely rotation. Range C candidate by odds profile.<br><br><strong>Risk:</strong> High-odds pick: require manual verification before staking.</div>
     <div class="metrics">
-      <span>Model <strong>46.5%</strong></span>
-      <span>Book <strong>21.7%</strong></span>
-      <span>Win <strong class="good">+$720</strong></span>
+      <span>Model <strong>34.2%</strong></span>
+      <span>Book <strong>21.3%</strong></span>
+      <span>Win <strong class="good">+$740</strong></span>
       <span>Lose <strong class="bad">-$200</strong></span>
     </div>
-
-
-    <div class="recent-form"><h3>Recent Form</h3><div class="form-row"><span class="form-l">L</span><small>Augsburg 1-2</small><span class="form-w">W</span><small>Dortmund 1-0</small><span class="form-w">W</span><small>Wolfsburg 6-3</small><span class="form-d">D</span><small>Heidenheim 3-3</small><span class="form-d">D</span><small>Bayern Munich 1-1</small></div></div>
+    <div class="h2h"><h3>Head-to-Head</h3><table><thead><tr><th>Date</th><th>Match</th><th>W</th></tr></thead><tbody><tr><td>2025-10-18</td><td>Man City 2-0 Everton</td><td>H</td></tr></tbody></table></div>
+    <div class="recent-form"><h3>Recent Form</h3><div class="form-row"><span class="form-l">L</span><small>Liverpool 1-2</small><span class="form-d">D</span><small>Brentford 2-2</small><span class="form-w">W</span><small>Chelsea 3-0</small><span class="form-l">L</span><small>Arsenal 0-2</small><span class="form-w">W</span><small>Burnley 2-0</small></div></div>
+    <div class="recent-form"><h3>Recent Form</h3><div class="form-row"><span class="form-w">W</span><small>Arsenal 2-1</small><span class="form-w">W</span><small>Chelsea 3-0</small><span class="form-d">D</span><small>West Ham 1-1</small><span class="form-d">D</span><small>Nott&#x27;m Forest 2-2</small><span class="form-l">L</span><small>Liverpool 1-2</small></div></div>
   </div>
 </div>
 
-<div class="pick-card strong" id="pick-3" data-date="2026-04-25">
+<div class="pick-card strong" id="pick-3" data-date="2026-05-05">
   <div class="pick-summary" onclick="toggleDetails(3)">
     <div class="rank">#3</div>
     <div class="pick-main">
-      <div class="pick-title">Augsburg Win <span class="badge strong">STRONG</span></div>
-      <div class="pick-meta">Augsburg vs Eintracht Frankfurt · <span>2026-04-25 15:30</span> · Bundesliga</div>
+      <div class="pick-title">Sociedad Win <span class="badge strong">STRONG</span></div>
+      <div class="pick-meta">Sevilla vs Sociedad · <span>2026-05-05 03:00</span> · LaLiga</div>
     </div>
     <div class="numbers">
-      <div><strong>@3.25</strong><span>Odds</span></div>
-      <div><strong class="good">+51.1%</strong><span>Edge</span></div>
+      <div><strong>@2.85</strong><span>Odds</span></div>
+      <div><strong class="good">+31.7%</strong><span>Edge</span></div>
       <div><strong>$200</strong><span>Stake</span></div>
     </div>
     <div class="result" id="result-3">pending</div>
@@ -235,29 +308,29 @@ button.loss { color:var(--bad); border-color:rgba(239,68,68,.35); }
     </div>
   </div>
   <div class="pick-details" id="details-3">
-    <div class="reasoning">Model prices this at 46.5% versus bookmaker implied 30.8%, creating +51.1% edge. 1X2 value should be manually checked against injuries, motivation, and likely rotation. Range C candidate by odds profile.<br><br><strong>Risk:</strong> High-odds pick: require manual verification before staking.</div>
+    <div class="reasoning">Model prices this at 46.2% versus bookmaker implied 35.1%, creating +31.7% edge. 1X2 value should be manually checked against injuries, motivation, and likely rotation. Range C candidate by odds profile.<br><br><strong>Risk:</strong> Check team news and odds movement before kickoff.</div>
     <div class="metrics">
-      <span>Model <strong>46.5%</strong></span>
-      <span>Book <strong>30.8%</strong></span>
-      <span>Win <strong class="good">+$450</strong></span>
+      <span>Model <strong>46.2%</strong></span>
+      <span>Book <strong>35.1%</strong></span>
+      <span>Win <strong class="good">+$370</strong></span>
       <span>Lose <strong class="bad">-$200</strong></span>
     </div>
-
-    <div class="recent-form"><h3>Recent Form</h3><div class="form-row"><span class="form-w">W</span><small>Leverkusen 2-1</small><span class="form-d">D</span><small>Hoffenheim 2-2</small><span class="form-d">D</span><small>Hamburg 1-1</small><span class="form-l">L</span><small>Stuttgart 2-5</small><span class="form-l">L</span><small>Dortmund 0-2</small></div></div>
-
+    <div class="h2h"><h3>Head-to-Head</h3><table><thead><tr><th>Date</th><th>Match</th><th>W</th></tr></thead><tbody><tr><td>2025-10-24</td><td>Sociedad 2-1 Sevilla</td><td>H</td></tr></tbody></table></div>
+    <div class="recent-form"><h3>Recent Form</h3><div class="form-row"><span class="form-w">W</span><small>Ath Madrid 2-1</small><span class="form-l">L</span><small>Oviedo 0-1</small><span class="form-l">L</span><small>Valencia 0-2</small><span class="form-l">L</span><small>Barcelona 2-5</small><span class="form-d">D</span><small>Vallecano 1-1</small></div></div>
+    <div class="recent-form"><h3>Recent Form</h3><div class="form-row"><span class="form-d">D</span><small>Alaves 3-3</small><span class="form-w">W</span><small>Levante 2-0</small><span class="form-l">L</span><small>Villarreal 1-3</small><span class="form-w">W</span><small>Osasuna 3-1</small><span class="form-l">L</span><small>Ath Madrid 2-3</small></div></div>
   </div>
 </div>
-
-<div class="pick-card keep" id="pick-4" data-date="2026-04-25">
+<div class="day-header" data-date="2026-05-09"><span>Sat May 09</span><small>2 picks</small></div>
+<div class="pick-card strong" id="pick-4" data-date="2026-05-09">
   <div class="pick-summary" onclick="toggleDetails(4)">
     <div class="rank">#4</div>
     <div class="pick-main">
-      <div class="pick-title">St Pauli Win <span class="badge keep">KEEP</span></div>
-      <div class="pick-meta">Heidenheim vs St Pauli · <span>2026-04-25 15:30</span> · Bundesliga</div>
+      <div class="pick-title">Sassuolo Win <span class="badge strong">STRONG</span></div>
+      <div class="pick-meta">Torino vs Sassuolo · <span>2026-05-09 02:45</span> · SerieA</div>
     </div>
     <div class="numbers">
-      <div><strong>@3.20</strong><span>Odds</span></div>
-      <div><strong class="good">+24.8%</strong><span>Edge</span></div>
+      <div><strong>@3.15</strong><span>Odds</span></div>
+      <div><strong class="good">+62.5%</strong><span>Edge</span></div>
       <div><strong>$200</strong><span>Stake</span></div>
     </div>
     <div class="result" id="result-4">pending</div>
@@ -269,29 +342,29 @@ button.loss { color:var(--bad); border-color:rgba(239,68,68,.35); }
     </div>
   </div>
   <div class="pick-details" id="details-4">
-    <div class="reasoning">Model prices this at 39.0% versus bookmaker implied 31.2%, creating +24.8% edge. 1X2 value should be manually checked against injuries, motivation, and likely rotation. Range C candidate by odds profile.<br><br><strong>Risk:</strong> High-odds pick: require manual verification before staking.</div>
+    <div class="reasoning">Model prices this at 51.6% versus bookmaker implied 31.8%, creating +62.5% edge. 1X2 value should be manually checked against injuries, motivation, and likely rotation. Range C candidate by odds profile.<br><br><strong>Risk:</strong> High-odds pick: require manual verification before staking.</div>
     <div class="metrics">
-      <span>Model <strong>39.0%</strong></span>
-      <span>Book <strong>31.2%</strong></span>
-      <span>Win <strong class="good">+$440</strong></span>
+      <span>Model <strong>51.6%</strong></span>
+      <span>Book <strong>31.8%</strong></span>
+      <span>Win <strong class="good">+$430</strong></span>
       <span>Lose <strong class="bad">-$200</strong></span>
     </div>
-    <div class="h2h"><h3>Head-to-Head</h3><table><thead><tr><th>Date</th><th>Match</th><th>W</th></tr></thead><tbody><tr><td>2025-12-13</td><td>St Pauli 2-1 Heidenheim</td><td>H</td></tr><tr><td>2025-01-18</td><td>Heidenheim 0-2 St Pauli</td><td>A</td></tr><tr><td>2024-08-25</td><td>St Pauli 0-2 Heidenheim</td><td>A</td></tr></tbody></table></div>
-    <div class="recent-form"><h3>Recent Form</h3><div class="form-row"><span class="form-l">L</span><small>Freiburg 1-2</small><span class="form-w">W</span><small>Union Berlin 3-1</small><span class="form-d">D</span><small>M&#x27;gladbach 2-2</small><span class="form-d">D</span><small>Borussia M&#x27;gladbach 2-2</small><span class="form-d">D</span><small>Leverkusen 3-3</small></div></div>
-    <div class="recent-form"><h3>Recent Form</h3><div class="form-row"><span class="form-d">D</span><small>FC Koln 1-1</small><span class="form-l">L</span><small>Bayern Munich 0-5</small><span class="form-d">D</span><small>Union Berlin 1-1</small><span class="form-l">L</span><small>Freiburg 1-2</small><span class="form-l">L</span><small>M&#x27;gladbach 0-2</small></div></div>
+    <div class="h2h"><h3>Head-to-Head</h3><table><thead><tr><th>Date</th><th>Match</th><th>W</th></tr></thead><tbody><tr><td>2025-12-21</td><td>Sassuolo 0-1 Torino</td><td>A</td></tr></tbody></table></div>
+    <div class="recent-form"><h3>Recent Form</h3><div class="form-row"><span class="form-d">D</span><small>Cremonese 0-0</small><span class="form-w">W</span><small>Verona 2-1</small><span class="form-w">W</span><small>Pisa 1-0</small><span class="form-l">L</span><small>Milan 2-3</small><span class="form-w">W</span><small>Parma 4-1</small></div></div>
+    <div class="recent-form"><h3>Recent Form</h3><div class="form-row"><span class="form-w">W</span><small>Como 2-1</small><span class="form-l">L</span><small>Genoa 1-2</small><span class="form-w">W</span><small>Cagliari 2-1</small><span class="form-d">D</span><small>Juventus 1-1</small><span class="form-l">L</span><small>Bologna 0-1</small></div></div>
   </div>
 </div>
 
-<div class="pick-card strong" id="pick-5" data-date="2026-04-25">
+<div class="pick-card strong" id="pick-5" data-date="2026-05-09">
   <div class="pick-summary" onclick="toggleDetails(5)">
     <div class="rank">#5</div>
     <div class="pick-main">
-      <div class="pick-title">Roma Win <span class="badge strong">STRONG</span></div>
-      <div class="pick-meta">Bologna vs Roma · <span>2026-04-25 18:00</span> · SerieA</div>
+      <div class="pick-title">Osasuna Win <span class="badge strong">STRONG</span></div>
+      <div class="pick-meta">Levante vs Osasuna · <span>2026-05-09 03:00</span> · LaLiga</div>
     </div>
     <div class="numbers">
       <div><strong>@2.80</strong><span>Odds</span></div>
-      <div><strong class="good">+52.6%</strong><span>Edge</span></div>
+      <div><strong class="good">+27.7%</strong><span>Edge</span></div>
       <div><strong>$200</strong><span>Stake</span></div>
     </div>
     <div class="result" id="result-5">pending</div>
@@ -303,29 +376,29 @@ button.loss { color:var(--bad); border-color:rgba(239,68,68,.35); }
     </div>
   </div>
   <div class="pick-details" id="details-5">
-    <div class="reasoning">Model prices this at 54.5% versus bookmaker implied 35.7%, creating +52.6% edge. 1X2 value should be manually checked against injuries, motivation, and likely rotation. Range C candidate by odds profile.<br><br><strong>Risk:</strong> Check team news and odds movement before kickoff.</div>
+    <div class="reasoning">Model prices this at 45.6% versus bookmaker implied 35.7%, creating +27.7% edge. 1X2 value should be manually checked against injuries, motivation, and likely rotation. Range C candidate by odds profile.<br><br><strong>Risk:</strong> Check team news and odds movement before kickoff.</div>
     <div class="metrics">
-      <span>Model <strong>54.5%</strong></span>
+      <span>Model <strong>45.6%</strong></span>
       <span>Book <strong>35.7%</strong></span>
       <span>Win <strong class="good">+$360</strong></span>
       <span>Lose <strong class="bad">-$200</strong></span>
     </div>
-    <div class="h2h"><h3>Head-to-Head</h3><table><thead><tr><th>Date</th><th>Match</th><th>W</th></tr></thead><tbody><tr><td>2025-08-23</td><td>Roma 1-0 Bologna</td><td>H</td></tr><tr><td>2025-01-12</td><td>Bologna 2-2 Roma</td><td>D</td></tr><tr><td>2024-11-10</td><td>Roma 2-3 Bologna</td><td>A</td></tr><tr><td>2024-04-22</td><td>Roma 1-3 Bologna</td><td>A</td></tr><tr><td>2023-12-17</td><td>Bologna 2-0 Roma</td><td>H</td></tr></tbody></table></div>
-    <div class="recent-form"><h3>Recent Form</h3><div class="form-row"><span class="form-l">L</span><small>Juventus 0-2</small><span class="form-w">W</span><small>Lecce 2-0</small><span class="form-w">W</span><small>Cremonese 2-1</small><span class="form-l">L</span><small>Lazio 0-2</small><span class="form-w">W</span><small>Sassuolo 1-0</small></div></div>
-    <div class="recent-form"><h3>Recent Form</h3><div class="form-row"><span class="form-d">D</span><small>Atalanta 1-1</small><span class="form-w">W</span><small>Pisa 3-0</small><span class="form-l">L</span><small>Inter 2-5</small><span class="form-l">L</span><small>Inter Milan 2-5</small><span class="form-w">W</span><small>Lecce 1-0</small></div></div>
+    <div class="h2h"><h3>Head-to-Head</h3><table><thead><tr><th>Date</th><th>Match</th><th>W</th></tr></thead><tbody><tr><td>2025-12-08</td><td>Osasuna 2-0 Levante</td><td>H</td></tr></tbody></table></div>
+    <div class="recent-form"><h3>Recent Form</h3><div class="form-row"><span class="form-w">W</span><small>Getafe 1-0</small><span class="form-l">L</span><small>Sociedad 0-2</small><span class="form-w">W</span><small>Oviedo 4-2</small><span class="form-d">D</span><small>Vallecano 1-1</small><span class="form-d">D</span><small>Girona 1-1</small></div></div>
+    <div class="recent-form"><h3>Recent Form</h3><div class="form-row"><span class="form-d">D</span><small>Betis 1-1</small><span class="form-d">D</span><small>Alaves 2-2</small><span class="form-w">W</span><small>Girona 1-0</small><span class="form-l">L</span><small>Sociedad 1-3</small><span class="form-d">D</span><small>Mallorca 2-2</small></div></div>
   </div>
 </div>
-
-<div class="pick-card strong" id="pick-6" data-date="2026-04-25">
+<div class="day-header" data-date="2026-05-10"><span>Sun May 10</span><small>4 picks</small></div>
+<div class="pick-card keep" id="pick-6" data-date="2026-05-10">
   <div class="pick-summary" onclick="toggleDetails(6)">
     <div class="rank">#6</div>
     <div class="pick-main">
-      <div class="pick-title">Hoffenheim Win <span class="badge strong">STRONG</span></div>
-      <div class="pick-meta">Hamburg vs Hoffenheim · <span>2026-04-25 18:30</span> · Bundesliga</div>
+      <div class="pick-title">Villarreal Win <span class="badge keep">KEEP</span></div>
+      <div class="pick-meta">Mallorca vs Villarreal · <span>2026-05-10 20:00</span> · LaLiga</div>
     </div>
     <div class="numbers">
-      <div><strong>@2.50</strong><span>Odds</span></div>
-      <div><strong class="good">+28.5%</strong><span>Edge</span></div>
+      <div><strong>@2.85</strong><span>Odds</span></div>
+      <div><strong class="good">+23.1%</strong><span>Edge</span></div>
       <div><strong>$200</strong><span>Stake</span></div>
     </div>
     <div class="result" id="result-6">pending</div>
@@ -337,29 +410,29 @@ button.loss { color:var(--bad); border-color:rgba(239,68,68,.35); }
     </div>
   </div>
   <div class="pick-details" id="details-6">
-    <div class="reasoning">Model prices this at 51.4% versus bookmaker implied 40.0%, creating +28.5% edge. 1X2 value should be manually checked against injuries, motivation, and likely rotation. Range C candidate by odds profile.<br><br><strong>Risk:</strong> Check team news and odds movement before kickoff.</div>
+    <div class="reasoning">Model prices this at 43.2% versus bookmaker implied 35.1%, creating +23.1% edge. 1X2 value should be manually checked against injuries, motivation, and likely rotation. Range C candidate by odds profile.<br><br><strong>Risk:</strong> Check team news and odds movement before kickoff.</div>
     <div class="metrics">
-      <span>Model <strong>51.4%</strong></span>
-      <span>Book <strong>40.0%</strong></span>
-      <span>Win <strong class="good">+$300</strong></span>
+      <span>Model <strong>43.2%</strong></span>
+      <span>Book <strong>35.1%</strong></span>
+      <span>Win <strong class="good">+$370</strong></span>
       <span>Lose <strong class="bad">-$200</strong></span>
     </div>
-    <div class="h2h"><h3>Head-to-Head</h3><table><thead><tr><th>Date</th><th>Match</th><th>W</th></tr></thead><tbody><tr><td>2025-12-13</td><td>Hoffenheim 4-1 Hamburg</td><td>H</td></tr></tbody></table></div>
-    <div class="recent-form"><h3>Recent Form</h3><div class="form-row"><span class="form-l">L</span><small>Werder Bremen 1-3</small><span class="form-l">L</span><small>Stuttgart 0-4</small><span class="form-d">D</span><small>Augsburg 1-1</small><span class="form-l">L</span><small>Dortmund 2-3</small><span class="form-d">D</span><small>FC Koln 1-1</small></div></div>
-    <div class="recent-form"><h3>Recent Form</h3><div class="form-row"><span class="form-w">W</span><small>Dortmund 2-1</small><span class="form-d">D</span><small>Augsburg 2-2</small><span class="form-l">L</span><small>Mainz 1-2</small><span class="form-l">L</span><small>Mainz 05 1-2</small><span class="form-l">L</span><small>RB Leipzig 0-5</small></div></div>
+    <div class="h2h"><h3>Head-to-Head</h3><table><thead><tr><th>Date</th><th>Match</th><th>W</th></tr></thead><tbody><tr><td>2025-11-22</td><td>Villarreal 2-1 Mallorca</td><td>H</td></tr></tbody></table></div>
+    <div class="recent-form"><h3>Recent Form</h3><div class="form-row"><span class="form-w">W</span><small>Vallecano 3-0</small><span class="form-w">W</span><small>Real Madrid 2-1</small><span class="form-l">L</span><small>Elche 1-2</small><span class="form-w">W</span><small>Espanol 2-1</small><span class="form-d">D</span><small>Osasuna 2-2</small></div></div>
+    <div class="recent-form"><h3>Recent Form</h3><div class="form-row"><span class="form-w">W</span><small>Ath Bilbao 2-1</small><span class="form-l">L</span><small>Girona 0-1</small><span class="form-w">W</span><small>Sociedad 3-1</small><span class="form-d">D</span><small>Alaves 1-1</small><span class="form-w">W</span><small>Elche 2-1</small></div></div>
   </div>
 </div>
 
-<div class="pick-card strong" id="pick-7" data-date="2026-04-25">
+<div class="pick-card strong" id="pick-7" data-date="2026-05-10">
   <div class="pick-summary" onclick="toggleDetails(7)">
     <div class="rank">#7</div>
     <div class="pick-main">
-      <div class="pick-title">Lecce Win <span class="badge strong">STRONG</span></div>
-      <div class="pick-meta">Verona vs Lecce · <span>2026-04-25 20:45</span> · SerieA</div>
+      <div class="pick-title">Genoa Win <span class="badge strong">STRONG</span></div>
+      <div class="pick-meta">Fiorentina vs Genoa · <span>2026-05-10 21:00</span> · SerieA</div>
     </div>
     <div class="numbers">
-      <div><strong>@3.35</strong><span>Odds</span></div>
-      <div><strong class="good">+26.0%</strong><span>Edge</span></div>
+      <div><strong>@3.80</strong><span>Odds</span></div>
+      <div><strong class="good">+59.2%</strong><span>Edge</span></div>
       <div><strong>$200</strong><span>Stake</span></div>
     </div>
     <div class="result" id="result-7">pending</div>
@@ -371,29 +444,29 @@ button.loss { color:var(--bad); border-color:rgba(239,68,68,.35); }
     </div>
   </div>
   <div class="pick-details" id="details-7">
-    <div class="reasoning">Model prices this at 37.6% versus bookmaker implied 29.8%, creating +26.0% edge. 1X2 value should be manually checked against injuries, motivation, and likely rotation. Range C candidate by odds profile.<br><br><strong>Risk:</strong> High-odds pick: require manual verification before staking.</div>
+    <div class="reasoning">Model prices this at 41.9% versus bookmaker implied 26.3%, creating +59.2% edge. 1X2 value should be manually checked against injuries, motivation, and likely rotation. Range C candidate by odds profile.<br><br><strong>Risk:</strong> High-odds pick: require manual verification before staking.</div>
     <div class="metrics">
-      <span>Model <strong>37.6%</strong></span>
-      <span>Book <strong>29.8%</strong></span>
-      <span>Win <strong class="good">+$470</strong></span>
+      <span>Model <strong>41.9%</strong></span>
+      <span>Book <strong>26.3%</strong></span>
+      <span>Win <strong class="good">+$560</strong></span>
       <span>Lose <strong class="bad">-$200</strong></span>
     </div>
-    <div class="h2h"><h3>Head-to-Head</h3><table><thead><tr><th>Date</th><th>Match</th><th>W</th></tr></thead><tbody><tr><td>2025-11-08</td><td>Lecce 0-0 Verona</td><td>D</td></tr><tr><td>2025-05-11</td><td>Verona 1-1 Lecce</td><td>D</td></tr><tr><td>2024-10-29</td><td>Lecce 1-0 Verona</td><td>H</td></tr><tr><td>2024-03-10</td><td>Lecce 0-1 Verona</td><td>A</td></tr><tr><td>2023-11-27</td><td>Verona 2-2 Lecce</td><td>D</td></tr></tbody></table></div>
-    <div class="recent-form"><h3>Recent Form</h3><div class="form-row"><span class="form-l">L</span><small>Milan 0-1</small><span class="form-l">L</span><small>Torino 1-2</small><span class="form-l">L</span><small>Fiorentina 0-1</small><span class="form-l">L</span><small>Atalanta 0-1</small><span class="form-l">L</span><small>Genoa 0-2</small></div></div>
-    <div class="recent-form"><h3>Recent Form</h3><div class="form-row"><span class="form-d">D</span><small>Fiorentina 1-1</small><span class="form-l">L</span><small>Bologna 0-2</small><span class="form-l">L</span><small>Atalanta 0-3</small><span class="form-l">L</span><small>Roma 0-1</small><span class="form-l">L</span><small>Napoli 1-2</small></div></div>
+    <div class="h2h"><h3>Head-to-Head</h3><table><thead><tr><th>Date</th><th>Match</th><th>W</th></tr></thead><tbody><tr><td>2025-11-09</td><td>Genoa 2-2 Fiorentina</td><td>D</td></tr></tbody></table></div>
+    <div class="recent-form"><h3>Recent Form</h3><div class="form-row"><span class="form-d">D</span><small>Lecce 1-1</small><span class="form-w">W</span><small>Lazio 1-0</small><span class="form-w">W</span><small>Verona 1-0</small><span class="form-d">D</span><small>Inter 1-1</small><span class="form-w">W</span><small>Cremonese 4-1</small></div></div>
+    <div class="recent-form"><h3>Recent Form</h3><div class="form-row"><span class="form-w">W</span><small>Pisa 2-1</small><span class="form-w">W</span><small>Sassuolo 2-1</small><span class="form-l">L</span><small>Juventus 0-2</small><span class="form-l">L</span><small>Udinese 0-2</small><span class="form-w">W</span><small>Verona 2-0</small></div></div>
   </div>
 </div>
-<div class="day-header" data-date="2026-04-26"><span>Sun Apr 26</span><small>4 picks</small></div>
-<div class="pick-card strong" id="pick-8" data-date="2026-04-26">
+
+<div class="pick-card keep" id="pick-8" data-date="2026-05-10">
   <div class="pick-summary" onclick="toggleDetails(8)">
     <div class="rank">#8</div>
     <div class="pick-main">
-      <div class="pick-title">Rayo Vallecano Win <span class="badge strong">STRONG</span></div>
-      <div class="pick-meta">Rayo Vallecano vs Real Sociedad · <span>2026-04-26 14:00</span> · LaLiga</div>
+      <div class="pick-title">Draw <span class="badge keep">KEEP</span></div>
+      <div class="pick-meta">Cremonese vs Pisa · <span>2026-05-10 21:00</span> · SerieA</div>
     </div>
     <div class="numbers">
-      <div><strong>@2.95</strong><span>Odds</span></div>
-      <div><strong class="good">+37.2%</strong><span>Edge</span></div>
+      <div><strong>@3.75</strong><span>Odds</span></div>
+      <div><strong class="good">+23.8%</strong><span>Edge</span></div>
       <div><strong>$200</strong><span>Stake</span></div>
     </div>
     <div class="result" id="result-8">pending</div>
@@ -405,29 +478,29 @@ button.loss { color:var(--bad); border-color:rgba(239,68,68,.35); }
     </div>
   </div>
   <div class="pick-details" id="details-8">
-    <div class="reasoning">Model prices this at 46.5% versus bookmaker implied 33.9%, creating +37.2% edge. 1X2 value should be manually checked against injuries, motivation, and likely rotation. Range C candidate by odds profile.<br><br><strong>Risk:</strong> Check team news and odds movement before kickoff.</div>
+    <div class="reasoning">Model prices this at 33.0% versus bookmaker implied 26.7%, creating +23.8% edge. 1X2 value should be manually checked against injuries, motivation, and likely rotation. Range C candidate by odds profile.<br><br><strong>Risk:</strong> High-odds pick: require manual verification before staking.</div>
     <div class="metrics">
-      <span>Model <strong>46.5%</strong></span>
-      <span>Book <strong>33.9%</strong></span>
-      <span>Win <strong class="good">+$390</strong></span>
+      <span>Model <strong>33.0%</strong></span>
+      <span>Book <strong>26.7%</strong></span>
+      <span>Win <strong class="good">+$550</strong></span>
       <span>Lose <strong class="bad">-$200</strong></span>
     </div>
-
-
-
+    <div class="h2h"><h3>Head-to-Head</h3><table><thead><tr><th>Date</th><th>Match</th><th>W</th></tr></thead><tbody><tr><td>2025-11-07</td><td>Pisa 1-0 Cremonese</td><td>H</td></tr></tbody></table></div>
+    <div class="recent-form"><h3>Recent Form</h3><div class="form-row"><span class="form-d">D</span><small>Torino 0-0</small><span class="form-l">L</span><small>Cagliari 0-1</small><span class="form-l">L</span><small>Bologna 1-2</small><span class="form-w">W</span><small>Parma 2-0</small><span class="form-l">L</span><small>Fiorentina 1-4</small></div></div>
+    <div class="recent-form"><h3>Recent Form</h3><div class="form-row"><span class="form-l">L</span><small>Genoa 1-2</small><span class="form-l">L</span><small>Roma 0-3</small><span class="form-l">L</span><small>Torino 0-1</small><span class="form-l">L</span><small>Como 0-5</small><span class="form-w">W</span><small>Cagliari 3-1</small></div></div>
   </div>
 </div>
 
-<div class="pick-card strong" id="pick-9" data-date="2026-04-26">
+<div class="pick-card strong" id="pick-9" data-date="2026-05-10">
   <div class="pick-summary" onclick="toggleDetails(9)">
     <div class="rank">#9</div>
     <div class="pick-main">
-      <div class="pick-title">Como Win <span class="badge strong">STRONG</span></div>
-      <div class="pick-meta">Genoa vs Como · <span>2026-04-26 15:00</span> · SerieA</div>
+      <div class="pick-title">Valencia Win <span class="badge strong">STRONG</span></div>
+      <div class="pick-meta">Ath Bilbao vs Valencia · <span>2026-05-10 22:15</span> · LaLiga</div>
     </div>
     <div class="numbers">
-      <div><strong>@3.25</strong><span>Odds</span></div>
-      <div><strong class="good">+107.0%</strong><span>Edge</span></div>
+      <div><strong>@4.80</strong><span>Odds</span></div>
+      <div><strong class="good">+47.8%</strong><span>Edge</span></div>
       <div><strong>$200</strong><span>Stake</span></div>
     </div>
     <div class="result" id="result-9">pending</div>
@@ -439,29 +512,29 @@ button.loss { color:var(--bad); border-color:rgba(239,68,68,.35); }
     </div>
   </div>
   <div class="pick-details" id="details-9">
-    <div class="reasoning">Model prices this at 63.7% versus bookmaker implied 30.8%, creating +107.0% edge. 1X2 value should be manually checked against injuries, motivation, and likely rotation. Range C candidate by odds profile.<br><br><strong>Risk:</strong> High-odds pick: require manual verification before staking.</div>
+    <div class="reasoning">Model prices this at 30.8% versus bookmaker implied 20.8%, creating +47.8% edge. 1X2 value should be manually checked against injuries, motivation, and likely rotation. Range C candidate by odds profile.<br><br><strong>Risk:</strong> High-odds pick: require manual verification before staking.</div>
     <div class="metrics">
-      <span>Model <strong>63.7%</strong></span>
-      <span>Book <strong>30.8%</strong></span>
-      <span>Win <strong class="good">+$450</strong></span>
+      <span>Model <strong>30.8%</strong></span>
+      <span>Book <strong>20.8%</strong></span>
+      <span>Win <strong class="good">+$760</strong></span>
       <span>Lose <strong class="bad">-$200</strong></span>
     </div>
-    <div class="h2h"><h3>Head-to-Head</h3><table><thead><tr><th>Date</th><th>Match</th><th>W</th></tr></thead><tbody><tr><td>2025-09-15</td><td>Como 1-1 Genoa</td><td>D</td></tr><tr><td>2025-04-27</td><td>Como 1-0 Genoa</td><td>H</td></tr><tr><td>2024-11-07</td><td>Genoa 1-1 Como</td><td>D</td></tr></tbody></table></div>
-    <div class="recent-form"><h3>Recent Form</h3><div class="form-row"><span class="form-w">W</span><small>Pisa 2-1</small><span class="form-w">W</span><small>Sassuolo 2-1</small><span class="form-l">L</span><small>Juventus 0-2</small><span class="form-l">L</span><small>Udinese 0-2</small><span class="form-w">W</span><small>Verona 2-0</small></div></div>
-    <div class="recent-form"><h3>Recent Form</h3><div class="form-row"><span class="form-l">L</span><small>Sassuolo 1-2</small><span class="form-l">L</span><small>Inter 3-4</small><span class="form-l">L</span><small>Inter Milan 3-4</small><span class="form-d">D</span><small>Udinese 0-0</small><span class="form-w">W</span><small>Pisa 5-0</small></div></div>
+    <div class="h2h"><h3>Head-to-Head</h3><table><thead><tr><th>Date</th><th>Match</th><th>W</th></tr></thead><tbody><tr><td>2025-09-20</td><td>Valencia 2-0 Ath Bilbao</td><td>H</td></tr></tbody></table></div>
+    <div class="recent-form"><h3>Recent Form</h3><div class="form-row"><span class="form-l">L</span><small>Villarreal 1-2</small><span class="form-l">L</span><small>Getafe 0-2</small><span class="form-w">W</span><small>Betis 2-1</small><span class="form-l">L</span><small>Girona 0-3</small><span class="form-l">L</span><small>Barcelona 0-1</small></div></div>
+    <div class="recent-form"><h3>Recent Form</h3><div class="form-row"><span class="form-l">L</span><small>Elche 0-1</small><span class="form-l">L</span><small>Celta 2-3</small><span class="form-w">W</span><small>Sevilla 2-0</small><span class="form-l">L</span><small>Oviedo 0-1</small><span class="form-w">W</span><small>Alaves 3-2</small></div></div>
   </div>
 </div>
-
-<div class="pick-card strong" id="pick-10" data-date="2026-04-26">
+<div class="day-header" data-date="2026-05-11"><span>Mon May 11</span><small>3 picks</small></div>
+<div class="pick-card strong" id="pick-10" data-date="2026-05-11">
   <div class="pick-summary" onclick="toggleDetails(10)">
     <div class="rank">#10</div>
     <div class="pick-main">
-      <div class="pick-title">Elche Win <span class="badge strong">STRONG</span></div>
-      <div class="pick-meta">Oviedo vs Elche · <span>2026-04-26 16:15</span> · LaLiga</div>
+      <div class="pick-title">Real Oviedo Win <span class="badge strong">STRONG</span></div>
+      <div class="pick-meta">Real Oviedo vs Getafe · <span>2026-05-11 00:30</span> · LaLiga</div>
     </div>
     <div class="numbers">
-      <div><strong>@3.10</strong><span>Odds</span></div>
-      <div><strong class="good">+35.8%</strong><span>Edge</span></div>
+      <div><strong>@3.05</strong><span>Odds</span></div>
+      <div><strong class="good">+40.3%</strong><span>Edge</span></div>
       <div><strong>$200</strong><span>Stake</span></div>
     </div>
     <div class="result" id="result-10">pending</div>
@@ -473,29 +546,29 @@ button.loss { color:var(--bad); border-color:rgba(239,68,68,.35); }
     </div>
   </div>
   <div class="pick-details" id="details-10">
-    <div class="reasoning">Model prices this at 43.8% versus bookmaker implied 32.3%, creating +35.8% edge. 1X2 value should be manually checked against injuries, motivation, and likely rotation. Range C candidate by odds profile.<br><br><strong>Risk:</strong> High-odds pick: require manual verification before staking.</div>
+    <div class="reasoning">Model prices this at 46.0% versus bookmaker implied 32.8%, creating +40.3% edge. 1X2 value should be manually checked against injuries, motivation, and likely rotation. Range C candidate by odds profile.<br><br><strong>Risk:</strong> High-odds pick: require manual verification before staking.</div>
     <div class="metrics">
-      <span>Model <strong>43.8%</strong></span>
-      <span>Book <strong>32.3%</strong></span>
-      <span>Win <strong class="good">+$420</strong></span>
+      <span>Model <strong>46.0%</strong></span>
+      <span>Book <strong>32.8%</strong></span>
+      <span>Win <strong class="good">+$410</strong></span>
       <span>Lose <strong class="bad">-$200</strong></span>
     </div>
-    <div class="h2h"><h3>Head-to-Head</h3><table><thead><tr><th>Date</th><th>Match</th><th>W</th></tr></thead><tbody><tr><td>2025-09-21</td><td>Elche 1-0 Oviedo</td><td>H</td></tr></tbody></table></div>
-    <div class="recent-form"><h3>Recent Form</h3><div class="form-row"><span class="form-w">W</span><small>Celta 3-0</small><span class="form-w">W</span><small>Sevilla 1-0</small><span class="form-l">L</span><small>Levante 2-4</small><span class="form-w">W</span><small>Valencia 1-0</small><span class="form-d">D</span><small>Espanol 1-1</small></div></div>
-    <div class="recent-form"><h3>Recent Form</h3><div class="form-row"><span class="form-w">W</span><small>Valencia 1-0</small><span class="form-l">L</span><small>Vallecano 0-1</small><span class="form-w">W</span><small>Mallorca 2-1</small><span class="form-l">L</span><small>Real Madrid 1-4</small><span class="form-l">L</span><small>Villarreal 1-2</small></div></div>
+
+
+    <div class="recent-form"><h3>Recent Form</h3><div class="form-row"><span class="form-l">L</span><small>Levante 0-1</small><span class="form-w">W</span><small>Ath Bilbao 2-0</small><span class="form-w">W</span><small>Espanol 2-1</small><span class="form-l">L</span><small>Ath Madrid 0-1</small><span class="form-w">W</span><small>Betis 2-0</small></div></div>
   </div>
 </div>
 
-<div class="pick-card strong" id="pick-11" data-date="2026-04-26">
+<div class="pick-card strong" id="pick-11" data-date="2026-05-11">
   <div class="pick-summary" onclick="toggleDetails(11)">
     <div class="rank">#11</div>
     <div class="pick-main">
-      <div class="pick-title">Celta Vigo Win <span class="badge strong">STRONG</span></div>
-      <div class="pick-meta">Villarreal vs Celta Vigo · <span>2026-04-26 21:00</span> · LaLiga</div>
+      <div class="pick-title">Toulouse Win <span class="badge strong">STRONG</span></div>
+      <div class="pick-meta">Toulouse vs Lyon · <span>2026-05-11 03:00</span> · L1</div>
     </div>
     <div class="numbers">
-      <div><strong>@4.90</strong><span>Odds</span></div>
-      <div><strong class="good">+38.2%</strong><span>Edge</span></div>
+      <div><strong>@4.30</strong><span>Odds</span></div>
+      <div><strong class="good">+46.6%</strong><span>Edge</span></div>
       <div><strong>$200</strong><span>Stake</span></div>
     </div>
     <div class="result" id="result-11">pending</div>
@@ -507,29 +580,29 @@ button.loss { color:var(--bad); border-color:rgba(239,68,68,.35); }
     </div>
   </div>
   <div class="pick-details" id="details-11">
-    <div class="reasoning">Model prices this at 28.2% versus bookmaker implied 20.4%, creating +38.2% edge. 1X2 value should be manually checked against injuries, motivation, and likely rotation. Range C candidate by odds profile.<br><br><strong>Risk:</strong> High-odds pick: require manual verification before staking.</div>
+    <div class="reasoning">Model prices this at 34.1% versus bookmaker implied 23.3%, creating +46.6% edge. 1X2 value should be manually checked against injuries, motivation, and likely rotation. Range C candidate by odds profile.<br><br><strong>Risk:</strong> High-odds pick: require manual verification before staking.</div>
     <div class="metrics">
-      <span>Model <strong>28.2%</strong></span>
-      <span>Book <strong>20.4%</strong></span>
-      <span>Win <strong class="good">+$780</strong></span>
+      <span>Model <strong>34.1%</strong></span>
+      <span>Book <strong>23.3%</strong></span>
+      <span>Win <strong class="good">+$660</strong></span>
       <span>Lose <strong class="bad">-$200</strong></span>
     </div>
-
-    <div class="recent-form"><h3>Recent Form</h3><div class="form-row"><span class="form-w">W</span><small>Ath Bilbao 2-1</small><span class="form-w">W</span><small>Athletic Bilbao 2-1</small><span class="form-l">L</span><small>Girona 0-1</small><span class="form-w">W</span><small>Sociedad 3-1</small><span class="form-d">D</span><small>Alaves 1-1</small></div></div>
-
+    <div class="h2h"><h3>Head-to-Head</h3><table><thead><tr><th>Date</th><th>Match</th><th>W</th></tr></thead><tbody><tr><td>2025-10-05</td><td>Lyon 1-2 Toulouse</td><td>A</td></tr></tbody></table></div>
+    <div class="recent-form"><h3>Recent Form</h3><div class="form-row"><span class="form-l">L</span><small>Lens 2-3</small><span class="form-l">L</span><small>Lille 0-4</small><span class="form-l">L</span><small>Paris SG 1-3</small><span class="form-w">W</span><small>Lorient 1-0</small><span class="form-w">W</span><small>Metz 4-3</small></div></div>
+    <div class="recent-form"><h3>Recent Form</h3><div class="form-row"><span class="form-w">W</span><small>Paris SG 2-1</small><span class="form-w">W</span><small>Lorient 2-0</small><span class="form-d">D</span><small>Angers 0-0</small><span class="form-l">L</span><small>Monaco 1-2</small><span class="form-d">D</span><small>Le Havre 0-0</small></div></div>
   </div>
 </div>
-<div class="day-header" data-date="2026-04-27"><span>Mon Apr 27</span><small>1 picks</small></div>
-<div class="pick-card strong" id="pick-12" data-date="2026-04-27">
+
+<div class="pick-card keep" id="pick-12" data-date="2026-05-11">
   <div class="pick-summary" onclick="toggleDetails(12)">
     <div class="rank">#12</div>
     <div class="pick-main">
-      <div class="pick-title">Udinese Win <span class="badge strong">STRONG</span></div>
-      <div class="pick-meta">Lazio vs Udinese · <span>2026-04-27 20:45</span> · SerieA</div>
+      <div class="pick-title">Lille Win <span class="badge keep">KEEP</span></div>
+      <div class="pick-meta">Monaco vs Lille · <span>2026-05-11 03:00</span> · L1</div>
     </div>
     <div class="numbers">
-      <div><strong>@5.00</strong><span>Odds</span></div>
-      <div><strong class="good">+57.0%</strong><span>Edge</span></div>
+      <div><strong>@2.85</strong><span>Odds</span></div>
+      <div><strong class="good">+24.3%</strong><span>Edge</span></div>
       <div><strong>$200</strong><span>Stake</span></div>
     </div>
     <div class="result" id="result-12">pending</div>
@@ -541,16 +614,16 @@ button.loss { color:var(--bad); border-color:rgba(239,68,68,.35); }
     </div>
   </div>
   <div class="pick-details" id="details-12">
-    <div class="reasoning">Model prices this at 31.4% versus bookmaker implied 20.0%, creating +57.0% edge. 1X2 value should be manually checked against injuries, motivation, and likely rotation. Range C candidate by odds profile.<br><br><strong>Risk:</strong> High-odds pick: require manual verification before staking.</div>
+    <div class="reasoning">Model prices this at 43.6% versus bookmaker implied 35.1%, creating +24.3% edge. 1X2 value should be manually checked against injuries, motivation, and likely rotation. Range C candidate by odds profile.<br><br><strong>Risk:</strong> Check team news and odds movement before kickoff.</div>
     <div class="metrics">
-      <span>Model <strong>31.4%</strong></span>
-      <span>Book <strong>20.0%</strong></span>
-      <span>Win <strong class="good">+$800</strong></span>
+      <span>Model <strong>43.6%</strong></span>
+      <span>Book <strong>35.1%</strong></span>
+      <span>Win <strong class="good">+$370</strong></span>
       <span>Lose <strong class="bad">-$200</strong></span>
     </div>
-    <div class="h2h"><h3>Head-to-Head</h3><table><thead><tr><th>Date</th><th>Match</th><th>W</th></tr></thead><tbody><tr><td>2025-12-27</td><td>Udinese 1-1 Lazio</td><td>D</td></tr><tr><td>2025-03-10</td><td>Lazio 1-1 Udinese</td><td>D</td></tr><tr><td>2024-08-24</td><td>Udinese 2-1 Lazio</td><td>H</td></tr><tr><td>2024-03-11</td><td>Lazio 1-2 Udinese</td><td>A</td></tr><tr><td>2024-01-07</td><td>Udinese 1-2 Lazio</td><td>A</td></tr></tbody></table></div>
-    <div class="recent-form"><h3>Recent Form</h3><div class="form-row"><span class="form-w">W</span><small>Napoli 2-0</small><span class="form-l">L</span><small>Fiorentina 0-1</small><span class="form-d">D</span><small>Parma 1-1</small><span class="form-w">W</span><small>Bologna 2-0</small><span class="form-w">W</span><small>Milan 1-0</small></div></div>
-    <div class="recent-form"><h3>Recent Form</h3><div class="form-row"><span class="form-l">L</span><small>Parma 0-1</small><span class="form-w">W</span><small>Milan 3-0</small><span class="form-d">D</span><small>Como 0-0</small><span class="form-w">W</span><small>Genoa 2-0</small><span class="form-l">L</span><small>Juventus 0-1</small></div></div>
+    <div class="h2h"><h3>Head-to-Head</h3><table><thead><tr><th>Date</th><th>Match</th><th>W</th></tr></thead><tbody><tr><td>2025-08-24</td><td>Lille 1-0 Monaco</td><td>H</td></tr></tbody></table></div>
+    <div class="recent-form"><h3>Recent Form</h3><div class="form-row"><span class="form-d">D</span><small>Auxerre 2-2</small><span class="form-l">L</span><small>Paris FC 1-4</small><span class="form-w">W</span><small>Marseille 2-1</small><span class="form-w">W</span><small>Lyon 2-1</small><span class="form-w">W</span><small>Brest 2-0</small></div></div>
+    <div class="recent-form"><h3>Recent Form</h3><div class="form-row"><span class="form-d">D</span><small>Nice 0-0</small><span class="form-w">W</span><small>Toulouse 4-0</small><span class="form-w">W</span><small>Lens 3-0</small><span class="form-w">W</span><small>Marseille 2-1</small><span class="form-w">W</span><small>Rennes 2-1</small></div></div>
   </div>
 </div>
 
@@ -562,35 +635,35 @@ button.loss { color:var(--bad); border-color:rgba(239,68,68,.35); }
     <div><span>Base Bank</span><strong>$10,000</strong></div>
     <div><span>Flat Stake</span><strong>$200</strong></div>
     <div><span>Odds Band</span><strong>1.70-2.70</strong></div>
-    <div><span>Strong</span><strong class="good">12</strong></div>
-    <div><span>Caution</span><strong class="warn">0</strong></div>
+    <div><span>Strong</span><strong class="good">1</strong></div>
+    <div><span>Caution</span><strong class="warn">5</strong></div>
     <div><span>Record</span><strong id="D-record">-</strong></div>
     <div><span>Staked</span><strong id="D-staked">$0</strong></div>
     <div><span>P&amp;L</span><strong id="D-pnl">$0</strong></div>
     <div><span>ROI</span><strong id="D-roi">-</strong></div>
     <div><span>Bank</span><strong id="D-bank">$10,000</strong></div>
   </div>
-  <div class="range-note">12 picks · planned stake $2,400 · no duplicate selection exposure across ranges.</div>
+  <div class="range-note">12 picks · planned stake $2,400 · correlated same-match exposure is flagged in each pick's risk note.</div>
 
 <div class="filter-bar">
   <label for="D-filter">Filter by kickoff</label>
   <select id="D-filter" class="filter-select" onchange="filterRange('D', this.value)">
-    <option value="all">All dates</option><option value="2026-04-24">Fri Apr 24</option><option value="2026-04-25">Sat Apr 25</option><option value="2026-04-26">Sun Apr 26</option><option value="2026-04-28">Tue Apr 28</option><option value="2026-04-29">Wed Apr 29</option>
+    <option value="all">All dates</option><option value="2026-05-05">Tue May 05</option><option value="2026-05-09">Sat May 09</option><option value="2026-05-10">Sun May 10</option><option value="2026-05-11">Mon May 11</option>
   </select>
   <div class="filter-count">Showing <span id="D-visible">12</span> of 12 picks</div>
 </div>
 
-  <div class="day-header" data-date="2026-04-24"><span>Fri Apr 24</span><small>1 picks</small></div>
-<div class="pick-card strong" id="pick-13" data-date="2026-04-24">
+  <div class="day-header" data-date="2026-05-05"><span>Tue May 05</span><small>1 picks</small></div>
+<div class="pick-card keep" id="pick-13" data-date="2026-05-05">
   <div class="pick-summary" onclick="toggleDetails(13)">
     <div class="rank">#1</div>
     <div class="pick-main">
-      <div class="pick-title">Lens Win <span class="badge strong">STRONG</span></div>
-      <div class="pick-meta">Brest vs Lens · <span>2026-04-24 20:45</span> · L1</div>
+      <div class="pick-title">Lazio Win <span class="badge keep">KEEP</span></div>
+      <div class="pick-meta">Cremonese vs Lazio · <span>2026-05-05 00:30</span> · SerieA</div>
     </div>
     <div class="numbers">
-      <div><strong>@2.45</strong><span>Odds</span></div>
-      <div><strong class="good">+40.1%</strong><span>Edge</span></div>
+      <div><strong>@2.48</strong><span>Odds</span></div>
+      <div><strong class="good">+22.3%</strong><span>Edge</span></div>
       <div><strong>$200</strong><span>Stake</span></div>
     </div>
     <div class="result" id="result-13">pending</div>
@@ -602,29 +675,29 @@ button.loss { color:var(--bad); border-color:rgba(239,68,68,.35); }
     </div>
   </div>
   <div class="pick-details" id="details-13">
-    <div class="reasoning">Model prices this at 57.2% versus bookmaker implied 40.8%, creating +40.1% edge. 1X2 value should be manually checked against injuries, motivation, and likely rotation. Range D candidate by odds profile.<br><br><strong>Risk:</strong> Check team news and odds movement before kickoff.</div>
+    <div class="reasoning">Model prices this at 49.3% versus bookmaker implied 40.3%, creating +22.3% edge. 1X2 value should be manually checked against injuries, motivation, and likely rotation. Range D candidate by odds profile.<br><br><strong>Risk:</strong> Check team news and odds movement before kickoff.</div>
     <div class="metrics">
-      <span>Model <strong>57.2%</strong></span>
-      <span>Book <strong>40.8%</strong></span>
-      <span>Win <strong class="good">+$290</strong></span>
+      <span>Model <strong>49.3%</strong></span>
+      <span>Book <strong>40.3%</strong></span>
+      <span>Win <strong class="good">+$296</strong></span>
       <span>Lose <strong class="bad">-$200</strong></span>
     </div>
-    <div class="h2h"><h3>Head-to-Head</h3><table><thead><tr><th>Date</th><th>Match</th><th>W</th></tr></thead><tbody><tr><td>2025-08-29</td><td>Lens 3-1 Brest</td><td>H</td></tr><tr><td>2025-04-20</td><td>Brest 1-3 Lens</td><td>A</td></tr><tr><td>2024-08-25</td><td>Lens 2-0 Brest</td><td>H</td></tr><tr><td>2024-03-09</td><td>Lens 1-0 Brest</td><td>H</td></tr><tr><td>2023-08-13</td><td>Brest 3-2 Lens</td><td>H</td></tr></tbody></table></div>
-    <div class="recent-form"><h3>Recent Form</h3><div class="form-row"><span class="form-d">D</span><small>Nantes 1-1</small><span class="form-l">L</span><small>Rennes 3-4</small><span class="form-l">L</span><small>Auxerre 0-3</small><span class="form-l">L</span><small>Monaco 0-2</small><span class="form-w">W</span><small>Le Havre 2-0</small></div></div>
-    <div class="recent-form"><h3>Recent Form</h3><div class="form-row"><span class="form-w">W</span><small>Toulouse 3-2</small><span class="form-l">L</span><small>Lille 0-3</small><span class="form-w">W</span><small>Angers 5-1</small><span class="form-l">L</span><small>Lorient 1-2</small><span class="form-w">W</span><small>Metz 3-0</small></div></div>
+    <div class="h2h"><h3>Head-to-Head</h3><table><thead><tr><th>Date</th><th>Match</th><th>W</th></tr></thead><tbody><tr><td>2025-12-20</td><td>Lazio 0-0 Cremonese</td><td>D</td></tr></tbody></table></div>
+    <div class="recent-form"><h3>Recent Form</h3><div class="form-row"><span class="form-d">D</span><small>Torino 0-0</small><span class="form-l">L</span><small>Cagliari 0-1</small><span class="form-l">L</span><small>Bologna 1-2</small><span class="form-w">W</span><small>Parma 2-0</small><span class="form-l">L</span><small>Fiorentina 1-4</small></div></div>
+    <div class="recent-form"><h3>Recent Form</h3><div class="form-row"><span class="form-w">W</span><small>Napoli 2-0</small><span class="form-l">L</span><small>Fiorentina 0-1</small><span class="form-d">D</span><small>Parma 1-1</small><span class="form-w">W</span><small>Bologna 2-0</small><span class="form-w">W</span><small>Milan 1-0</small></div></div>
   </div>
 </div>
-<div class="day-header" data-date="2026-04-25"><span>Sat Apr 25</span><small>4 picks</small></div>
-<div class="pick-card strong" id="pick-14" data-date="2026-04-25">
+<div class="day-header" data-date="2026-05-09"><span>Sat May 09</span><small>3 picks</small></div>
+<div class="pick-card keep" id="pick-14" data-date="2026-05-09">
   <div class="pick-summary" onclick="toggleDetails(14)">
     <div class="rank">#2</div>
     <div class="pick-main">
-      <div class="pick-title">Man City Win <span class="badge strong">STRONG</span></div>
-      <div class="pick-meta">Man City vs Liverpool · <span>2026-04-25 15:00</span> · EPL</div>
+      <div class="pick-title">Liverpool Win <span class="badge keep">KEEP</span></div>
+      <div class="pick-meta">Liverpool vs Chelsea · <span>2026-05-09 19:30</span> · EPL</div>
     </div>
     <div class="numbers">
-      <div><strong>@2.30</strong><span>Odds</span></div>
-      <div><strong class="good">+47.7%</strong><span>Edge</span></div>
+      <div><strong>@1.94</strong><span>Odds</span></div>
+      <div><strong class="good">+10.4%</strong><span>Edge</span></div>
       <div><strong>$200</strong><span>Stake</span></div>
     </div>
     <div class="result" id="result-14">pending</div>
@@ -636,29 +709,29 @@ button.loss { color:var(--bad); border-color:rgba(239,68,68,.35); }
     </div>
   </div>
   <div class="pick-details" id="details-14">
-    <div class="reasoning">Model prices this at 64.2% versus bookmaker implied 43.5%, creating +47.7% edge. 1X2 value should be manually checked against injuries, motivation, and likely rotation. Range D candidate by odds profile.<br><br><strong>Risk:</strong> Check team news and odds movement before kickoff.</div>
+    <div class="reasoning">Model prices this at 56.9% versus bookmaker implied 51.5%, creating +10.4% edge. 1X2 value should be manually checked against injuries, motivation, and likely rotation. Range D candidate by odds profile.<br><br><strong>Risk:</strong> Check team news and odds movement before kickoff.</div>
     <div class="metrics">
-      <span>Model <strong>64.2%</strong></span>
-      <span>Book <strong>43.5%</strong></span>
-      <span>Win <strong class="good">+$260</strong></span>
+      <span>Model <strong>56.9%</strong></span>
+      <span>Book <strong>51.5%</strong></span>
+      <span>Win <strong class="good">+$188</strong></span>
       <span>Lose <strong class="bad">-$200</strong></span>
     </div>
-    <div class="h2h"><h3>Head-to-Head</h3><table><thead><tr><th>Date</th><th>Match</th><th>W</th></tr></thead><tbody><tr><td>2026-03-01</td><td>Man City 1-2 Liverpool</td><td>A</td></tr><tr><td>2026-02-08</td><td>Liverpool 1-2 Man City</td><td>A</td></tr><tr><td>2025-11-09</td><td>Man City 3-0 Liverpool</td><td>H</td></tr><tr><td>2025-11-02</td><td>Liverpool 1-1 Man City</td><td>D</td></tr><tr><td>2025-08-15</td><td>Man City 2-1 Liverpool</td><td>H</td></tr></tbody></table></div>
-    <div class="recent-form"><h3>Recent Form</h3><div class="form-row"><span class="form-w">W</span><small>Arsenal 2-1</small><span class="form-w">W</span><small>Chelsea 3-0</small><span class="form-d">D</span><small>West Ham 1-1</small><span class="form-d">D</span><small>Nott&#x27;m Forest 2-2</small><span class="form-d">D</span><small>Nottingham Forest 2-2</small></div></div>
+    <div class="h2h"><h3>Head-to-Head</h3><table><thead><tr><th>Date</th><th>Match</th><th>W</th></tr></thead><tbody><tr><td>2026-02-10</td><td>Liverpool 2-1 Chelsea</td><td>H</td></tr><tr><td>2025-12-26</td><td>Liverpool 3-1 Chelsea</td><td>H</td></tr><tr><td>2025-10-04</td><td>Chelsea 2-1 Liverpool</td><td>H</td></tr><tr><td>2025-08-23</td><td>Chelsea 0-3 Liverpool</td><td>A</td></tr></tbody></table></div>
     <div class="recent-form"><h3>Recent Form</h3><div class="form-row"><span class="form-w">W</span><small>Everton 2-1</small><span class="form-w">W</span><small>Fulham 2-0</small><span class="form-l">L</span><small>Brighton 1-2</small><span class="form-d">D</span><small>Tottenham 1-1</small><span class="form-l">L</span><small>Wolves 1-2</small></div></div>
+    <div class="recent-form"><h3>Recent Form</h3><div class="form-row"><span class="form-l">L</span><small>Man United 0-1</small><span class="form-l">L</span><small>Man City 0-3</small><span class="form-l">L</span><small>Arsenal 1-2</small><span class="form-l">L</span><small>Everton 0-3</small><span class="form-l">L</span><small>Newcastle 0-1</small></div></div>
   </div>
 </div>
 
-<div class="pick-card strong" id="pick-15" data-date="2026-04-25">
+<div class="pick-card caution" id="pick-15" data-date="2026-05-09">
   <div class="pick-summary" onclick="toggleDetails(15)">
     <div class="rank">#3</div>
     <div class="pick-main">
-      <div class="pick-title">Arsenal Win <span class="badge strong">STRONG</span></div>
-      <div class="pick-meta">Arsenal vs Chelsea · <span>2026-04-25 17:30</span> · EPL</div>
+      <div class="pick-title">Elche Win <span class="badge caution">CAUTION</span></div>
+      <div class="pick-meta">Elche vs Alaves · <span>2026-05-09 20:00</span> · LaLiga</div>
     </div>
     <div class="numbers">
-      <div><strong>@1.85</strong><span>Odds</span></div>
-      <div><strong class="good">+38.2%</strong><span>Edge</span></div>
+      <div><strong>@2.28</strong><span>Odds</span></div>
+      <div><strong class="good">+6.7%</strong><span>Edge</span></div>
       <div><strong>$200</strong><span>Stake</span></div>
     </div>
     <div class="result" id="result-15">pending</div>
@@ -670,29 +743,29 @@ button.loss { color:var(--bad); border-color:rgba(239,68,68,.35); }
     </div>
   </div>
   <div class="pick-details" id="details-15">
-    <div class="reasoning">Model prices this at 74.7% versus bookmaker implied 54.0%, creating +38.2% edge. 1X2 value should be manually checked against injuries, motivation, and likely rotation. Range D candidate by odds profile.<br><br><strong>Risk:</strong> Check team news and odds movement before kickoff.</div>
+    <div class="reasoning">Model prices this at 46.8% versus bookmaker implied 43.9%, creating +6.7% edge. 1X2 value should be manually checked against injuries, motivation, and likely rotation. Range D candidate by odds profile.<br><br><strong>Risk:</strong> Check team news and odds movement before kickoff.</div>
     <div class="metrics">
-      <span>Model <strong>74.7%</strong></span>
-      <span>Book <strong>54.0%</strong></span>
-      <span>Win <strong class="good">+$170</strong></span>
+      <span>Model <strong>46.8%</strong></span>
+      <span>Book <strong>43.9%</strong></span>
+      <span>Win <strong class="good">+$256</strong></span>
       <span>Lose <strong class="bad">-$200</strong></span>
     </div>
-    <div class="h2h"><h3>Head-to-Head</h3><table><thead><tr><th>Date</th><th>Match</th><th>W</th></tr></thead><tbody><tr><td>2026-04-05</td><td>Arsenal 2-1 Chelsea</td><td>H</td></tr><tr><td>2026-03-01</td><td>Arsenal 2-1 Chelsea</td><td>H</td></tr><tr><td>2025-11-30</td><td>Chelsea 1-1 Arsenal</td><td>D</td></tr><tr><td>2025-11-09</td><td>Chelsea 1-2 Arsenal</td><td>A</td></tr><tr><td>2025-08-16</td><td>Arsenal 3-0 Chelsea</td><td>H</td></tr></tbody></table></div>
-    <div class="recent-form"><h3>Recent Form</h3><div class="form-row"><span class="form-l">L</span><small>Man City 1-2</small><span class="form-l">L</span><small>Bournemouth 1-2</small><span class="form-w">W</span><small>Chelsea 2-1</small><span class="form-w">W</span><small>Everton 2-0</small><span class="form-w">W</span><small>Brighton 1-0</small></div></div>
-    <div class="recent-form"><h3>Recent Form</h3><div class="form-row"><span class="form-l">L</span><small>Man United 0-1</small><span class="form-l">L</span><small>Man City 0-3</small><span class="form-l">L</span><small>Arsenal 1-2</small><span class="form-l">L</span><small>Everton 0-3</small><span class="form-l">L</span><small>Newcastle 0-1</small></div></div>
+    <div class="h2h"><h3>Head-to-Head</h3><table><thead><tr><th>Date</th><th>Match</th><th>W</th></tr></thead><tbody><tr><td>2025-10-05</td><td>Alaves 3-1 Elche</td><td>H</td></tr></tbody></table></div>
+    <div class="recent-form"><h3>Recent Form</h3><div class="form-row"><span class="form-w">W</span><small>Valencia 1-0</small><span class="form-l">L</span><small>Vallecano 0-1</small><span class="form-w">W</span><small>Mallorca 2-1</small><span class="form-l">L</span><small>Real Madrid 1-4</small><span class="form-l">L</span><small>Villarreal 1-2</small></div></div>
+    <div class="recent-form"><h3>Recent Form</h3><div class="form-row"><span class="form-d">D</span><small>Sociedad 3-3</small><span class="form-d">D</span><small>Osasuna 2-2</small><span class="form-w">W</span><small>Celta 4-3</small><span class="form-d">D</span><small>Villarreal 1-1</small><span class="form-l">L</span><small>Valencia 2-3</small></div></div>
   </div>
 </div>
 
-<div class="pick-card strong" id="pick-16" data-date="2026-04-25">
+<div class="pick-card caution" id="pick-16" data-date="2026-05-09">
   <div class="pick-summary" onclick="toggleDetails(16)">
     <div class="rank">#4</div>
     <div class="pick-main">
-      <div class="pick-title">Arsenal Win <span class="badge strong">STRONG</span></div>
-      <div class="pick-meta">Arsenal vs Newcastle · <span>2026-04-25 17:30</span> · EPL</div>
+      <div class="pick-title">Stuttgart Win <span class="badge caution">CAUTION</span></div>
+      <div class="pick-meta">Stuttgart vs Leverkusen · <span>2026-05-09 21:30</span> · Bundesliga</div>
     </div>
     <div class="numbers">
-      <div><strong>@1.82</strong><span>Odds</span></div>
-      <div><strong class="good">+28.3%</strong><span>Edge</span></div>
+      <div><strong>@2.17</strong><span>Odds</span></div>
+      <div><strong class="good">+6.3%</strong><span>Edge</span></div>
       <div><strong>$200</strong><span>Stake</span></div>
     </div>
     <div class="result" id="result-16">pending</div>
@@ -704,29 +777,29 @@ button.loss { color:var(--bad); border-color:rgba(239,68,68,.35); }
     </div>
   </div>
   <div class="pick-details" id="details-16">
-    <div class="reasoning">Model prices this at 70.5% versus bookmaker implied 54.9%, creating +28.3% edge. 1X2 value should be manually checked against injuries, motivation, and likely rotation. Range D candidate by odds profile.<br><br><strong>Risk:</strong> Check team news and odds movement before kickoff.</div>
+    <div class="reasoning">Model prices this at 49.0% versus bookmaker implied 46.1%, creating +6.3% edge. 1X2 value should be manually checked against injuries, motivation, and likely rotation. Range D candidate by odds profile.<br><br><strong>Risk:</strong> Check team news and odds movement before kickoff.</div>
     <div class="metrics">
-      <span>Model <strong>70.5%</strong></span>
-      <span>Book <strong>54.9%</strong></span>
-      <span>Win <strong class="good">+$164</strong></span>
+      <span>Model <strong>49.0%</strong></span>
+      <span>Book <strong>46.1%</strong></span>
+      <span>Win <strong class="good">+$234</strong></span>
       <span>Lose <strong class="bad">-$200</strong></span>
     </div>
-    <div class="h2h"><h3>Head-to-Head</h3><table><thead><tr><th>Date</th><th>Match</th><th>W</th></tr></thead><tbody><tr><td>2025-09-28</td><td>Newcastle 1-2 Arsenal</td><td>A</td></tr><tr><td>2025-05-18</td><td>Arsenal 1-0 Newcastle</td><td>H</td></tr><tr><td>2024-11-02</td><td>Newcastle 1-0 Arsenal</td><td>H</td></tr><tr><td>2024-02-24</td><td>Arsenal 4-1 Newcastle</td><td>H</td></tr><tr><td>2023-11-04</td><td>Newcastle 1-0 Arsenal</td><td>H</td></tr></tbody></table></div>
-    <div class="recent-form"><h3>Recent Form</h3><div class="form-row"><span class="form-l">L</span><small>Man City 1-2</small><span class="form-l">L</span><small>Bournemouth 1-2</small><span class="form-w">W</span><small>Chelsea 2-1</small><span class="form-w">W</span><small>Everton 2-0</small><span class="form-w">W</span><small>Brighton 1-0</small></div></div>
-    <div class="recent-form"><h3>Recent Form</h3><div class="form-row"><span class="form-l">L</span><small>Bournemouth 1-2</small><span class="form-l">L</span><small>Crystal Palace 1-2</small><span class="form-l">L</span><small>Sunderland 1-2</small><span class="form-w">W</span><small>Chelsea 1-0</small><span class="form-w">W</span><small>Man United 2-1</small></div></div>
+    <div class="h2h"><h3>Head-to-Head</h3><table><thead><tr><th>Date</th><th>Match</th><th>W</th></tr></thead><tbody><tr><td>2026-01-10</td><td>Leverkusen 1-4 Stuttgart</td><td>A</td></tr></tbody></table></div>
+    <div class="recent-form"><h3>Recent Form</h3><div class="form-row"><span class="form-l">L</span><small>Bayern Munich 2-4</small><span class="form-w">W</span><small>Hamburg 4-0</small><span class="form-l">L</span><small>Dortmund 0-2</small><span class="form-w">W</span><small>Augsburg 5-2</small><span class="form-w">W</span><small>RB Leipzig 1-0</small></div></div>
+    <div class="recent-form"><h3>Recent Form</h3><div class="form-row"><span class="form-l">L</span><small>Augsburg 1-2</small><span class="form-w">W</span><small>Dortmund 1-0</small><span class="form-w">W</span><small>Wolfsburg 6-3</small><span class="form-d">D</span><small>Heidenheim 3-3</small><span class="form-d">D</span><small>Bayern Munich 1-1</small></div></div>
   </div>
 </div>
-
-<div class="pick-card strong" id="pick-17" data-date="2026-04-25">
+<div class="day-header" data-date="2026-05-10"><span>Sun May 10</span><small>5 picks</small></div>
+<div class="pick-card strong" id="pick-17" data-date="2026-05-10">
   <div class="pick-summary" onclick="toggleDetails(17)">
     <div class="rank">#5</div>
     <div class="pick-main">
-      <div class="pick-title">Atletico Madrid Win <span class="badge strong">STRONG</span></div>
-      <div class="pick-meta">Atletico Madrid vs Athletic Bilbao · <span>2026-04-25 21:00</span> · LaLiga</div>
+      <div class="pick-title">Inter Milan Win <span class="badge strong">STRONG</span></div>
+      <div class="pick-meta">Lazio vs Inter Milan · <span>2026-05-10 00:00</span> · SerieA</div>
     </div>
     <div class="numbers">
-      <div><strong>@1.95</strong><span>Odds</span></div>
-      <div><strong class="good">+36.1%</strong><span>Edge</span></div>
+      <div><strong>@1.81</strong><span>Odds</span></div>
+      <div><strong class="good">+60.9%</strong><span>Edge</span></div>
       <div><strong>$200</strong><span>Stake</span></div>
     </div>
     <div class="result" id="result-17">pending</div>
@@ -738,29 +811,29 @@ button.loss { color:var(--bad); border-color:rgba(239,68,68,.35); }
     </div>
   </div>
   <div class="pick-details" id="details-17">
-    <div class="reasoning">Model prices this at 69.8% versus bookmaker implied 51.3%, creating +36.1% edge. 1X2 value should be manually checked against injuries, motivation, and likely rotation. Range D candidate by odds profile.<br><br><strong>Risk:</strong> Check team news and odds movement before kickoff.</div>
+    <div class="reasoning">Model prices this at 88.9% versus bookmaker implied 55.2%, creating +60.9% edge. 1X2 value should be manually checked against injuries, motivation, and likely rotation. Range D candidate by odds profile.<br><br><strong>Risk:</strong> Check team news and odds movement before kickoff.</div>
     <div class="metrics">
-      <span>Model <strong>69.8%</strong></span>
-      <span>Book <strong>51.3%</strong></span>
-      <span>Win <strong class="good">+$190</strong></span>
+      <span>Model <strong>88.9%</strong></span>
+      <span>Book <strong>55.2%</strong></span>
+      <span>Win <strong class="good">+$162</strong></span>
       <span>Lose <strong class="bad">-$200</strong></span>
     </div>
-    <div class="h2h"><h3>Head-to-Head</h3><table><thead><tr><th>Date</th><th>Match</th><th>W</th></tr></thead><tbody><tr><td>2025-12-06</td><td>Athletic Bilbao 1-0 Atletico Madrid</td><td>H</td></tr><tr><td>2025-03-01</td><td>Atletico Madrid 1-0 Athletic Bilbao</td><td>H</td></tr><tr><td>2024-08-31</td><td>Athletic Bilbao 0-1 Atletico Madrid</td><td>A</td></tr><tr><td>2024-04-27</td><td>Atletico Madrid 3-1 Athletic Bilbao</td><td>H</td></tr><tr><td>2023-12-16</td><td>Athletic Bilbao 2-0 Atletico Madrid</td><td>H</td></tr></tbody></table></div>
-    <div class="recent-form"><h3>Recent Form</h3><div class="form-row"><span class="form-l">L</span><small>Sevilla 1-2</small><span class="form-l">L</span><small>Barcelona 1-2</small><span class="form-l">L</span><small>Real Madrid 2-3</small><span class="form-w">W</span><small>Getafe 1-0</small><span class="form-w">W</span><small>Sociedad 3-2</small></div></div>
-    <div class="recent-form"><h3>Recent Form</h3><div class="form-row"><span class="form-l">L</span><small>Villarreal 1-2</small><span class="form-l">L</span><small>Getafe 0-2</small><span class="form-w">W</span><small>Betis 2-1</small><span class="form-l">L</span><small>Girona 0-3</small><span class="form-l">L</span><small>Barcelona 0-1</small></div></div>
+
+    <div class="recent-form"><h3>Recent Form</h3><div class="form-row"><span class="form-w">W</span><small>Napoli 2-0</small><span class="form-l">L</span><small>Fiorentina 0-1</small><span class="form-d">D</span><small>Parma 1-1</small><span class="form-w">W</span><small>Bologna 2-0</small><span class="form-w">W</span><small>Milan 1-0</small></div></div>
+    <div class="recent-form"><h3>Recent Form</h3><div class="form-row"><span class="form-d">D</span><small>AC Milan 1-1</small><span class="form-w">W</span><small>Juventus 2-0</small><span class="form-w">W</span><small>AC Milan 2-0</small><span class="form-d">D</span><small>Juventus 1-1</small></div></div>
   </div>
 </div>
-<div class="day-header" data-date="2026-04-26"><span>Sun Apr 26</span><small>5 picks</small></div>
-<div class="pick-card strong" id="pick-18" data-date="2026-04-26">
+
+<div class="pick-card keep" id="pick-18" data-date="2026-05-10">
   <div class="pick-summary" onclick="toggleDetails(18)">
     <div class="rank">#6</div>
     <div class="pick-main">
-      <div class="pick-title">Man United Win <span class="badge strong">STRONG</span></div>
-      <div class="pick-meta">Man United vs Tottenham · <span>2026-04-26 14:00</span> · EPL</div>
+      <div class="pick-title">Sociedad Win <span class="badge keep">KEEP</span></div>
+      <div class="pick-meta">Sociedad vs Betis · <span>2026-05-10 03:00</span> · LaLiga</div>
     </div>
     <div class="numbers">
-      <div><strong>@2.40</strong><span>Odds</span></div>
-      <div><strong class="good">+67.5%</strong><span>Edge</span></div>
+      <div><strong>@2.24</strong><span>Odds</span></div>
+      <div><strong class="good">+14.7%</strong><span>Edge</span></div>
       <div><strong>$200</strong><span>Stake</span></div>
     </div>
     <div class="result" id="result-18">pending</div>
@@ -772,29 +845,29 @@ button.loss { color:var(--bad); border-color:rgba(239,68,68,.35); }
     </div>
   </div>
   <div class="pick-details" id="details-18">
-    <div class="reasoning">Model prices this at 69.8% versus bookmaker implied 41.7%, creating +67.5% edge. 1X2 value should be manually checked against injuries, motivation, and likely rotation. Range D candidate by odds profile.<br><br><strong>Risk:</strong> Check team news and odds movement before kickoff.</div>
+    <div class="reasoning">Model prices this at 51.2% versus bookmaker implied 44.6%, creating +14.7% edge. 1X2 value should be manually checked against injuries, motivation, and likely rotation. Range D candidate by odds profile.<br><br><strong>Risk:</strong> Check team news and odds movement before kickoff.</div>
     <div class="metrics">
-      <span>Model <strong>69.8%</strong></span>
-      <span>Book <strong>41.7%</strong></span>
-      <span>Win <strong class="good">+$280</strong></span>
+      <span>Model <strong>51.2%</strong></span>
+      <span>Book <strong>44.6%</strong></span>
+      <span>Win <strong class="good">+$248</strong></span>
       <span>Lose <strong class="bad">-$200</strong></span>
     </div>
-    <div class="h2h"><h3>Head-to-Head</h3><table><thead><tr><th>Date</th><th>Match</th><th>W</th></tr></thead><tbody><tr><td>2026-02-07</td><td>Man United 2-0 Tottenham</td><td>H</td></tr><tr><td>2025-11-08</td><td>Tottenham 2-2 Man United</td><td>D</td></tr><tr><td>2025-02-16</td><td>Tottenham 1-0 Man United</td><td>H</td></tr><tr><td>2024-09-29</td><td>Man United 0-3 Tottenham</td><td>A</td></tr><tr><td>2024-01-14</td><td>Man United 2-2 Tottenham</td><td>D</td></tr></tbody></table></div>
-    <div class="recent-form"><h3>Recent Form</h3><div class="form-row"><span class="form-w">W</span><small>Chelsea 1-0</small><span class="form-l">L</span><small>Leeds 1-2</small><span class="form-d">D</span><small>Bournemouth 2-2</small><span class="form-w">W</span><small>Aston Villa 3-1</small><span class="form-l">L</span><small>Newcastle 1-2</small></div></div>
-    <div class="recent-form"><h3>Recent Form</h3><div class="form-row"><span class="form-d">D</span><small>Brighton 2-2</small><span class="form-l">L</span><small>Sunderland 0-1</small><span class="form-l">L</span><small>Nott&#x27;m Forest 0-3</small><span class="form-l">L</span><small>Nottingham Forest 0-3</small><span class="form-d">D</span><small>Liverpool 1-1</small></div></div>
+    <div class="h2h"><h3>Head-to-Head</h3><table><thead><tr><th>Date</th><th>Match</th><th>W</th></tr></thead><tbody><tr><td>2025-09-19</td><td>Betis 3-1 Sociedad</td><td>H</td></tr></tbody></table></div>
+    <div class="recent-form"><h3>Recent Form</h3><div class="form-row"><span class="form-d">D</span><small>Alaves 3-3</small><span class="form-w">W</span><small>Levante 2-0</small><span class="form-l">L</span><small>Villarreal 1-3</small><span class="form-w">W</span><small>Osasuna 3-1</small><span class="form-l">L</span><small>Ath Madrid 2-3</small></div></div>
+    <div class="recent-form"><h3>Recent Form</h3><div class="form-row"><span class="form-d">D</span><small>Osasuna 1-1</small><span class="form-d">D</span><small>Espanol 0-0</small><span class="form-l">L</span><small>Ath Bilbao 1-2</small><span class="form-d">D</span><small>Celta 1-1</small><span class="form-l">L</span><small>Getafe 0-2</small></div></div>
   </div>
 </div>
 
-<div class="pick-card strong" id="pick-19" data-date="2026-04-26">
+<div class="pick-card keep" id="pick-19" data-date="2026-05-10">
   <div class="pick-summary" onclick="toggleDetails(19)">
     <div class="rank">#7</div>
     <div class="pick-main">
-      <div class="pick-title">Rennes Win <span class="badge strong">STRONG</span></div>
-      <div class="pick-meta">Rennes vs Nantes · <span>2026-04-26 17:15</span> · L1</div>
+      <div class="pick-title">Everton Win <span class="badge keep">KEEP</span></div>
+      <div class="pick-meta">Crystal Palace vs Everton · <span>2026-05-10 21:00</span> · EPL</div>
     </div>
     <div class="numbers">
-      <div><strong>@1.80</strong><span>Odds</span></div>
-      <div><strong class="good">+43.1%</strong><span>Edge</span></div>
+      <div><strong>@2.65</strong><span>Odds</span></div>
+      <div><strong class="good">+15.3%</strong><span>Edge</span></div>
       <div><strong>$200</strong><span>Stake</span></div>
     </div>
     <div class="result" id="result-19">pending</div>
@@ -806,29 +879,29 @@ button.loss { color:var(--bad); border-color:rgba(239,68,68,.35); }
     </div>
   </div>
   <div class="pick-details" id="details-19">
-    <div class="reasoning">Model prices this at 79.5% versus bookmaker implied 55.6%, creating +43.1% edge. 1X2 value should be manually checked against injuries, motivation, and likely rotation. Range D candidate by odds profile.<br><br><strong>Risk:</strong> Check team news and odds movement before kickoff.</div>
+    <div class="reasoning">Model prices this at 43.5% versus bookmaker implied 37.7%, creating +15.3% edge. 1X2 value should be manually checked against injuries, motivation, and likely rotation. Range C candidate by odds profile.<br><br><strong>Risk:</strong> Check team news and odds movement before kickoff.</div>
     <div class="metrics">
-      <span>Model <strong>79.5%</strong></span>
-      <span>Book <strong>55.6%</strong></span>
-      <span>Win <strong class="good">+$160</strong></span>
+      <span>Model <strong>43.5%</strong></span>
+      <span>Book <strong>37.7%</strong></span>
+      <span>Win <strong class="good">+$330</strong></span>
       <span>Lose <strong class="bad">-$200</strong></span>
     </div>
-    <div class="h2h"><h3>Head-to-Head</h3><table><thead><tr><th>Date</th><th>Match</th><th>W</th></tr></thead><tbody><tr><td>2025-09-20</td><td>Nantes 2-2 Rennes</td><td>D</td></tr><tr><td>2025-04-18</td><td>Rennes 2-1 Nantes</td><td>H</td></tr><tr><td>2024-12-08</td><td>Nantes 1-0 Rennes</td><td>H</td></tr><tr><td>2024-04-20</td><td>Nantes 0-3 Rennes</td><td>A</td></tr><tr><td>2023-10-01</td><td>Rennes 3-1 Nantes</td><td>H</td></tr></tbody></table></div>
-    <div class="recent-form"><h3>Recent Form</h3><div class="form-row"><span class="form-w">W</span><small>Strasbourg 3-0</small><span class="form-w">W</span><small>Angers 2-1</small><span class="form-w">W</span><small>Brest 4-3</small><span class="form-d">D</span><small>Metz 0-0</small><span class="form-l">L</span><small>Lille 1-2</small></div></div>
-    <div class="recent-form"><h3>Recent Form</h3><div class="form-row"><span class="form-d">D</span><small>Brest 1-1</small><span class="form-d">D</span><small>Auxerre 0-0</small><span class="form-d">D</span><small>Metz 0-0</small><span class="form-l">L</span><small>Strasbourg 2-3</small><span class="form-l">L</span><small>Angers 0-1</small></div></div>
+    <div class="h2h"><h3>Head-to-Head</h3><table><thead><tr><th>Date</th><th>Match</th><th>W</th></tr></thead><tbody><tr><td>2025-10-05</td><td>Everton 2-1 Crystal Palace</td><td>H</td></tr></tbody></table></div>
+    <div class="recent-form"><h3>Recent Form</h3><div class="form-row"><span class="form-d">D</span><small>West Ham 0-0</small><span class="form-w">W</span><small>Newcastle 2-1</small><span class="form-d">D</span><small>Leeds 0-0</small><span class="form-w">W</span><small>Tottenham 3-1</small><span class="form-l">L</span><small>Man United 1-2</small></div></div>
+    <div class="recent-form"><h3>Recent Form</h3><div class="form-row"><span class="form-l">L</span><small>Liverpool 1-2</small><span class="form-d">D</span><small>Brentford 2-2</small><span class="form-w">W</span><small>Chelsea 3-0</small><span class="form-l">L</span><small>Arsenal 0-2</small><span class="form-w">W</span><small>Burnley 2-0</small></div></div>
   </div>
 </div>
 
-<div class="pick-card strong" id="pick-20" data-date="2026-04-26">
+<div class="pick-card caution" id="pick-20" data-date="2026-05-10">
   <div class="pick-summary" onclick="toggleDetails(20)">
     <div class="rank">#8</div>
     <div class="pick-main">
-      <div class="pick-title">Inter Milan Win <span class="badge strong">STRONG</span></div>
-      <div class="pick-meta">Torino vs Inter Milan · <span>2026-04-26 18:00</span> · SerieA</div>
+      <div class="pick-title">Nott&#x27;m Forest Win <span class="badge caution">CAUTION</span></div>
+      <div class="pick-meta">Nott&#x27;m Forest vs Newcastle · <span>2026-05-10 21:00</span> · EPL</div>
     </div>
     <div class="numbers">
-      <div><strong>@1.80</strong><span>Odds</span></div>
-      <div><strong class="good">+59.5%</strong><span>Edge</span></div>
+      <div><strong>@2.50</strong><span>Odds</span></div>
+      <div><strong class="good">+8.0%</strong><span>Edge</span></div>
       <div><strong>$200</strong><span>Stake</span></div>
     </div>
     <div class="result" id="result-20">pending</div>
@@ -840,29 +913,29 @@ button.loss { color:var(--bad); border-color:rgba(239,68,68,.35); }
     </div>
   </div>
   <div class="pick-details" id="details-20">
-    <div class="reasoning">Model prices this at 88.6% versus bookmaker implied 55.6%, creating +59.5% edge. 1X2 value should be manually checked against injuries, motivation, and likely rotation. Range D candidate by odds profile.<br><br><strong>Risk:</strong> Check team news and odds movement before kickoff.</div>
+    <div class="reasoning">Model prices this at 43.2% versus bookmaker implied 40.0%, creating +8.0% edge. 1X2 value should be manually checked against injuries, motivation, and likely rotation. Range C candidate by odds profile.<br><br><strong>Risk:</strong> Check team news and odds movement before kickoff.</div>
     <div class="metrics">
-      <span>Model <strong>88.6%</strong></span>
-      <span>Book <strong>55.6%</strong></span>
-      <span>Win <strong class="good">+$160</strong></span>
+      <span>Model <strong>43.2%</strong></span>
+      <span>Book <strong>40.0%</strong></span>
+      <span>Win <strong class="good">+$300</strong></span>
       <span>Lose <strong class="bad">-$200</strong></span>
     </div>
-    <div class="h2h"><h3>Head-to-Head</h3><table><thead><tr><th>Date</th><th>Match</th><th>W</th></tr></thead><tbody><tr><td>2025-08-25</td><td>Inter Milan 5-0 Torino</td><td>H</td></tr><tr><td>2025-05-11</td><td>Torino 0-2 Inter Milan</td><td>A</td></tr><tr><td>2024-10-05</td><td>Inter Milan 3-2 Torino</td><td>H</td></tr><tr><td>2024-04-28</td><td>Inter Milan 2-0 Torino</td><td>H</td></tr><tr><td>2023-10-21</td><td>Torino 0-3 Inter Milan</td><td>A</td></tr></tbody></table></div>
-    <div class="recent-form"><h3>Recent Form</h3><div class="form-row"><span class="form-d">D</span><small>Cremonese 0-0</small><span class="form-w">W</span><small>Verona 2-1</small><span class="form-w">W</span><small>Pisa 1-0</small><span class="form-l">L</span><small>Milan 2-3</small><span class="form-w">W</span><small>Parma 4-1</small></div></div>
-    <div class="recent-form"><h3>Recent Form</h3><div class="form-row"><span class="form-w">W</span><small>Cagliari 3-0</small><span class="form-w">W</span><small>Como 4-3</small><span class="form-w">W</span><small>Roma 5-2</small><span class="form-d">D</span><small>Fiorentina 1-1</small><span class="form-d">D</span><small>Atalanta 1-1</small></div></div>
+    <div class="h2h"><h3>Head-to-Head</h3><table><thead><tr><th>Date</th><th>Match</th><th>W</th></tr></thead><tbody><tr><td>2025-10-05</td><td>Newcastle 2-0 Nott&#x27;m Forest</td><td>H</td></tr></tbody></table></div>
+    <div class="recent-form"><h3>Recent Form</h3><div class="form-row"><span class="form-w">W</span><small>Burnley 4-1</small><span class="form-d">D</span><small>Aston Villa 1-1</small><span class="form-w">W</span><small>Tottenham 3-0</small><span class="form-d">D</span><small>Fulham 0-0</small><span class="form-d">D</span><small>Man City 2-2</small></div></div>
+    <div class="recent-form"><h3>Recent Form</h3><div class="form-row"><span class="form-l">L</span><small>Bournemouth 1-2</small><span class="form-l">L</span><small>Crystal Palace 1-2</small><span class="form-l">L</span><small>Sunderland 1-2</small><span class="form-w">W</span><small>Chelsea 1-0</small><span class="form-w">W</span><small>Man United 2-1</small></div></div>
   </div>
 </div>
 
-<div class="pick-card strong" id="pick-21" data-date="2026-04-26">
+<div class="pick-card caution" id="pick-21" data-date="2026-05-10">
   <div class="pick-summary" onclick="toggleDetails(21)">
     <div class="rank">#9</div>
     <div class="pick-main">
-      <div class="pick-title">Osasuna Win <span class="badge strong">STRONG</span></div>
-      <div class="pick-meta">Osasuna vs Sevilla · <span>2026-04-26 18:30</span> · LaLiga</div>
+      <div class="pick-title">FC Koln Win <span class="badge caution">CAUTION</span></div>
+      <div class="pick-meta">FC Koln vs Heidenheim · <span>2026-05-10 23:30</span> · Bundesliga</div>
     </div>
     <div class="numbers">
-      <div><strong>@2.30</strong><span>Odds</span></div>
-      <div><strong class="good">+41.7%</strong><span>Edge</span></div>
+      <div><strong>@1.80</strong><span>Odds</span></div>
+      <div><strong class="good">+8.7%</strong><span>Edge</span></div>
       <div><strong>$200</strong><span>Stake</span></div>
     </div>
     <div class="result" id="result-21">pending</div>
@@ -874,29 +947,29 @@ button.loss { color:var(--bad); border-color:rgba(239,68,68,.35); }
     </div>
   </div>
   <div class="pick-details" id="details-21">
-    <div class="reasoning">Model prices this at 61.6% versus bookmaker implied 43.5%, creating +41.7% edge. 1X2 value should be manually checked against injuries, motivation, and likely rotation. Range D candidate by odds profile.<br><br><strong>Risk:</strong> Check team news and odds movement before kickoff.</div>
+    <div class="reasoning">Model prices this at 60.4% versus bookmaker implied 55.6%, creating +8.7% edge. 1X2 value should be manually checked against injuries, motivation, and likely rotation. Range D candidate by odds profile.<br><br><strong>Risk:</strong> Check team news and odds movement before kickoff.</div>
     <div class="metrics">
-      <span>Model <strong>61.6%</strong></span>
-      <span>Book <strong>43.5%</strong></span>
-      <span>Win <strong class="good">+$260</strong></span>
+      <span>Model <strong>60.4%</strong></span>
+      <span>Book <strong>55.6%</strong></span>
+      <span>Win <strong class="good">+$160</strong></span>
       <span>Lose <strong class="bad">-$200</strong></span>
     </div>
-    <div class="h2h"><h3>Head-to-Head</h3><table><thead><tr><th>Date</th><th>Match</th><th>W</th></tr></thead><tbody><tr><td>2025-11-08</td><td>Sevilla 1-0 Osasuna</td><td>H</td></tr><tr><td>2025-04-24</td><td>Osasuna 1-0 Sevilla</td><td>H</td></tr><tr><td>2024-12-02</td><td>Sevilla 1-1 Osasuna</td><td>D</td></tr><tr><td>2024-01-28</td><td>Sevilla 1-1 Osasuna</td><td>D</td></tr><tr><td>2023-09-23</td><td>Osasuna 0-0 Sevilla</td><td>D</td></tr></tbody></table></div>
-    <div class="recent-form"><h3>Recent Form</h3><div class="form-row"><span class="form-d">D</span><small>Betis 1-1</small><span class="form-d">D</span><small>Alaves 2-2</small><span class="form-w">W</span><small>Girona 1-0</small><span class="form-l">L</span><small>Sociedad 1-3</small><span class="form-d">D</span><small>Mallorca 2-2</small></div></div>
-    <div class="recent-form"><h3>Recent Form</h3><div class="form-row"><span class="form-w">W</span><small>Ath Madrid 2-1</small><span class="form-w">W</span><small>Atletico Madrid 2-1</small><span class="form-l">L</span><small>Oviedo 0-1</small><span class="form-l">L</span><small>Valencia 0-2</small><span class="form-l">L</span><small>Barcelona 2-5</small></div></div>
+    <div class="h2h"><h3>Head-to-Head</h3><table><thead><tr><th>Date</th><th>Match</th><th>W</th></tr></thead><tbody><tr><td>2026-01-10</td><td>Heidenheim 2-2 FC Koln</td><td>D</td></tr></tbody></table></div>
+    <div class="recent-form"><h3>Recent Form</h3><div class="form-row"><span class="form-d">D</span><small>St Pauli 1-1</small><span class="form-w">W</span><small>Werder Bremen 3-1</small><span class="form-d">D</span><small>Ein Frankfurt 2-2</small><span class="form-d">D</span><small>M&#x27;gladbach 3-3</small><span class="form-d">D</span><small>Hamburg 1-1</small></div></div>
+    <div class="recent-form"><h3>Recent Form</h3><div class="form-row"><span class="form-l">L</span><small>Freiburg 1-2</small><span class="form-w">W</span><small>Union Berlin 3-1</small><span class="form-d">D</span><small>M&#x27;gladbach 2-2</small><span class="form-d">D</span><small>Leverkusen 3-3</small><span class="form-l">L</span><small>Ein Frankfurt 0-1</small></div></div>
   </div>
 </div>
-
-<div class="pick-card strong" id="pick-22" data-date="2026-04-26">
+<div class="day-header" data-date="2026-05-11"><span>Mon May 11</span><small>3 picks</small></div>
+<div class="pick-card keep" id="pick-22" data-date="2026-05-11">
   <div class="pick-summary" onclick="toggleDetails(22)">
     <div class="rank">#10</div>
     <div class="pick-main">
-      <div class="pick-title">Marseille Win <span class="badge strong">STRONG</span></div>
-      <div class="pick-meta">Marseille vs Nice · <span>2026-04-26 20:45</span> · L1</div>
+      <div class="pick-title">Roma Win <span class="badge keep">KEEP</span></div>
+      <div class="pick-meta">Parma vs Roma · <span>2026-05-11 00:00</span> · SerieA</div>
     </div>
     <div class="numbers">
-      <div><strong>@2.10</strong><span>Odds</span></div>
-      <div><strong class="good">+39.9%</strong><span>Edge</span></div>
+      <div><strong>@1.73</strong><span>Odds</span></div>
+      <div><strong class="good">+15.0%</strong><span>Edge</span></div>
       <div><strong>$200</strong><span>Stake</span></div>
     </div>
     <div class="result" id="result-22">pending</div>
@@ -908,29 +981,29 @@ button.loss { color:var(--bad); border-color:rgba(239,68,68,.35); }
     </div>
   </div>
   <div class="pick-details" id="details-22">
-    <div class="reasoning">Model prices this at 66.6% versus bookmaker implied 47.6%, creating +39.9% edge. 1X2 value should be manually checked against injuries, motivation, and likely rotation. Range D candidate by odds profile.<br><br><strong>Risk:</strong> Check team news and odds movement before kickoff.</div>
+    <div class="reasoning">Model prices this at 66.5% versus bookmaker implied 57.8%, creating +15.0% edge. 1X2 value should be manually checked against injuries, motivation, and likely rotation. Range D candidate by odds profile.<br><br><strong>Risk:</strong> Check team news and odds movement before kickoff.</div>
     <div class="metrics">
-      <span>Model <strong>66.6%</strong></span>
-      <span>Book <strong>47.6%</strong></span>
-      <span>Win <strong class="good">+$220</strong></span>
+      <span>Model <strong>66.5%</strong></span>
+      <span>Book <strong>57.8%</strong></span>
+      <span>Win <strong class="good">+$146</strong></span>
       <span>Lose <strong class="bad">-$200</strong></span>
     </div>
-    <div class="h2h"><h3>Head-to-Head</h3><table><thead><tr><th>Date</th><th>Match</th><th>W</th></tr></thead><tbody><tr><td>2025-11-21</td><td>Nice 1-5 Marseille</td><td>A</td></tr><tr><td>2025-01-26</td><td>Nice 2-0 Marseille</td><td>H</td></tr><tr><td>2024-09-14</td><td>Marseille 2-0 Nice</td><td>H</td></tr><tr><td>2024-04-24</td><td>Marseille 2-2 Nice</td><td>D</td></tr><tr><td>2023-10-21</td><td>Nice 1-0 Marseille</td><td>H</td></tr></tbody></table></div>
-    <div class="recent-form"><h3>Recent Form</h3><div class="form-row"><span class="form-l">L</span><small>Lorient 0-2</small><span class="form-w">W</span><small>Metz 3-1</small><span class="form-l">L</span><small>Monaco 1-2</small><span class="form-l">L</span><small>Lille 1-2</small><span class="form-w">W</span><small>Auxerre 1-0</small></div></div>
-    <div class="recent-form"><h3>Recent Form</h3><div class="form-row"><span class="form-d">D</span><small>Lille 0-0</small><span class="form-d">D</span><small>Le Havre 1-1</small><span class="form-l">L</span><small>Strasbourg 1-3</small><span class="form-l">L</span><small>Paris SG 0-4</small><span class="form-l">L</span><small>PSG 0-4</small></div></div>
+    <div class="h2h"><h3>Head-to-Head</h3><table><thead><tr><th>Date</th><th>Match</th><th>W</th></tr></thead><tbody><tr><td>2025-10-29</td><td>Roma 2-1 Parma</td><td>H</td></tr></tbody></table></div>
+    <div class="recent-form"><h3>Recent Form</h3><div class="form-row"><span class="form-w">W</span><small>Udinese 1-0</small><span class="form-d">D</span><small>Napoli 1-1</small><span class="form-d">D</span><small>Lazio 1-1</small><span class="form-l">L</span><small>Cremonese 0-2</small><span class="form-l">L</span><small>Torino 1-4</small></div></div>
+    <div class="recent-form"><h3>Recent Form</h3><div class="form-row"><span class="form-d">D</span><small>Atalanta 1-1</small><span class="form-w">W</span><small>Pisa 3-0</small><span class="form-l">L</span><small>Inter 2-5</small><span class="form-w">W</span><small>Lecce 1-0</small><span class="form-l">L</span><small>Como 1-2</small></div></div>
   </div>
 </div>
-<div class="day-header" data-date="2026-04-28"><span>Tue Apr 28</span><small>1 picks</small></div>
-<div class="pick-card strong" id="pick-23" data-date="2026-04-28">
+
+<div class="pick-card keep" id="pick-23" data-date="2026-05-11">
   <div class="pick-summary" onclick="toggleDetails(23)">
     <div class="rank">#11</div>
     <div class="pick-main">
-      <div class="pick-title">Inter Milan Win <span class="badge strong">STRONG</span></div>
-      <div class="pick-meta">Inter Milan vs Juventus · <span>2026-04-28 20:45</span> · SerieA</div>
+      <div class="pick-title">Lorient Win <span class="badge keep">KEEP</span></div>
+      <div class="pick-meta">Metz vs Lorient · <span>2026-05-11 03:00</span> · L1</div>
     </div>
     <div class="numbers">
-      <div><strong>@2.20</strong><span>Odds</span></div>
-      <div><strong class="good">+45.0%</strong><span>Edge</span></div>
+      <div><strong>@2.19</strong><span>Odds</span></div>
+      <div><strong class="good">+22.6%</strong><span>Edge</span></div>
       <div><strong>$200</strong><span>Stake</span></div>
     </div>
     <div class="result" id="result-23">pending</div>
@@ -942,29 +1015,29 @@ button.loss { color:var(--bad); border-color:rgba(239,68,68,.35); }
     </div>
   </div>
   <div class="pick-details" id="details-23">
-    <div class="reasoning">Model prices this at 65.9% versus bookmaker implied 45.5%, creating +45.0% edge. 1X2 value should be manually checked against injuries, motivation, and likely rotation. Range D candidate by odds profile.<br><br><strong>Risk:</strong> Check team news and odds movement before kickoff.</div>
+    <div class="reasoning">Model prices this at 56.0% versus bookmaker implied 45.7%, creating +22.6% edge. 1X2 value should be manually checked against injuries, motivation, and likely rotation. Range D candidate by odds profile.<br><br><strong>Risk:</strong> Check team news and odds movement before kickoff.</div>
     <div class="metrics">
-      <span>Model <strong>65.9%</strong></span>
-      <span>Book <strong>45.5%</strong></span>
-      <span>Win <strong class="good">+$240</strong></span>
+      <span>Model <strong>56.0%</strong></span>
+      <span>Book <strong>45.7%</strong></span>
+      <span>Win <strong class="good">+$238</strong></span>
       <span>Lose <strong class="bad">-$200</strong></span>
     </div>
-    <div class="h2h"><h3>Head-to-Head</h3><table><thead><tr><th>Date</th><th>Match</th><th>W</th></tr></thead><tbody><tr><td>2026-02-14</td><td>Inter Milan 3-2 Juventus</td><td>H</td></tr><tr><td>2025-11-12</td><td>Juventus 0-2 Inter Milan</td><td>A</td></tr><tr><td>2025-09-13</td><td>Juventus 4-3 Inter Milan</td><td>H</td></tr><tr><td>2025-08-18</td><td>Inter Milan 1-1 Juventus</td><td>D</td></tr><tr><td>2025-02-16</td><td>Juventus 1-0 Inter Milan</td><td>H</td></tr></tbody></table></div>
-    <div class="recent-form"><h3>Recent Form</h3><div class="form-row"><span class="form-w">W</span><small>Cagliari 3-0</small><span class="form-w">W</span><small>Como 4-3</small><span class="form-w">W</span><small>Roma 5-2</small><span class="form-d">D</span><small>Fiorentina 1-1</small><span class="form-d">D</span><small>Atalanta 1-1</small></div></div>
-    <div class="recent-form"><h3>Recent Form</h3><div class="form-row"><span class="form-w">W</span><small>Bologna 2-0</small><span class="form-w">W</span><small>Atalanta 1-0</small><span class="form-w">W</span><small>Genoa 2-0</small><span class="form-d">D</span><small>Sassuolo 1-1</small><span class="form-w">W</span><small>Udinese 1-0</small></div></div>
+    <div class="h2h"><h3>Head-to-Head</h3><table><thead><tr><th>Date</th><th>Match</th><th>W</th></tr></thead><tbody><tr><td>2026-01-04</td><td>Lorient 1-1 Metz</td><td>D</td></tr></tbody></table></div>
+    <div class="recent-form"><h3>Recent Form</h3><div class="form-row"><span class="form-l">L</span><small>Paris FC 1-3</small><span class="form-l">L</span><small>Marseille 1-3</small><span class="form-d">D</span><small>Nantes 0-0</small><span class="form-d">D</span><small>Rennes 0-0</small><span class="form-l">L</span><small>Toulouse 3-4</small></div></div>
+    <div class="recent-form"><h3>Recent Form</h3><div class="form-row"><span class="form-w">W</span><small>Marseille 2-0</small><span class="form-l">L</span><small>Lyon 0-2</small><span class="form-d">D</span><small>Paris FC 1-1</small><span class="form-l">L</span><small>Toulouse 0-1</small><span class="form-w">W</span><small>Lens 2-1</small></div></div>
   </div>
 </div>
-<div class="day-header" data-date="2026-04-29"><span>Wed Apr 29</span><small>1 picks</small></div>
-<div class="pick-card strong" id="pick-24" data-date="2026-04-29">
+
+<div class="pick-card caution" id="pick-24" data-date="2026-05-11">
   <div class="pick-summary" onclick="toggleDetails(24)">
     <div class="rank">#12</div>
     <div class="pick-main">
-      <div class="pick-title">Real Madrid Win <span class="badge strong">STRONG</span></div>
-      <div class="pick-meta">Real Madrid vs Barcelona · <span>2026-04-29 21:00</span> · LaLiga</div>
+      <div class="pick-title">Strasbourg Win <span class="badge caution">CAUTION</span></div>
+      <div class="pick-meta">Angers vs Strasbourg · <span>2026-05-11 03:00</span> · L1</div>
     </div>
     <div class="numbers">
-      <div><strong>@2.40</strong><span>Odds</span></div>
-      <div><strong class="good">+26.2%</strong><span>Edge</span></div>
+      <div><strong>@2.19</strong><span>Odds</span></div>
+      <div><strong class="good">+6.7%</strong><span>Edge</span></div>
       <div><strong>$200</strong><span>Stake</span></div>
     </div>
     <div class="result" id="result-24">pending</div>
@@ -976,16 +1049,16 @@ button.loss { color:var(--bad); border-color:rgba(239,68,68,.35); }
     </div>
   </div>
   <div class="pick-details" id="details-24">
-    <div class="reasoning">Model prices this at 52.6% versus bookmaker implied 41.7%, creating +26.2% edge. 1X2 value should be manually checked against injuries, motivation, and likely rotation. Range D candidate by odds profile.<br><br><strong>Risk:</strong> Check team news and odds movement before kickoff.</div>
+    <div class="reasoning">Model prices this at 48.7% versus bookmaker implied 45.7%, creating +6.7% edge. 1X2 value should be manually checked against injuries, motivation, and likely rotation. Range D candidate by odds profile.<br><br><strong>Risk:</strong> Check team news and odds movement before kickoff.</div>
     <div class="metrics">
-      <span>Model <strong>52.6%</strong></span>
-      <span>Book <strong>41.7%</strong></span>
-      <span>Win <strong class="good">+$280</strong></span>
+      <span>Model <strong>48.7%</strong></span>
+      <span>Book <strong>45.7%</strong></span>
+      <span>Win <strong class="good">+$238</strong></span>
       <span>Lose <strong class="bad">-$200</strong></span>
     </div>
-    <div class="h2h"><h3>Head-to-Head</h3><table><thead><tr><th>Date</th><th>Match</th><th>W</th></tr></thead><tbody><tr><td>2025-11-15</td><td>Barcelona 1-1 Real Madrid</td><td>D</td></tr><tr><td>2025-10-26</td><td>Real Madrid 2-1 Barcelona</td><td>H</td></tr><tr><td>2025-08-20</td><td>Real Madrid 2-1 Barcelona</td><td>H</td></tr><tr><td>2025-05-11</td><td>Barcelona 4-3 Real Madrid</td><td>H</td></tr><tr><td>2024-10-26</td><td>Real Madrid 0-4 Barcelona</td><td>A</td></tr></tbody></table></div>
-    <div class="recent-form"><h3>Recent Form</h3><div class="form-row"><span class="form-d">D</span><small>Girona 1-1</small><span class="form-l">L</span><small>Mallorca 1-2</small><span class="form-w">W</span><small>Ath Madrid 3-2</small><span class="form-w">W</span><small>Atletico Madrid 3-2</small><span class="form-w">W</span><small>Elche 4-1</small></div></div>
-    <div class="recent-form"><h3>Recent Form</h3><div class="form-row"><span class="form-w">W</span><small>Espanol 4-1</small><span class="form-w">W</span><small>Ath Madrid 2-1</small><span class="form-w">W</span><small>Atletico Madrid 2-1</small><span class="form-w">W</span><small>Vallecano 1-0</small><span class="form-w">W</span><small>Sevilla 5-2</small></div></div>
+    <div class="h2h"><h3>Head-to-Head</h3><table><thead><tr><th>Date</th><th>Match</th><th>W</th></tr></thead><tbody><tr><td>2025-10-05</td><td>Strasbourg 5-0 Angers</td><td>H</td></tr></tbody></table></div>
+    <div class="recent-form"><h3>Recent Form</h3><div class="form-row"><span class="form-d">D</span><small>Le Havre 1-1</small><span class="form-l">L</span><small>Rennes 1-2</small><span class="form-d">D</span><small>Lyon 0-0</small><span class="form-l">L</span><small>Lens 1-5</small><span class="form-l">L</span><small>Nice 0-2</small></div></div>
+    <div class="recent-form"><h3>Recent Form</h3><div class="form-row"><span class="form-l">L</span><small>Rennes 0-3</small><span class="form-w">W</span><small>Nice 3-1</small><span class="form-w">W</span><small>Nantes 3-2</small><span class="form-d">D</span><small>Paris FC 0-0</small><span class="form-d">D</span><small>Auxerre 0-0</small></div></div>
   </div>
 </div>
 
@@ -995,9 +1068,21 @@ button.loss { color:var(--bad); border-color:rgba(239,68,68,.35); }
 </main>
 <script>
 const KEY = 'rollo-range-results-v1';
-const PICKS = {"C": [{"id": 1, "odds": 3.3, "stake": 200.0, "status": "pending"}, {"id": 2, "odds": 4.6, "stake": 200.0, "status": "pending"}, {"id": 3, "odds": 3.25, "stake": 200.0, "status": "pending"}, {"id": 4, "odds": 3.2, "stake": 200.0, "status": "pending"}, {"id": 5, "odds": 2.8, "stake": 200.0, "status": "pending"}, {"id": 6, "odds": 2.5, "stake": 200.0, "status": "pending"}, {"id": 7, "odds": 3.35, "stake": 200.0, "status": "pending"}, {"id": 8, "odds": 2.95, "stake": 200.0, "status": "pending"}, {"id": 9, "odds": 3.25, "stake": 200.0, "status": "pending"}, {"id": 10, "odds": 3.1, "stake": 200.0, "status": "pending"}, {"id": 11, "odds": 4.9, "stake": 200.0, "status": "pending"}, {"id": 12, "odds": 5.0, "stake": 200.0, "status": "pending"}], "D": [{"id": 13, "odds": 2.45, "stake": 200.0, "status": "pending"}, {"id": 14, "odds": 2.3, "stake": 200.0, "status": "pending"}, {"id": 15, "odds": 1.85, "stake": 200.0, "status": "pending"}, {"id": 16, "odds": 1.82, "stake": 200.0, "status": "pending"}, {"id": 17, "odds": 1.95, "stake": 200.0, "status": "pending"}, {"id": 18, "odds": 2.4, "stake": 200.0, "status": "pending"}, {"id": 19, "odds": 1.8, "stake": 200.0, "status": "pending"}, {"id": 20, "odds": 1.8, "stake": 200.0, "status": "pending"}, {"id": 21, "odds": 2.3, "stake": 200.0, "status": "pending"}, {"id": 22, "odds": 2.1, "stake": 200.0, "status": "pending"}, {"id": 23, "odds": 2.2, "stake": 200.0, "status": "pending"}, {"id": 24, "odds": 2.4, "stake": 200.0, "status": "pending"}]};
+const THEME_KEY = 'rollo-dashboard-theme';
+const PICKS = {"C": [{"id": 1, "odds": 4.9, "stake": 200.0, "status": "pending"}, {"id": 2, "odds": 4.7, "stake": 200.0, "status": "pending"}, {"id": 3, "odds": 2.85, "stake": 200.0, "status": "pending"}, {"id": 4, "odds": 3.15, "stake": 200.0, "status": "pending"}, {"id": 5, "odds": 2.8, "stake": 200.0, "status": "pending"}, {"id": 6, "odds": 2.85, "stake": 200.0, "status": "pending"}, {"id": 7, "odds": 3.8, "stake": 200.0, "status": "pending"}, {"id": 8, "odds": 3.75, "stake": 200.0, "status": "pending"}, {"id": 9, "odds": 4.8, "stake": 200.0, "status": "pending"}, {"id": 10, "odds": 3.05, "stake": 200.0, "status": "pending"}, {"id": 11, "odds": 4.3, "stake": 200.0, "status": "pending"}, {"id": 12, "odds": 2.85, "stake": 200.0, "status": "pending"}], "D": [{"id": 13, "odds": 2.48, "stake": 200.0, "status": "pending"}, {"id": 14, "odds": 1.94, "stake": 200.0, "status": "pending"}, {"id": 15, "odds": 2.28, "stake": 200.0, "status": "pending"}, {"id": 16, "odds": 2.17, "stake": 200.0, "status": "pending"}, {"id": 17, "odds": 1.81, "stake": 200.0, "status": "pending"}, {"id": 18, "odds": 2.24, "stake": 200.0, "status": "pending"}, {"id": 19, "odds": 2.65, "stake": 200.0, "status": "pending"}, {"id": 20, "odds": 2.5, "stake": 200.0, "status": "pending"}, {"id": 21, "odds": 1.8, "stake": 200.0, "status": "pending"}, {"id": 22, "odds": 1.73, "stake": 200.0, "status": "pending"}, {"id": 23, "odds": 2.19, "stake": 200.0, "status": "pending"}, {"id": 24, "odds": 2.19, "stake": 200.0, "status": "pending"}]};
 const BANK = {"C": 10000.0, "D": 10000.0};
 let state = JSON.parse(localStorage.getItem(KEY) || '{}');
+
+function applyTheme(theme) {
+  document.documentElement.dataset.theme = theme;
+  document.getElementById('theme-label').textContent = theme === 'dark' ? 'Dark' : 'Light';
+}
+
+function toggleTheme() {
+  const next = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+  localStorage.setItem(THEME_KEY, next);
+  applyTheme(next);
+}
 
 function switchRange(code) {
   document.querySelectorAll('.tab').forEach((tab, index) => {
@@ -1087,6 +1172,7 @@ function updateRange(range) {
   bankEl.className = pnl >= 0 ? 'good' : 'bad';
 }
 
+applyTheme(localStorage.getItem(THEME_KEY) || 'light');
 ['C', 'D'].forEach(updateRange);
 </script>
 </body>

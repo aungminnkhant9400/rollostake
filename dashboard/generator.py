@@ -403,119 +403,192 @@ class DashboardGenerator:
 <title>Rollo Stake Model - Range C/D</title>
 <style>
 :root {{
-  --bg:#0a0a0a; --panel:#141414; --panel2:#1f1f1f; --border:#2d2d2d;
-  --text:#e5e5e5; --muted:#8a8a8a; --dim:#585858; --accent:#e07a3a;
-  --good:#22c55e; --bad:#ef4444; --warn:#fbbf24; --blue:#60a5fa;
+  --background:#f5efe4;
+  --panel:#fffaf2;
+  --panel-strong:#f1e4d0;
+  --ink:#20201c;
+  --muted:#68624e;
+  --accent:#a44b1a;
+  --accent-soft:#d77b46;
+  --line:#20201c1a;
+  --shadow:#0000000d;
+  --good:#15803d;
+  --bad:#b91c1c;
+  --warn:#b45309;
+  --blue:#2563eb;
+}}
+[data-theme=dark] {{
+  --background:#1a1a18;
+  --panel:#2a2a26;
+  --panel-strong:#3a3a34;
+  --ink:#f5efe4;
+  --muted:#a8a090;
+  --accent:#d77b46;
+  --accent-soft:#e89a6a;
+  --line:#f5efe41a;
+  --shadow:#0000004d;
+  --good:#86efac;
+  --bad:#fca5a5;
+  --warn:#fdba74;
+  --blue:#93c5fd;
 }}
 * {{ box-sizing:border-box; margin:0; padding:0; }}
-body {{ background:var(--bg); color:var(--text); font-family:Inter,Segoe UI,Arial,sans-serif; font-size:13px; }}
-header {{ position:sticky; top:0; z-index:10; background:rgba(10,10,10,.96); border-bottom:1px solid var(--border); padding:0 24px; height:58px; display:flex; align-items:center; justify-content:space-between; }}
-.logo {{ font-weight:900; letter-spacing:.02em; }}
-.logo em {{ color:var(--accent); font-style:normal; }}
-.header-meta {{ color:var(--muted); font-size:11px; }}
-.shell {{ max-width:1120px; margin:0 auto; padding:18px 20px 64px; }}
-.tabs {{ display:flex; gap:6px; margin-bottom:14px; }}
-.tab {{ background:var(--panel); border:1px solid var(--border); color:var(--muted); border-radius:8px; padding:10px 24px; font-size:11px; font-weight:800; letter-spacing:.08em; cursor:pointer; }}
-.tab.on {{ color:var(--accent); border-color:rgba(224,122,58,.45); background:rgba(224,122,58,.08); }}
-.intro {{ background:var(--panel); border:1px solid var(--border); border-radius:8px; padding:15px 18px; line-height:1.65; margin-bottom:14px; color:#cfcfcf; }}
-.intro strong {{ color:#fff; }}
-.quality-summary {{ display:grid; grid-template-columns:repeat(3,minmax(140px,1fr)); gap:8px; margin:0 0 14px; }}
-.quality-summary div {{ background:var(--panel); border:1px solid var(--border); border-radius:8px; padding:12px 14px; }}
-.quality-summary span {{ display:block; color:var(--dim); font-size:9px; font-weight:900; text-transform:uppercase; letter-spacing:.08em; margin-bottom:4px; }}
-.quality-summary strong {{ display:block; color:#fff; font-size:16px; }}
-.quality-summary small {{ color:var(--muted); font-size:11px; }}
+body {{ background:var(--background); color:var(--ink); min-height:100vh; font-family:Georgia,"Times New Roman",serif; font-size:14px; line-height:1.6; transition:background .25s,color .25s; }}
+.shell {{ max-width:1200px; margin:0 auto; padding:24px 16px 64px; }}
+.site-header {{ display:flex; justify-content:space-between; align-items:flex-start; gap:16px; margin:0 auto 28px; max-width:1200px; padding:24px 16px 0; }}
+.brand h1 {{ color:var(--ink); font-size:2rem; line-height:1.1; font-weight:700; margin-bottom:8px; }}
+.brand p {{ color:var(--muted); }}
+.theme-toggle {{ border:1px solid var(--line); background:var(--panel); color:var(--ink); cursor:pointer; border-radius:9999px; align-items:center; gap:8px; padding:8px 16px; font-family:inherit; font-size:.875rem; transition:all .2s; display:flex; }}
+.theme-toggle:hover {{ background:var(--panel-strong); border-color:var(--accent); }}
+.theme-icon {{ width:16px; height:16px; display:inline-block; text-align:center; }}
+.tabs {{ border-bottom:1px solid var(--line); display:flex; gap:4px; margin-bottom:24px; }}
+.tab {{ background:transparent; border:0; color:var(--muted); border-radius:8px 8px 0 0; padding:12px 16px; font-family:inherit; font-size:1rem; cursor:pointer; transition:all .2s; }}
+.tab:hover {{ color:var(--ink); background:var(--panel); }}
+.tab.on {{ background:var(--panel); color:var(--accent); border-bottom:2px solid var(--accent); font-weight:600; }}
+.intro {{ background:var(--panel); border:1px solid var(--line); border-radius:16px; box-shadow:0 1px 3px var(--shadow); padding:20px; line-height:1.65; margin-bottom:16px; color:var(--muted); }}
+.intro strong {{ color:var(--ink); }}
+.quality-summary {{ display:grid; grid-template-columns:repeat(3,minmax(140px,1fr)); gap:16px; margin:0 0 24px; }}
+.quality-summary div {{ background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:16px; box-shadow:0 1px 3px var(--shadow); }}
+.quality-summary span {{ display:block; color:var(--muted); font-size:.75rem; font-weight:700; text-transform:uppercase; letter-spacing:.05em; margin-bottom:4px; }}
+.quality-summary strong {{ display:block; color:var(--ink); font-size:1.5rem; line-height:1.2; }}
+.quality-summary small {{ color:var(--muted); font-size:.875rem; }}
 .range {{ display:none; }}
 .range.on {{ display:block; }}
-.pnl-bar {{ display:grid; grid-template-columns:repeat(10,minmax(82px,1fr)); border:1px solid var(--border); border-radius:8px; overflow:hidden; margin-bottom:10px; }}
-.pnl-bar div {{ background:var(--panel); border-right:1px solid var(--border); padding:11px 10px; text-align:center; min-height:58px; }}
-.pnl-bar div:last-child {{ border-right:0; }}
-.pnl-bar span {{ display:block; color:var(--dim); font-size:9px; font-weight:800; text-transform:uppercase; letter-spacing:.08em; margin-bottom:5px; }}
-.pnl-bar strong {{ font-size:15px; color:#fff; }}
+.pnl-bar {{ display:grid; grid-template-columns:repeat(5,minmax(110px,1fr)); gap:16px; margin-bottom:16px; }}
+.pnl-bar div {{ background:var(--panel); border:1px solid var(--line); border-radius:12px; box-shadow:0 1px 3px var(--shadow); padding:16px; min-height:86px; }}
+.pnl-bar span {{ display:block; color:var(--muted); font-size:.75rem; font-weight:700; text-transform:uppercase; letter-spacing:.05em; margin-bottom:4px; }}
+.pnl-bar strong {{ font-size:1.5rem; color:var(--ink); line-height:1.2; }}
 .good {{ color:var(--good)!important; }}
 .bad {{ color:var(--bad)!important; }}
 .warn {{ color:var(--warn)!important; }}
-.range-note {{ color:var(--muted); margin:10px 0 14px; font-size:12px; }}
-.filter-bar {{ display:flex; gap:12px; align-items:center; background:var(--panel); border:1px solid var(--border); border-radius:8px; padding:10px 14px; margin-bottom:12px; }}
-.filter-bar label {{ color:var(--dim); font-size:10px; font-weight:900; text-transform:uppercase; letter-spacing:.08em; }}
-.filter-select {{ background:var(--panel2); border:1px solid var(--border); color:var(--text); border-radius:6px; padding:7px 12px; min-width:160px; }}
-.filter-count {{ margin-left:auto; color:var(--muted); font-size:11px; }}
-.filter-count span {{ color:var(--accent); font-weight:900; }}
-.day-header {{ display:flex; justify-content:space-between; align-items:center; border-left:3px solid var(--accent); background:linear-gradient(180deg,rgba(224,122,58,.07),transparent); padding:10px 14px; margin:18px 0 7px; border-radius:4px; }}
-.day-header small {{ color:var(--dim); text-transform:uppercase; font-weight:800; letter-spacing:.08em; }}
-.pick-card {{ background:var(--panel); border:1px solid var(--border); border-radius:8px; margin-bottom:8px; overflow:hidden; }}
-.pick-card.strong {{ border-color:rgba(34,197,94,.45); box-shadow:0 0 16px rgba(34,197,94,.06); }}
-.pick-card.win {{ border-color:rgba(34,197,94,.55); background:rgba(34,197,94,.03); }}
-.pick-card.loss {{ border-color:rgba(239,68,68,.55); background:rgba(239,68,68,.03); }}
-.pick-card.push {{ border-color:rgba(148,163,184,.45); }}
-.pick-summary {{ display:flex; gap:14px; align-items:center; padding:13px 16px; cursor:pointer; }}
-.pick-summary:hover {{ background:var(--panel2); }}
-.rank {{ color:var(--accent); font-size:22px; font-weight:900; min-width:40px; }}
+.range-note {{ color:var(--muted); margin:8px 0 16px; font-size:.875rem; }}
+.filter-bar {{ display:flex; gap:12px; align-items:center; background:var(--panel); border:1px solid var(--line); border-radius:12px; box-shadow:0 1px 3px var(--shadow); padding:12px 16px; margin-bottom:16px; }}
+.filter-bar label {{ color:var(--muted); font-size:.75rem; font-weight:700; text-transform:uppercase; letter-spacing:.05em; }}
+.filter-select {{ background:var(--panel-strong); border:1px solid var(--line); color:var(--ink); border-radius:9999px; padding:8px 14px; min-width:160px; font-family:inherit; }}
+.filter-select:focus {{ border-color:var(--accent); outline:none; box-shadow:0 0 0 3px #a44b1a1a; }}
+.filter-count {{ margin-left:auto; color:var(--muted); font-size:.875rem; }}
+.filter-count span {{ color:var(--accent); font-weight:700; }}
+.day-header {{ display:flex; justify-content:space-between; align-items:center; color:var(--ink); padding:14px 4px 8px; margin-top:18px; border-bottom:1px solid var(--line); font-size:1.05rem; font-weight:600; }}
+.day-header small {{ color:var(--muted); font-size:.75rem; text-transform:uppercase; font-weight:700; letter-spacing:.05em; }}
+.pick-card {{ background:var(--panel); border:1px solid var(--line); border-radius:16px; box-shadow:0 1px 3px var(--shadow); margin:16px 0; overflow:hidden; transition:box-shadow .2s,border-color .2s,background .2s; }}
+.pick-card:hover {{ box-shadow:0 4px 12px var(--shadow); }}
+.pick-card.strong {{ border-color:#22c55e33; }}
+.pick-card.win {{ border-color:#22c55e55; background:#22c55e0f; }}
+.pick-card.loss {{ border-color:#ef444455; background:#ef44440f; }}
+.pick-card.push {{ border-color:#9ca3af55; }}
+.pick-summary {{ display:flex; gap:16px; align-items:center; padding:18px 20px; cursor:pointer; }}
+.pick-summary:hover {{ background:var(--panel-strong); }}
+.rank {{ color:var(--accent); font-size:1.6rem; font-weight:700; min-width:42px; }}
 .pick-main {{ flex:1; min-width:190px; }}
-.pick-title {{ color:#fff; font-weight:800; font-size:15px; }}
-.pick-meta {{ color:var(--muted); font-size:11px; margin-top:3px; }}
-.badge {{ display:inline-block; margin-left:6px; border-radius:4px; padding:2px 6px; font-size:9px; font-weight:900; letter-spacing:.05em; }}
-.badge.strong {{ color:var(--good); background:rgba(34,197,94,.12); }}
-.badge.keep {{ color:var(--blue); background:rgba(96,165,250,.12); }}
-.badge.caution {{ color:var(--warn); background:rgba(251,191,36,.12); }}
-.numbers {{ display:flex; gap:14px; text-align:center; }}
-.numbers div {{ min-width:54px; }}
-.numbers strong {{ display:block; font-size:14px; color:#fff; }}
-.numbers span {{ display:block; color:var(--dim); font-size:8px; text-transform:uppercase; letter-spacing:.08em; margin-top:2px; }}
-.result {{ min-width:78px; text-align:center; color:var(--muted); font-size:11px; font-weight:800; }}
-.actions {{ display:flex; gap:4px; flex-wrap:wrap; justify-content:flex-end; }}
-button {{ background:var(--panel2); border:1px solid var(--border); color:var(--muted); border-radius:6px; padding:6px 10px; font-size:9px; font-weight:900; cursor:pointer; }}
-button.win {{ color:var(--good); border-color:rgba(34,197,94,.35); }}
-button.loss {{ color:var(--bad); border-color:rgba(239,68,68,.35); }}
-.pick-details {{ display:none; border-top:1px solid var(--border); padding:15px 20px 16px 70px; }}
+.pick-title {{ color:var(--ink); font-weight:600; font-size:1.125rem; }}
+.pick-meta {{ color:var(--muted); font-size:.875rem; margin-top:4px; }}
+.badge {{ display:inline-block; margin-left:8px; border-radius:9999px; padding:4px 10px; font-size:.75rem; font-weight:600; vertical-align:middle; }}
+.badge.strong {{ color:#166534; background:#dcfce7; }}
+.badge.keep {{ color:#1d4ed8; background:#dbeafe; }}
+.badge.caution {{ color:#9a3412; background:#ffedd5; }}
+[data-theme=dark] .badge.strong {{ color:#86efac; background:#22c55e33; }}
+[data-theme=dark] .badge.keep {{ color:#93c5fd; background:#3b82f633; }}
+[data-theme=dark] .badge.caution {{ color:#fdba74; background:#f9731633; }}
+.numbers {{ display:flex; gap:10px; text-align:center; flex-wrap:wrap; justify-content:flex-end; }}
+.numbers div {{ min-width:62px; background:var(--panel-strong); border-radius:12px; padding:8px 10px; }}
+.numbers strong {{ display:block; font-size:1rem; color:var(--ink); }}
+.numbers span {{ display:block; color:var(--muted); font-size:.72rem; text-transform:uppercase; letter-spacing:.05em; margin-top:2px; }}
+.result {{ min-width:86px; text-align:center; color:var(--muted); font-size:.875rem; font-weight:700; }}
+.actions {{ display:flex; gap:6px; flex-wrap:wrap; justify-content:flex-end; max-width:148px; }}
+button {{ background:var(--panel-strong); border:1px solid var(--line); color:var(--ink); border-radius:9999px; padding:6px 10px; font-family:inherit; font-size:.75rem; font-weight:700; cursor:pointer; transition:all .2s; }}
+button:hover {{ border-color:var(--accent); color:var(--accent); }}
+button.win {{ color:var(--good); border-color:#22c55e33; }}
+button.loss {{ color:var(--bad); border-color:#ef444433; }}
+.pick-details {{ display:none; border-top:1px solid var(--line); padding:18px 20px 20px 78px; }}
 .pick-details.open {{ display:block; }}
-.reasoning {{ color:#cfcfcf; line-height:1.7; margin-bottom:12px; }}
-.reasoning strong {{ color:#fff; }}
+.reasoning {{ color:var(--muted); line-height:1.7; margin-bottom:12px; }}
+.reasoning strong {{ color:var(--ink); }}
 .metrics {{ display:flex; gap:18px; flex-wrap:wrap; color:var(--muted); }}
-.metrics strong {{ color:#fff; }}
+.metrics strong {{ color:var(--ink); }}
 .hidden {{ display:none!important; }}
-.empty {{ background:var(--panel); border:1px solid var(--border); border-radius:8px; padding:28px; color:var(--muted); text-align:center; }}
-.history {{ background:var(--panel); border:1px solid var(--border); border-radius:8px; margin-top:18px; overflow:auto; }}
-.history h2 {{ font-size:13px; padding:14px 16px; border-bottom:1px solid var(--border); }}
+.empty {{ background:var(--panel); border:1px solid var(--line); border-radius:16px; padding:48px; color:var(--muted); text-align:center; }}
+.history {{ background:var(--panel); border:1px solid var(--line); border-radius:16px; box-shadow:0 1px 3px var(--shadow); margin-top:24px; overflow:auto; }}
+.history h2 {{ font-size:1.25rem; font-weight:600; padding:16px 20px; border-bottom:1px solid var(--line); }}
 .history table {{ width:100%; border-collapse:collapse; min-width:780px; }}
-.history th,.history td {{ padding:10px 12px; border-bottom:1px solid var(--border); text-align:left; font-size:11px; color:var(--muted); }}
-.history th {{ color:var(--dim); text-transform:uppercase; letter-spacing:.08em; font-size:9px; }}
+.history th,.history td {{ padding:10px 12px; border-bottom:1px solid var(--line); text-align:left; font-size:.875rem; color:var(--muted); }}
+.history th {{ color:var(--muted); text-transform:uppercase; letter-spacing:.05em; font-size:.75rem; }}
 .empty-history {{ padding:18px; color:var(--muted); }}
 .h2h {{ margin-top:12px; margin-bottom:12px; }}
-.h2h h3 {{ font-size:11px; color:var(--dim); text-transform:uppercase; letter-spacing:.08em; margin-bottom:8px; }}
-.h2h table {{ width:100%; border-collapse:collapse; font-size:11px; }}
-.h2h th,.h2h td {{ padding:6px 8px; border-bottom:1px solid var(--border); color:var(--muted); text-align:left; }}
-.h2h th {{ color:var(--dim); font-size:9px; text-transform:uppercase; }}
+.h2h h3 {{ font-size:.75rem; color:var(--muted); text-transform:uppercase; letter-spacing:.05em; margin-bottom:8px; }}
+.h2h table {{ width:100%; border-collapse:collapse; font-size:.875rem; }}
+.h2h th,.h2h td {{ padding:6px 8px; border-bottom:1px solid var(--line); color:var(--muted); text-align:left; }}
+.h2h th {{ color:var(--muted); font-size:.75rem; text-transform:uppercase; }}
 .recent-form {{ margin-top:12px; margin-bottom:12px; }}
-.recent-form h3 {{ font-size:11px; color:var(--dim); text-transform:uppercase; letter-spacing:.08em; margin-bottom:8px; }}
+.recent-form h3 {{ font-size:.75rem; color:var(--muted); text-transform:uppercase; letter-spacing:.05em; margin-bottom:8px; }}
 .form-row {{ display:flex; gap:12px; align-items:center; flex-wrap:wrap; }}
-.form-row span {{ display:inline-flex; align-items:center; justify-content:center; width:24px; height:24px; border-radius:4px; font-size:11px; font-weight:800; }}
-.form-row .form-w {{ color:var(--good); background:rgba(34,197,94,.15); }}
-.form-row .form-d {{ color:var(--warn); background:rgba(251,191,36,.15); }}
-.form-row .form-l {{ color:var(--bad); background:rgba(239,68,68,.15); }}
-.form-row small {{ color:var(--muted); font-size:10px; margin-left:2px; }}
+.form-row span {{ display:inline-flex; align-items:center; justify-content:center; width:24px; height:24px; border-radius:9999px; font-size:.75rem; font-weight:700; }}
+.form-row .form-w {{ color:#166534; background:#dcfce7; }}
+.form-row .form-d {{ color:#9a3412; background:#ffedd5; }}
+.form-row .form-l {{ color:#991b1b; background:#fee2e2; }}
+[data-theme=dark] .form-row .form-w {{ color:#86efac; background:#22c55e33; }}
+[data-theme=dark] .form-row .form-d {{ color:#fdba74; background:#f9731633; }}
+[data-theme=dark] .form-row .form-l {{ color:#fca5a5; background:#ef444433; }}
+.form-row small {{ color:var(--muted); font-size:.75rem; margin-left:2px; }}
+::-webkit-scrollbar {{ width:8px; height:8px; }}
+::-webkit-scrollbar-track {{ background:var(--panel); }}
+::-webkit-scrollbar-thumb {{ background:var(--muted); border-radius:4px; }}
+::-webkit-scrollbar-thumb:hover {{ background:var(--accent); }}
 @media (max-width:900px) {{
-  header {{ height:auto; gap:8px; align-items:flex-start; flex-direction:column; padding:12px 16px; }}
-  .pnl-bar {{ grid-template-columns:repeat(2,minmax(120px,1fr)); }}
+  .site-header {{ gap:12px; align-items:flex-start; flex-direction:column; }}
+  .pnl-bar {{ grid-template-columns:repeat(2,minmax(120px,1fr)); gap:10px; }}
   .quality-summary {{ grid-template-columns:1fr; }}
   .pick-summary {{ align-items:flex-start; flex-direction:column; }}
   .numbers {{ width:100%; justify-content:space-between; }}
   .actions {{ width:100%; justify-content:flex-start; }}
   .pick-details {{ padding:14px 16px; }}
 }}
+@media (max-width:520px) {{
+  .shell {{ padding:20px 12px 48px; }}
+  .site-header {{ padding:20px 16px 0; }}
+  .brand h1 {{ font-size:2rem; }}
+  .tabs {{ margin-left:-12px; margin-right:-12px; padding-left:12px; }}
+  .tab {{ flex:1; justify-content:center; }}
+  .intro {{ padding:18px; }}
+  .pnl-bar {{ grid-template-columns:1fr; }}
+  .filter-bar {{ align-items:stretch; flex-direction:column; }}
+  .filter-select {{ width:100%; }}
+  .filter-count {{ margin-left:0; }}
+  .numbers {{ justify-content:flex-start; }}
+  .numbers div {{ flex:1 1 88px; }}
+  .result {{ text-align:left; }}
+}}
+@media (min-width:640px) {{
+  .shell {{ padding:24px; }}
+  .site-header {{ padding:24px 24px 0; }}
+  .brand h1 {{ font-size:2.5rem; }}
+}}
+@media (min-width:1024px) {{
+  .shell {{ padding:24px 32px 64px; }}
+  .site-header {{ padding:24px 32px 0; }}
+}}
 </style>
 </head>
 <body>
-<header>
-  <div class="logo">ROLLO STAKE MODEL <em>Range C/D</em></div>
-  <div class="header-meta">{total_picks} picks · generated {html.escape(generated)}</div>
+<header class="site-header">
+  <div class="brand">
+    <h1>RolloStake</h1>
+    <p>Football edge intelligence &middot; {total_picks} picks &middot; generated {html.escape(generated)}</p>
+  </div>
+  <button class="theme-toggle" type="button" onclick="toggleTheme()" aria-label="Toggle theme">
+    <svg class="theme-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <circle cx="12" cy="12" r="4"></circle>
+      <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path>
+    </svg>
+    <span id="theme-label">Light</span>
+  </button>
 </header>
 <main class="shell">
   <div class="tabs">
-    <button class="tab on" onclick="switchRange('C')">RANGE C</button>
-    <button class="tab" onclick="switchRange('D')">RANGE D</button>
+    <button class="tab on" onclick="switchRange('C')">Range C</button>
+    <button class="tab" onclick="switchRange('D')">Range D</button>
   </div>
   <div class="intro">
-    <strong>Range C/D mode.</strong> Picks are split by odds band, use flat $200 staking, and flag same-match correlated exposure. Result buttons update this static dashboard in your browser local storage; database settlement can still be handled from the Python CLI.
+    <strong>Range C/D workflow.</strong> Same betting concept: odds bands, flat $200 staking, quality flags, correlated-exposure notes, and browser-side result settlement. The presentation now follows the RolloForge visual system instead of your friend's dashboard skin.
   </div>
   {self._quality_summary(picks)}
   {self._render_range('C', by_range['C'], True)}
@@ -524,9 +597,21 @@ button.loss {{ color:var(--bad); border-color:rgba(239,68,68,.35); }}
 </main>
 <script>
 const KEY = 'rollo-range-results-v1';
+const THEME_KEY = 'rollo-dashboard-theme';
 const PICKS = {json.dumps(js_picks)};
 const BANK = {json.dumps(js_bank)};
 let state = JSON.parse(localStorage.getItem(KEY) || '{{}}');
+
+function applyTheme(theme) {{
+  document.documentElement.dataset.theme = theme;
+  document.getElementById('theme-label').textContent = theme === 'dark' ? 'Dark' : 'Light';
+}}
+
+function toggleTheme() {{
+  const next = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+  localStorage.setItem(THEME_KEY, next);
+  applyTheme(next);
+}}
 
 function switchRange(code) {{
   document.querySelectorAll('.tab').forEach((tab, index) => {{
@@ -616,6 +701,7 @@ function updateRange(range) {{
   bankEl.className = pnl >= 0 ? 'good' : 'bad';
 }}
 
+applyTheme(localStorage.getItem(THEME_KEY) || 'light');
 ['C', 'D'].forEach(updateRange);
 </script>
 </body>
