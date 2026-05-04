@@ -19,6 +19,8 @@ TEAM_NAME_MAP = {
     "Leeds United": "Leeds",
     "Brighton & Hove Albion": "Brighton",
     "AFC Bournemouth": "Bournemouth",
+    "Crystal Palace": "Crystal Palace",
+    "Paris FC": "Paris FC",
 
     # La Liga
     "Ath Madrid": "Atletico Madrid",
@@ -37,6 +39,12 @@ TEAM_NAME_MAP = {
     "Deportivo Alaves": "Alaves",
     "RCD Espanyol de Barcelona": "Espanol",
     "Espanyol": "Espanol",
+    "Real Betis Balompie": "Betis",
+    "Real Sociedad de Futbol": "Sociedad",
+    "Levante UD": "Levante",
+    "CA Osasuna": "Osasuna",
+    "FC Barcelona": "Barcelona",
+    "RCD Mallorca": "Mallorca",
     
     # Ligue 1
     "Paris SG": "PSG",
@@ -45,6 +53,7 @@ TEAM_NAME_MAP = {
     "Olympique Lyonnais": "Lyon",
     "Stade Rennais FC 1901": "Rennes",
     "RC Lens": "Lens",
+    "Racing Club de Lens": "Lens",
     "AS Monaco FC": "Monaco",
     "OGC Nice": "Nice",
     "Stade Brestois 29": "Brest",
@@ -68,13 +77,23 @@ TEAM_NAME_MAP = {
     "Hellas Verona": "Verona",
     "US Sassuolo Calcio": "Sassuolo",
     "US Lecce": "Lecce",
+    "US Cremonese": "Cremonese",
+    "AS Roma": "Roma",
     "Bologna FC 1909": "Bologna",
     "Parma Calcio 1913": "Parma",
     "SSC Napoli": "Napoli",
     "Torino FC": "Torino",
+    "Cagliari Calcio": "Cagliari",
+    "Udinese Calcio": "Udinese",
+    "Como 1907": "Como",
+    "AC Pisa 1909": "Pisa",
+    "Genoa CFC": "Genoa",
+    "Atalanta BC": "Atalanta",
     
     # Bundesliga
     "Borussia Dortmund": "Dortmund",
+    "FC Bayern Munchen": "Bayern Munich",
+    "FC Bayern Munich": "Bayern Munich",
     "Bayer 04 Leverkusen": "Leverkusen",
     "Eintracht Frankfurt": "Ein Frankfurt",
     "SC Freiburg": "Freiburg",
@@ -143,6 +162,12 @@ def normalize_team_name(name: str) -> str:
             return canonical
         if name.endswith(" FC") and original.lower() == name[:-3].lower():
             return canonical
+
+    # football-data.org often appends legal suffixes that football-data.co.uk
+    # historical data omits. Keep true club names like Paris FC intact.
+    for suffix in (" AFC", " FC", " CF"):
+        if name.endswith(suffix) and name not in {"Paris FC"}:
+            return name[: -len(suffix)]
     
     # If no mapping, return as-is
     return name

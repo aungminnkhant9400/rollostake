@@ -1,46 +1,54 @@
-home_team,away_team,league,kickoff,home_odds,draw_odds,away_odds
-Sunderland,Nottingham Forest,EPL,2026-04-24 20:00,3.10,3.30,2.25
-Real Betis,Real Madrid,LaLiga,2026-04-24 21:00,3.30,3.45,2.08
-Brest,Lens,L1,2026-04-24 20:45,2.95,3.10,2.45
-RB Leipzig,Union Berlin,Bundesliga,2026-04-24 20:30,1.72,3.90,4.70
-Napoli,Cremonese,SerieA,2026-04-24 20:45,1.38,4.90,8.20
-Fulham,Aston Villa,EPL,2026-04-25 12:30,2.75,3.30,2.50
-Liverpool,Crystal Palace,EPL,2026-04-25 15:00,1.60,4.10,5.40
-West Ham,Everton,EPL,2026-04-25 15:00,2.45,3.15,3.00
-Wolves,Tottenham,EPL,2026-04-25 15:00,2.60,3.40,2.55
-Arsenal,Newcastle,EPL,2026-04-25 17:30,1.82,3.65,4.20
-Lyon,Auxerre,L1,2026-04-25 15:00,1.58,4.10,5.50
-Angers,PSG,L1,2026-04-25 19:00,6.80,4.70,1.42
-Toulouse,Monaco,L1,2026-04-25 21:05,3.20,3.35,2.18
-Augsburg,Eintracht Frankfurt,Bundesliga,2026-04-25 15:30,3.25,3.45,2.12
-Cologne,Leverkusen,Bundesliga,2026-04-25 15:30,4.60,4.00,1.70
-Heidenheim,St Pauli,Bundesliga,2026-04-25 15:30,2.20,3.30,3.20
-Mainz,Bayern Munich,Bundesliga,2026-04-25 15:30,5.20,4.40,1.55
-Wolfsburg,Borussia Monchengladbach,Bundesliga,2026-04-25 15:30,2.10,3.45,3.35
-Hamburg,Hoffenheim,Bundesliga,2026-04-25 18:30,2.70,3.35,2.50
-Parma,Pisa,SerieA,2026-04-25 15:00,2.15,3.15,3.55
-Bologna,Roma,SerieA,2026-04-25 18:00,2.55,3.20,2.80
-Verona,Lecce,SerieA,2026-04-25 20:45,2.28,3.05,3.35
-Alaves,Mallorca,LaLiga,2026-04-25 14:00,2.50,2.95,3.15
-Getafe,Barcelona,LaLiga,2026-04-25 16:15,5.00,4.10,1.62
-Valencia,Girona,LaLiga,2026-04-25 18:30,2.35,3.25,3.00
-Atletico Madrid,Athletic Bilbao,LaLiga,2026-04-25 21:00,1.95,3.35,4.05
-Lorient,Strasbourg,L1,2026-04-26 15:00,2.55,3.20,2.80
-Le Havre,Metz,L1,2026-04-26 17:15,2.35,3.15,3.15
-Paris FC,Lille,L1,2026-04-26 17:15,3.55,3.25,2.05
-Rennes,Nantes,L1,2026-04-26 17:15,1.80,3.60,4.50
-Marseille,Nice,L1,2026-04-26 20:45,2.10,3.30,3.45
-Stuttgart,Werder Bremen,Bundesliga,2026-04-26 15:30,1.78,3.90,4.40
-Dortmund,Freiburg,Bundesliga,2026-04-26 17:30,1.62,4.20,5.20
-Fiorentina,Sassuolo,SerieA,2026-04-26 12:30,1.95,3.45,3.90
-Genoa,Como,SerieA,2026-04-26 15:00,2.30,3.10,3.25
-Torino,Inter,SerieA,2026-04-26 18:00,4.50,3.60,1.80
-AC Milan,Juventus,SerieA,2026-04-26 20:45,2.30,3.20,3.05
-Rayo Vallecano,Real Sociedad,LaLiga,2026-04-26 14:00,2.95,3.00,2.55
-Oviedo,Elche,LaLiga,2026-04-26 16:15,2.45,3.05,3.10
-Osasuna,Sevilla,LaLiga,2026-04-26 18:30,2.30,3.10,3.25
-Villarreal,Celta Vigo,LaLiga,2026-04-26 21:00,1.72,3.80,4.90
-Man United,Brentford,EPL,2026-04-27 20:00,2.05,3.50,3.65
-Cagliari,Atalanta,SerieA,2026-04-27 18:30,4.40,3.70,1.78
-Lazio,Udinese,SerieA,2026-04-27 20:45,1.72,3.55,5.00
-Espanyol,Levante,LaLiga,2026-04-27 21:00,2.08,3.25,3.75
+home_team,away_team,league,kickoff,home_odds,draw_odds,away_odds,over_0_5_odds,under_0_5_odds,over_1_5_odds,under_1_5_odds,over_2_5_odds,under_2_5_odds,over_3_0_odds,under_3_0_odds,over_3_5_odds,under_3_5_odds,btts_yes_odds,btts_no_odds,home_over_0_5_odds,home_under_0_5_odds,home_over_1_5_odds,home_under_1_5_odds,home_over_2_5_odds,home_under_2_5_odds,away_over_0_5_odds,away_under_0_5_odds,away_over_1_5_odds,away_under_1_5_odds,away_over_2_5_odds,away_under_2_5_odds,handicap_line,handicap_home_odds,handicap_away_odds
+Chelsea,Nott'm Forest,EPL,2026-05-04 22:00,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+Cremonese,Lazio,SerieA,2026-05-05 00:30,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+Roma,Fiorentina,SerieA,2026-05-05 02:45,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+Everton,Man City,EPL,2026-05-05 03:00,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+Sevilla,Sociedad,LaLiga,2026-05-05 03:00,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+Dortmund,Ein Frankfurt,Bundesliga,2026-05-09 02:30,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+Lens,Nantes,L1,2026-05-09 02:45,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+Torino,Sassuolo,SerieA,2026-05-09 02:45,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+Levante,Osasuna,LaLiga,2026-05-09 03:00,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+Liverpool,Chelsea,EPL,2026-05-09 19:30,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+Elche,Alaves,LaLiga,2026-05-09 20:00,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+Cagliari,Udinese,SerieA,2026-05-09 21:00,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+Augsburg,M'gladbach,Bundesliga,2026-05-09 21:30,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+Hoffenheim,Werder Bremen,Bundesliga,2026-05-09 21:30,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+RB Leipzig,St Pauli,Bundesliga,2026-05-09 21:30,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+Stuttgart,Leverkusen,Bundesliga,2026-05-09 21:30,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+Brighton,Wolves,EPL,2026-05-09 22:00,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+Fulham,Bournemouth,EPL,2026-05-09 22:00,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+Sunderland,Man United,EPL,2026-05-09 22:00,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+Sevilla,Espanol,LaLiga,2026-05-09 22:15,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+Lazio,Inter Milan,SerieA,2026-05-10 00:00,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+Wolfsburg,Bayern Munich,Bundesliga,2026-05-10 00:30,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+Man City,Brentford,EPL,2026-05-10 00:30,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+Atletico Madrid,Celta,LaLiga,2026-05-10 00:30,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+Lecce,Juventus,SerieA,2026-05-10 02:45,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+Sociedad,Betis,LaLiga,2026-05-10 03:00,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+Verona,Como,SerieA,2026-05-10 18:30,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+Mallorca,Villarreal,LaLiga,2026-05-10 20:00,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+Burnley,Aston Villa,EPL,2026-05-10 21:00,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+Crystal Palace,Everton,EPL,2026-05-10 21:00,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+Nott'm Forest,Newcastle,EPL,2026-05-10 21:00,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+Cremonese,Pisa,SerieA,2026-05-10 21:00,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+Fiorentina,Genoa,SerieA,2026-05-10 21:00,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+Hamburg,Freiburg,Bundesliga,2026-05-10 21:30,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+Ath Bilbao,Valencia,LaLiga,2026-05-10 22:15,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+FC Koln,Heidenheim,Bundesliga,2026-05-10 23:30,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+West Ham,Arsenal,EPL,2026-05-10 23:30,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+Parma,Roma,SerieA,2026-05-11 00:00,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+Real Oviedo,Getafe,LaLiga,2026-05-11 00:30,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+Mainz,Union Berlin,Bundesliga,2026-05-11 01:30,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+AC Milan,Atalanta,SerieA,2026-05-11 02:45,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+Angers,Strasbourg,L1,2026-05-11 03:00,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+Auxerre,Nice,L1,2026-05-11 03:00,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+Le Havre,Marseille,L1,2026-05-11 03:00,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+Metz,Lorient,L1,2026-05-11 03:00,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+Monaco,Lille,L1,2026-05-11 03:00,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+PSG,Brest,L1,2026-05-11 03:00,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+Rennes,Paris FC,L1,2026-05-11 03:00,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+Toulouse,Lyon,L1,2026-05-11 03:00,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+Barcelona,Real Madrid,LaLiga,2026-05-11 03:00,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+Napoli,Bologna,SerieA,2026-05-12 02:45,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+Tottenham,Leeds,EPL,2026-05-12 03:00,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+Vallecano,Girona,LaLiga,2026-05-12 03:00,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
