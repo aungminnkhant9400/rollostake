@@ -41,6 +41,32 @@ python scripts\import_weekly_slate.py week_slate.csv
 python main.py --skip-scrape --no-fatigue
 ```
 
+### Team Total Odds
+
+Team over/under is supported, but it needs real bookmaker odds before those
+markets become official picks. Export the model-ranked team-total shortlist,
+fill the `odds` column from your bookmaker, import it, then rerun the model.
+
+```bash
+python3 scripts/team_total_odds_cli.py --export-template team_total_odds.csv
+python3 scripts/team_total_odds_cli.py --import-file team_total_odds.csv
+python3 main.py --skip-scrape --no-fatigue
+```
+
+On Windows PowerShell:
+
+```powershell
+python scripts\team_total_odds_cli.py --export-template team_total_odds.csv
+python scripts\team_total_odds_cli.py --import-file team_total_odds.csv
+python main.py --skip-scrape --no-fatigue
+```
+
+For direct prompting instead of editing CSV:
+
+```powershell
+python scripts\team_total_odds_cli.py --interactive --max-rows 40
+```
+
 ## Architecture
 
 ```

@@ -97,6 +97,7 @@ def _add_candidate(candidates: list, fixture: dict, market: str, selection: str,
     candidates.append(
         {
             "range_hint": _range_for_required_odds(required_odds),
+            "match_id": fixture["match_id"],
             "league": fixture["league"],
             "kickoff": fixture["kickoff"],
             "home_team": fixture["home_team"],
@@ -174,6 +175,7 @@ def export_watchlist(path: str, min_edge: float, max_rows: int) -> list:
     rows = build_watchlist(min_edge=min_edge, max_rows=max_rows)
     fieldnames = [
         "range_hint",
+        "match_id",
         "league",
         "kickoff",
         "home_team",
