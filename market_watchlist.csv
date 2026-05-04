@@ -1,0 +1,161 @@
+range_hint,league,kickoff,home_team,away_team,market,selection,model_prob,fair_odds,min_odds_for_edge,lambda_h,lambda_a
+D,Bundesliga,2026-05-11 01:30,Mainz,Union Berlin,OU,Over 1.5,0.617,1.621,1.702,1.351,0.736
+D,LaLiga,2026-05-05 03:00,Sevilla,Sociedad,TT,Sevilla U1.5,0.6166,1.622,1.703,1.329,1.718
+D,LaLiga,2026-05-09 03:00,Levante,Osasuna,TT,Osasuna U1.5,0.6162,1.623,1.704,0.92,1.33
+D,SerieA,2026-05-11 00:00,Parma,Roma,BTTS,BTTS No,0.616,1.623,1.705,0.542,1.736
+D,EPL,2026-05-12 03:00,Tottenham,Leeds,BTTS,BTTS Yes,0.616,1.623,1.705,0.987,1.978
+D,Bundesliga,2026-05-10 21:30,Hamburg,Freiburg,TT,Hamburg U1.5,0.6155,1.625,1.706,1.332,1.386
+D,L1,2026-05-11 03:00,Monaco,Lille,BTTS,BTTS Yes,0.615,1.626,1.707,1.195,1.541
+D,EPL,2026-05-09 22:00,Brighton,Wolves,TT,Brighton U1.5,0.6145,1.627,1.709,1.335,0.711
+D,SerieA,2026-05-10 18:30,Verona,Como,OU,Under 3.5,0.6144,1.628,1.709,0.374,2.773
+D,SerieA,2026-05-10 02:45,Lecce,Juventus,TT,Lecce U0.5,0.6139,1.629,1.711,0.488,1.949
+D,EPL,2026-05-10 23:30,West Ham,Arsenal,TT,West Ham O0.5,0.6136,1.63,1.711,0.951,2.097
+D,LaLiga,2026-05-09 20:00,Elche,Alaves,TT,Alaves U1.5,0.6134,1.63,1.712,1.753,1.338
+D,Bundesliga,2026-05-09 21:30,RB Leipzig,St Pauli,OU,Under 3,0.612,1.634,1.716,2.175,0.597
+D,EPL,2026-05-10 23:30,West Ham,Arsenal,1X2,Arsenal Win,0.612,1.634,1.716,0.951,2.097
+D,EPL,2026-05-04 22:00,Chelsea,Nott'm Forest,BTTS,BTTS Yes,0.61,1.639,1.721,1.31,1.174
+D,L1,2026-05-11 03:00,Rennes,Paris FC,BTTS,BTTS Yes,0.61,1.639,1.721,2.052,1.028
+D,EPL,2026-05-09 22:00,Fulham,Bournemouth,TT,Fulham U1.5,0.6099,1.64,1.722,1.348,1.393
+D,LaLiga,2026-05-09 03:00,Levante,Osasuna,OU,Under 2.5,0.6093,1.641,1.723,0.92,1.33
+D,Bundesliga,2026-05-09 21:30,Stuttgart,Leverkusen,OU,Over 3,0.6095,1.641,1.723,2.043,1.532
+D,SerieA,2026-05-10 18:30,Verona,Como,OU,Over 2.5,0.6089,1.642,1.725,0.374,2.773
+D,Bundesliga,2026-05-11 01:30,Mainz,Union Berlin,TT,Mainz U1.5,0.6089,1.642,1.725,1.351,0.736
+D,EPL,2026-05-10 23:30,West Ham,Arsenal,BTTS,BTTS Yes,0.608,1.645,1.727,0.951,2.097
+D,L1,2026-05-11 03:00,Rennes,Paris FC,TT,Rennes O1.5,0.6079,1.645,1.727,2.052,1.028
+D,L1,2026-05-11 03:00,Metz,Lorient,TT,Metz O0.5,0.6078,1.645,1.728,0.936,1.79
+D,Bundesliga,2026-05-10 21:30,Hamburg,Freiburg,BTTS,BTTS Yes,0.607,1.647,1.73,1.332,1.386
+D,EPL,2026-05-09 22:00,Brighton,Wolves,OU,Over 1.5,0.6063,1.649,1.732,1.335,0.711
+D,SerieA,2026-05-10 21:00,Cremonese,Pisa,TT,Cremonese O0.5,0.6058,1.651,1.733,0.931,0.861
+D,Bundesliga,2026-05-09 21:30,Stuttgart,Leverkusen,TT,Stuttgart O1.5,0.6055,1.652,1.734,2.043,1.532
+D,Bundesliga,2026-05-10 23:30,FC Koln,Heidenheim,1X2,FC Koln Win,0.604,1.656,1.738,2.365,1.303
+D,L1,2026-05-11 03:00,Le Havre,Marseille,TT,Le Havre O0.5,0.6043,1.655,1.738,0.927,1.501
+D,SerieA,2026-05-05 02:45,Roma,Fiorentina,OU,Under 3,0.6038,1.656,1.739,1.994,0.806
+D,L1,2026-05-11 03:00,Auxerre,Nice,TT,Auxerre U1.5,0.6026,1.66,1.743,1.369,1.075
+D,LaLiga,2026-05-10 03:00,Sociedad,Betis,TT,Betis U1.5,0.6019,1.661,1.745,1.977,1.371
+D,SerieA,2026-05-11 00:00,Parma,Roma,OU,Under 2.5,0.6019,1.661,1.745,0.542,1.736
+D,LaLiga,2026-05-09 03:00,Levante,Osasuna,TT,Levante O0.5,0.6015,1.663,1.746,0.92,1.33
+D,Bundesliga,2026-05-09 02:30,Dortmund,Ein Frankfurt,BTTS,BTTS Yes,0.6,1.667,1.75,2.673,0.966
+D,Bundesliga,2026-05-09 21:30,Hoffenheim,Werder Bremen,OU,Under 3.5,0.5985,1.671,1.754,2.42,0.798
+D,L1,2026-05-09 02:45,Lens,Nantes,OU,Over 3,0.5968,1.676,1.759,2.936,0.588
+D,LaLiga,2026-05-09 20:00,Elche,Alaves,OU,Over 2.5,0.5969,1.675,1.759,1.753,1.338
+D,Bundesliga,2026-05-10 21:30,Hamburg,Freiburg,TT,Freiburg U1.5,0.5967,1.676,1.76,1.332,1.386
+D,L1,2026-05-11 03:00,Angers,Strasbourg,TT,Angers O0.5,0.5963,1.677,1.761,0.907,1.475
+D,L1,2026-05-11 03:00,Rennes,Paris FC,1X2,Rennes Win,0.596,1.678,1.762,2.052,1.028
+D,EPL,2026-05-05 03:00,Everton,Man City,TT,Man City U1.5,0.5953,1.68,1.764,0.788,1.39
+D,L1,2026-05-11 03:00,Rennes,Paris FC,OU,Over 2.5,0.5945,1.682,1.766,2.052,1.028
+D,SerieA,2026-05-09 02:45,Torino,Sassuolo,OU,Under 3,0.5941,1.683,1.767,1.112,1.721
+D,EPL,2026-05-09 22:00,Fulham,Bournemouth,TT,Bournemouth U1.5,0.5943,1.683,1.767,1.348,1.393
+D,SerieA,2026-05-10 21:00,Fiorentina,Genoa,OU,Under 3.5,0.5932,1.686,1.77,1.539,1.703
+D,SerieA,2026-05-05 02:45,Roma,Fiorentina,TT,Roma O1.5,0.5924,1.688,1.773,1.994,0.806
+D,EPL,2026-05-10 21:00,Crystal Palace,Everton,OU,Over 1.5,0.5907,1.693,1.777,0.766,1.222
+D,LaLiga,2026-05-11 03:00,Barcelona,Real Madrid,TT,Real Madrid U1.5,0.5908,1.693,1.777,1.638,1.403
+D,EPL,2026-05-10 21:00,Burnley,Aston Villa,OU,Over 3,0.5906,1.693,1.778,1.127,2.372
+D,Bundesliga,2026-05-09 21:30,Augsburg,M'gladbach,OU,Under 2.5,0.5899,1.695,1.78,1.244,1.079
+D,EPL,2026-05-10 00:30,Man City,Brentford,1X2,Man City Win,0.589,1.698,1.783,1.785,0.764
+D,EPL,2026-05-12 03:00,Tottenham,Leeds,TT,Leeds O1.5,0.588,1.701,1.786,0.987,1.978
+D,LaLiga,2026-05-10 03:00,Sociedad,Betis,TT,Sociedad O1.5,0.5877,1.701,1.787,1.977,1.371
+D,EPL,2026-05-10 23:30,West Ham,Arsenal,OU,Over 2.5,0.5875,1.702,1.787,0.951,2.097
+D,LaLiga,2026-05-05 03:00,Sevilla,Sociedad,OU,Over 2.5,0.5873,1.703,1.788,1.329,1.718
+D,EPL,2026-05-09 19:30,Liverpool,Chelsea,OU,Under 3.5,0.5863,1.706,1.791,2.116,1.157
+D,SerieA,2026-05-09 02:45,Torino,Sassuolo,BTTS,BTTS Yes,0.586,1.706,1.792,1.112,1.721
+D,LaLiga,2026-05-11 00:30,Real Oviedo,Getafe,BTTS,BTTS Yes,0.586,1.706,1.792,1.55,1.15
+D,LaLiga,2026-05-11 03:00,Barcelona,Real Madrid,OU,Over 2.5,0.5859,1.707,1.792,1.638,1.403
+D,SerieA,2026-05-11 00:00,Parma,Roma,TT,Parma U0.5,0.5816,1.719,1.805,0.542,1.736
+D,SerieA,2026-05-10 21:00,Cremonese,Pisa,BTTS,BTTS No,0.581,1.721,1.807,0.931,0.861
+D,SerieA,2026-05-10 02:45,Lecce,Juventus,TT,Juventus O1.5,0.58,1.724,1.81,0.488,1.949
+D,LaLiga,2026-05-10 00:30,Atletico Madrid,Celta,OU,Under 3.5,0.5788,1.728,1.814,1.827,1.48
+D,Bundesliga,2026-05-10 23:30,FC Koln,Heidenheim,TT,FC Koln U2.5,0.5789,1.727,1.814,2.365,1.303
+D,SerieA,2026-05-05 00:30,Cremonese,Lazio,TT,Cremonese U0.5,0.5775,1.732,1.818,0.549,1.11
+D,LaLiga,2026-05-09 22:15,Sevilla,Espanol,TT,Sevilla U1.5,0.5774,1.732,1.818,1.442,1.096
+D,EPL,2026-05-09 22:00,Sunderland,Man United,TT,Sunderland O0.5,0.5773,1.732,1.819,0.861,1.544
+D,SerieA,2026-05-10 21:00,Cremonese,Pisa,TT,Pisa O0.5,0.5773,1.732,1.819,0.931,0.861
+D,EPL,2026-05-10 21:00,Burnley,Aston Villa,TT,Aston Villa U2.5,0.5771,1.733,1.82,1.127,2.372
+D,EPL,2026-05-12 03:00,Tottenham,Leeds,1X2,Leeds Win,0.577,1.733,1.82,0.987,1.978
+D,LaLiga,2026-05-10 22:15,Ath Bilbao,Valencia,OU,Under 2.5,0.5747,1.74,1.827,1.291,1.09
+D,L1,2026-05-11 03:00,Angers,Strasbourg,OU,Under 2.5,0.5744,1.741,1.828,0.907,1.475
+D,L1,2026-05-11 03:00,Toulouse,Lyon,OU,Under 2.5,0.5731,1.745,1.832,1.19,1.197
+D,SerieA,2026-05-12 02:45,Napoli,Bologna,TT,Napoli U1.5,0.5699,1.755,1.842,1.464,1.009
+D,LaLiga,2026-05-10 03:00,Sociedad,Betis,OU,Under 3.5,0.5698,1.755,1.843,1.977,1.371
+D,EPL,2026-05-09 19:30,Liverpool,Chelsea,1X2,Liverpool Win,0.569,1.757,1.845,2.116,1.157
+D,EPL,2026-05-12 03:00,Tottenham,Leeds,OU,Over 2.5,0.5689,1.758,1.846,0.987,1.978
+D,EPL,2026-05-09 22:00,Sunderland,Man United,OU,Under 2.5,0.5684,1.759,1.847,0.861,1.544
+D,L1,2026-05-11 03:00,Auxerre,Nice,BTTS,BTTS Yes,0.568,1.761,1.849,1.369,1.075
+D,L1,2026-05-11 03:00,Metz,Lorient,BTTS,BTTS Yes,0.567,1.764,1.852,0.936,1.79
+D,SerieA,2026-05-09 21:00,Cagliari,Udinese,OU,Under 2.5,0.5666,1.765,1.853,1.172,1.24
+D,L1,2026-05-11 03:00,Angers,Strasbourg,TT,Strasbourg U1.5,0.5662,1.766,1.854,0.907,1.475
+D,Bundesliga,2026-05-09 21:30,RB Leipzig,St Pauli,BTTS,BTTS No,0.566,1.767,1.855,2.175,0.597
+D,L1,2026-05-11 03:00,Toulouse,Lyon,BTTS,BTTS Yes,0.566,1.767,1.855,1.19,1.197
+D,Bundesliga,2026-05-09 21:30,Hoffenheim,Werder Bremen,TT,Hoffenheim U2.5,0.5645,1.771,1.86,2.42,0.798
+D,LaLiga,2026-05-10 00:30,Atletico Madrid,Celta,TT,Celta U1.5,0.5645,1.771,1.86,1.827,1.48
+D,LaLiga,2026-05-12 03:00,Vallecano,Girona,TT,Vallecano U0.5,0.5633,1.775,1.864,0.574,1.034
+D,LaLiga,2026-05-10 20:00,Mallorca,Villarreal,OU,Under 3.5,0.5623,1.778,1.867,1.573,1.809
+D,L1,2026-05-11 03:00,Le Havre,Marseille,OU,Under 2.5,0.5624,1.778,1.867,0.927,1.501
+D,L1,2026-05-09 02:45,Lens,Nantes,TT,Lens O2.5,0.5622,1.779,1.868,2.936,0.588
+D,LaLiga,2026-05-09 22:15,Sevilla,Espanol,BTTS,BTTS Yes,0.561,1.783,1.872,1.442,1.096
+D,LaLiga,2026-05-10 20:00,Mallorca,Villarreal,OU,Over 3,0.5605,1.784,1.873,1.573,1.809
+D,SerieA,2026-05-10 02:45,Lecce,Juventus,OU,Under 2.5,0.5601,1.785,1.875,0.488,1.949
+D,L1,2026-05-11 03:00,Metz,Lorient,1X2,Lorient Win,0.56,1.786,1.875,0.936,1.79
+D,L1,2026-05-11 03:00,Auxerre,Nice,OU,Under 2.5,0.5583,1.791,1.881,1.369,1.075
+D,L1,2026-05-11 03:00,Le Havre,Marseille,TT,Marseille U1.5,0.5575,1.794,1.883,0.927,1.501
+D,EPL,2026-05-10 21:00,Nott'm Forest,Newcastle,TT,Nott'm Forest U1.5,0.5565,1.797,1.887,1.504,1.103
+D,L1,2026-05-09 02:45,Lens,Nantes,BTTS,BTTS No,0.556,1.799,1.888,2.936,0.588
+D,SerieA,2026-05-10 00:00,Lazio,Inter Milan,TT,Inter Milan U2.5,0.5562,1.798,1.888,0.115,2.452
+D,L1,2026-05-09 02:45,Lens,Nantes,TT,Nantes U0.5,0.5554,1.8,1.89,2.936,0.588
+D,EPL,2026-05-12 03:00,Tottenham,Leeds,OU,Under 3,0.5555,1.8,1.89,0.987,1.978
+D,EPL,2026-05-09 22:00,Sunderland,Man United,BTTS,BTTS Yes,0.554,1.805,1.895,0.861,1.544
+D,SerieA,2026-05-05 02:45,Roma,Fiorentina,TT,Fiorentina O0.5,0.5534,1.807,1.898,1.994,0.806
+D,LaLiga,2026-05-10 03:00,Sociedad,Betis,OU,Over 3,0.5515,1.813,1.904,1.977,1.371
+D,SerieA,2026-05-12 02:45,Napoli,Bologna,OU,Under 2.5,0.5508,1.816,1.906,1.464,1.009
+D,Bundesliga,2026-05-09 21:30,RB Leipzig,St Pauli,TT,St Pauli U0.5,0.5505,1.817,1.907,2.175,0.597
+D,Bundesliga,2026-05-09 21:30,Hoffenheim,Werder Bremen,TT,Werder Bremen O0.5,0.5498,1.819,1.91,2.42,0.798
+D,EPL,2026-05-04 22:00,Chelsea,Nott'm Forest,OU,Under 2.5,0.5479,1.825,1.916,1.31,1.174
+D,Bundesliga,2026-05-09 21:30,Stuttgart,Leverkusen,TT,Leverkusen U1.5,0.5472,1.828,1.919,2.043,1.532
+D,EPL,2026-05-05 03:00,Everton,Man City,TT,Everton O0.5,0.5452,1.834,1.926,0.788,1.39
+D,LaLiga,2026-05-10 00:30,Atletico Madrid,Celta,TT,Atletico Madrid O1.5,0.5451,1.834,1.926,1.827,1.48
+D,SerieA,2026-05-10 21:00,Fiorentina,Genoa,TT,Fiorentina U1.5,0.5449,1.835,1.927,1.539,1.703
+D,L1,2026-05-11 03:00,Monaco,Lille,TT,Lille U1.5,0.5442,1.838,1.929,1.195,1.541
+D,Bundesliga,2026-05-11 01:30,Mainz,Union Berlin,BTTS,BTTS No,0.544,1.838,1.93,1.351,0.736
+D,L1,2026-05-11 03:00,Le Havre,Marseille,BTTS,BTTS Yes,0.544,1.838,1.93,0.927,1.501
+D,EPL,2026-05-09 22:00,Sunderland,Man United,TT,Man United U1.5,0.5432,1.841,1.933,0.861,1.544
+D,LaLiga,2026-05-11 00:30,Real Oviedo,Getafe,TT,Real Oviedo U1.5,0.5412,1.848,1.94,1.55,1.15
+D,LaLiga,2026-05-10 00:30,Atletico Madrid,Celta,OU,Over 3,0.5405,1.85,1.942,1.827,1.48
+D,LaLiga,2026-05-10 20:00,Mallorca,Villarreal,TT,Villarreal O1.5,0.5398,1.852,1.945,1.573,1.809
+D,SerieA,2026-05-09 21:00,Cagliari,Udinese,BTTS,BTTS Yes,0.539,1.855,1.948,1.172,1.24
+D,LaLiga,2026-05-10 22:15,Ath Bilbao,Valencia,BTTS,BTTS Yes,0.539,1.855,1.948,1.291,1.09
+D,SerieA,2026-05-09 02:45,Torino,Sassuolo,OU,Over 2.5,0.5384,1.857,1.95,1.112,1.721
+D,Bundesliga,2026-05-09 21:30,Augsburg,M'gladbach,BTTS,BTTS Yes,0.537,1.862,1.955,1.244,1.079
+D,EPL,2026-05-10 21:00,Burnley,Aston Villa,OU,Under 3.5,0.5369,1.863,1.956,1.127,2.372
+D,L1,2026-05-11 03:00,Angers,Strasbourg,BTTS,BTTS Yes,0.536,1.866,1.959,0.907,1.475
+D,EPL,2026-05-10 21:00,Crystal Palace,Everton,TT,Crystal Palace O0.5,0.5351,1.869,1.962,0.766,1.222
+D,SerieA,2026-05-10 21:00,Cremonese,Pisa,OU,Over 1.5,0.5348,1.87,1.963,0.931,0.861
+D,LaLiga,2026-05-09 22:15,Sevilla,Espanol,OU,Under 2.5,0.5341,1.872,1.966,1.442,1.096
+D,EPL,2026-05-10 00:30,Man City,Brentford,TT,Brentford O0.5,0.5342,1.872,1.966,1.785,0.764
+D,L1,2026-05-11 03:00,Metz,Lorient,TT,Lorient O1.5,0.5342,1.872,1.966,0.936,1.79
+D,LaLiga,2026-05-10 20:00,Mallorca,Villarreal,TT,Mallorca U1.5,0.5337,1.874,1.967,1.573,1.809
+D,LaLiga,2026-05-11 03:00,Barcelona,Real Madrid,OU,Under 3,0.5336,1.874,1.968,1.638,1.403
+D,SerieA,2026-05-12 02:45,Napoli,Bologna,BTTS,BTTS Yes,0.533,1.876,1.97,1.464,1.009
+D,EPL,2026-05-10 00:30,Man City,Brentford,TT,Man City O1.5,0.5327,1.877,1.971,1.785,0.764
+D,LaLiga,2026-05-05 03:00,Sevilla,Sociedad,OU,Under 3,0.5319,1.88,1.974,1.329,1.718
+D,L1,2026-05-09 02:45,Lens,Nantes,OU,Under 3.5,0.5316,1.881,1.975,2.936,0.588
+D,EPL,2026-05-10 23:30,West Ham,Arsenal,OU,Under 3,0.5316,1.881,1.975,0.951,2.097
+D,EPL,2026-05-09 19:30,Liverpool,Chelsea,OU,Over 3,0.5313,1.882,1.976,2.116,1.157
+D,EPL,2026-05-10 00:30,Man City,Brentford,OU,Under 2.5,0.5313,1.882,1.976,1.785,0.764
+D,Bundesliga,2026-05-09 21:30,Hoffenheim,Werder Bremen,BTTS,BTTS Yes,0.531,1.883,1.977,2.42,0.798
+D,SerieA,2026-05-05 02:45,Roma,Fiorentina,OU,Over 2.5,0.5305,1.885,1.979,1.994,0.806
+D,EPL,2026-05-10 00:30,Man City,Brentford,BTTS,BTTS Yes,0.529,1.89,1.985,1.785,0.764
+D,SerieA,2026-05-10 00:00,Lazio,Inter Milan,OU,Under 2.5,0.5268,1.898,1.993,0.115,2.452
+D,Bundesliga,2026-05-09 21:30,RB Leipzig,St Pauli,OU,Over 2.5,0.5238,1.909,2.004,2.175,0.597
+D,SerieA,2026-05-10 18:30,Verona,Como,TT,Como O2.5,0.524,1.908,2.004,0.374,2.773
+D,LaLiga,2026-05-09 20:00,Elche,Alaves,TT,Elche O1.5,0.523,1.912,2.008,1.753,1.338
+D,SerieA,2026-05-10 21:00,Fiorentina,Genoa,OU,Over 3,0.5229,1.912,2.008,1.539,1.703
+D,L1,2026-05-11 03:00,Rennes,Paris FC,OU,Under 3,0.5224,1.914,2.01,2.052,1.028
+D,LaLiga,2026-05-12 03:00,Vallecano,Girona,OU,Under 1.5,0.5224,1.914,2.01,0.574,1.034
+D,Bundesliga,2026-05-11 01:30,Mainz,Union Berlin,TT,Union Berlin O0.5,0.521,1.919,2.015,1.351,0.736
+D,Bundesliga,2026-05-09 21:30,Stuttgart,Leverkusen,OU,Under 3.5,0.5205,1.921,2.017,2.043,1.532
+D,LaLiga,2026-05-09 20:00,Elche,Alaves,OU,Under 3,0.5193,1.926,2.022,1.753,1.338
+D,EPL,2026-05-05 03:00,Everton,Man City,BTTS,BTTS Yes,0.518,1.931,2.027,0.788,1.39
+D,SerieA,2026-05-11 00:00,Parma,Roma,TT,Roma O1.5,0.5179,1.931,2.028,0.542,1.736
+D,EPL,2026-05-10 21:00,Nott'm Forest,Newcastle,OU,Under 2.5,0.5167,1.935,2.032,1.504,1.103
+D,EPL,2026-05-09 22:00,Fulham,Bournemouth,OU,Over 2.5,0.5164,1.937,2.033,1.348,1.393
+D,Bundesliga,2026-05-09 21:30,Hoffenheim,Werder Bremen,OU,Over 3,0.5163,1.937,2.034,2.42,0.798
+D,SerieA,2026-05-09 02:45,Torino,Sassuolo,1X2,Sassuolo Win,0.516,1.938,2.035,1.112,1.721
