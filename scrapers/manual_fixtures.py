@@ -41,10 +41,28 @@ def add_fixture(home_team: str, away_team: str, league: str, kickoff: str, match
     away_team = normalize_team_name(away_team.strip())
     
     kickoff = normalize_kickoff(kickoff)
-    match_id = match_id or make_match_id(home_team, away_team, league, kickoff)
 
     conn = sqlite3.connect(DB_PATH)
     c = conn.cursor()
+
+    if not match_id:
+        c.execute(
+            """
+            SELECT match_id
+            FROM matches
+            WHERE home_team = ?
+              AND away_team = ?
+              AND league = ?
+              AND kickoff = ?
+              AND status IN ('scheduled', 'stale')
+            ORDER BY CASE WHEN match_id LIKE 'manual_%' THEN 1 ELSE 0 END, match_id
+            LIMIT 1
+            """,
+            (home_team.strip(), away_team.strip(), league.strip(), kickoff),
+        )
+        row = c.fetchone()
+        match_id = row[0] if row else make_match_id(home_team, away_team, league, kickoff)
+
     c.execute(
         """
         INSERT INTO matches (match_id, home_team, away_team, league, kickoff, status)
