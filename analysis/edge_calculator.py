@@ -47,6 +47,8 @@ class RangeConfig:
     max_picks: int
     min_edge: float
     market_min_picks: Dict[str, int] = field(default_factory=dict)
+    max_picks_per_match: int = 2
+    max_family_per_match: int = 1
 
 class EdgeCalculator:
     """
@@ -98,6 +100,8 @@ class EdgeCalculator:
                     str(market).upper(): int(count)
                     for market, count in raw.get('market_min_picks', {}).items()
                 },
+                max_picks_per_match=int(raw.get('max_picks_per_match', settings.get('max_picks_per_match', 2))),
+                max_family_per_match=int(raw.get('max_family_per_match', settings.get('max_family_per_match', 1))),
             )
         return configs or EdgeCalculator.DEFAULT_RANGES
     
@@ -297,6 +301,8 @@ class EdgeCalculator:
         all_candidates = self.generate_picks(league=league, min_edge=0.0)
         selected = []
         exposure = set()
+        match_counts = {}
+        family_counts = {}
 
         for code, config in self.range_configs.items():
             range_candidates = [
@@ -312,12 +318,19 @@ class EdgeCalculator:
                 exposure_key = (pick.home_team, pick.away_team, pick.market, pick.selection)
                 if exposure_key in exposure:
                     return False
+                if match_counts.get(pick.match_id, 0) >= config.max_picks_per_match:
+                    return False
+                family_key = (pick.match_id, self._exposure_family(pick))
+                if family_counts.get(family_key, 0) >= config.max_family_per_match:
+                    return False
 
                 pick.range_code = code
                 pick.stake = self.flat_range_stake(config)
                 pick.reasoning = pick.reasoning or self._build_reasoning_from_pick(pick)
                 selected.append(pick)
                 exposure.add(exposure_key)
+                match_counts[pick.match_id] = match_counts.get(pick.match_id, 0) + 1
+                family_counts[family_key] = family_counts.get(family_key, 0) + 1
                 count += 1
                 return True
 

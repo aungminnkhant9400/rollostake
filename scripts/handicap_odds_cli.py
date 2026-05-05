@@ -17,7 +17,7 @@ from models.core import init_db
 from scripts.export_market_watchlist import _decision_prob, _range_for_required_odds, _score_distribution
 
 
-HANDICAP_LINES = (-1.5, -0.5, 0.0, 0.5, 1.5)
+HANDICAP_LINES = (-1.5, -1.0, -0.5, 0.0, 0.5, 1.0, 1.5)
 FIELDNAMES = [
     "range_hint",
     "match_id",

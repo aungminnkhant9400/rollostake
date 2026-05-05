@@ -78,6 +78,16 @@ python scripts\handicap_odds_cli.py --import-file handicap_odds.csv
 python main.py --skip-scrape --no-fatigue
 ```
 
+### Coverage Check
+
+Before locking a weekly card, generate a coverage report. It shows which markets
+have odds, what made the official card, and the highest-priority missing team
+total / handicap prices.
+
+```powershell
+python scripts\odds_coverage_report.py --output odds_coverage_report.md
+```
+
 ## Architecture
 
 ```
