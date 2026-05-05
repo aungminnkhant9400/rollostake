@@ -50,6 +50,42 @@ research/results/best_config_*.json
 
 These generated outputs are ignored by Git. Commit code changes, not every experiment output.
 
+## Speed
+
+The expensive step is rolling model fitting. AutoResearch caches the generated historical candidates in:
+
+```text
+research/cache/candidates_*.json
+```
+
+After one broad run, later market/filter tests reuse that cache and skip the model fits.
+
+Recommended broad cache build:
+
+```bash
+python research/autoresearch.py \
+  --seasons 2324 2425 2526 \
+  --leagues EPL L1 Bundesliga SerieA LaLiga \
+  --workers 8 \
+  --batch-days 14 \
+  --candidate-markets 1X2,OU,BTTS,AH \
+  --top 20
+```
+
+Then run quick filtered tests using the same cache:
+
+```bash
+python research/autoresearch.py \
+  --seasons 2324 2425 2526 \
+  --leagues EPL L1 Bundesliga SerieA LaLiga \
+  --workers 8 \
+  --batch-days 14 \
+  --markets 1X2 \
+  --top 20
+```
+
+Use `--refresh-cache` when you intentionally want to rebuild from source CSVs and refit the rolling models.
+
 ## Important Constraint
 
 The current Dixon-Coles model uses SciPy/NumPy CPU optimization. The A100 GPU is not used yet. The server is still useful because it can run long, parallel research jobs, but true GPU acceleration would require a future PyTorch/JAX model.

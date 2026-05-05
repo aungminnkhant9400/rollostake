@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import argparse
 import csv
+import hashlib
 import io
 import json
 import math
@@ -37,6 +38,7 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 RESEARCH_DIR = PROJECT_ROOT / "research"
 CACHE_DIR = RESEARCH_DIR / "cache"
 RESULTS_DIR = RESEARCH_DIR / "results"
+SUPPORTED_MARKETS = ("1X2", "OU", "BTTS", "AH")
 
 
 @dataclass(frozen=True)
@@ -86,6 +88,14 @@ class ResearchConfig:
 
 def parse_csv_list(raw: str, cast):
     return [cast(item.strip()) for item in raw.split(",") if item.strip()]
+
+
+def parse_markets(raw: str) -> Tuple[str, ...]:
+    markets = tuple(item.strip().upper() for item in raw.split(",") if item.strip())
+    unknown = [market for market in markets if market not in SUPPORTED_MARKETS]
+    if unknown:
+        raise ValueError(f"Unsupported market(s): {', '.join(unknown)}")
+    return markets
 
 
 def parse_date(value: str) -> Optional[date]:
@@ -530,6 +540,54 @@ def build_weekly_candidate_batches(
     return batches
 
 
+def candidate_cache_path(
+    leagues: Sequence[str],
+    seasons: Sequence[str],
+    markets: Sequence[str],
+    train_size: int,
+    min_train_size: int,
+    batch_days: int,
+    start_date: Optional[date],
+    end_date: Optional[date],
+) -> Path:
+    payload = {
+        "version": 2,
+        "leagues": list(leagues),
+        "seasons": list(seasons),
+        "candidate_markets": list(markets),
+        "train_size": train_size,
+        "min_train_size": min_train_size,
+        "batch_days": batch_days,
+        "start_date": start_date.isoformat() if start_date else None,
+        "end_date": end_date.isoformat() if end_date else None,
+    }
+    digest = hashlib.sha256(json.dumps(payload, sort_keys=True).encode("utf-8")).hexdigest()[:16]
+    return CACHE_DIR / f"candidates_{digest}.json"
+
+
+def load_candidate_batches(path: Path) -> Optional[List[List[Candidate]]]:
+    if not path.exists():
+        return None
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    batches = []
+    for raw_batch in payload.get("batches", []):
+        batches.append([Candidate(**raw_candidate) for raw_candidate in raw_batch])
+    print(f"Loaded candidate cache: {path}", flush=True)
+    return batches
+
+
+def save_candidate_batches(path: Path, batches: Sequence[Sequence[Candidate]]) -> None:
+    CACHE_DIR.mkdir(parents=True, exist_ok=True)
+    payload = {
+        "generated_at": datetime.now().isoformat(timespec="seconds"),
+        "batch_count": len(batches),
+        "candidate_count": sum(len(batch) for batch in batches),
+        "batches": [[asdict(candidate) for candidate in batch] for batch in batches],
+    }
+    path.write_text(json.dumps(payload), encoding="utf-8")
+    print(f"Saved candidate cache: {path}", flush=True)
+
+
 def quality(edge_pct: float) -> str:
     if edge_pct >= 25:
         return "STRONG"
@@ -798,7 +856,12 @@ def main():
     parser = argparse.ArgumentParser(description="Run Rollo Stake AutoResearch experiments")
     parser.add_argument("--leagues", nargs="+", default=settings.get("leagues", list(LEAGUE_CODES.keys())))
     parser.add_argument("--seasons", nargs="+", default=["2324", "2425", "2526"])
-    parser.add_argument("--markets", default="1X2,OU,BTTS,AH")
+    parser.add_argument("--markets", default="1X2,OU,BTTS,AH", help="Markets to evaluate in the config grid")
+    parser.add_argument(
+        "--candidate-markets",
+        default="1X2,OU,BTTS,AH",
+        help="Markets to build/cache during rolling model fits. Keep broad for reusable cache.",
+    )
     parser.add_argument("--train-size", type=int, default=200)
     parser.add_argument("--min-train-size", type=int, default=80)
     parser.add_argument("--batch-days", type=int, default=7)
@@ -814,6 +877,7 @@ def main():
     parser.add_argument("--max-family-per-match", default="1")
     parser.add_argument("--workers", type=int, default=1, help="Workers for model fitting and config scoring")
     parser.add_argument("--fit-workers", type=int, default=0, help="Override workers for rolling model fits")
+    parser.add_argument("--no-candidate-cache", action="store_true", help="Disable cached rolling candidates")
     parser.add_argument("--top", type=int, default=10)
     parser.add_argument("--refresh-cache", action="store_true")
     parser.add_argument("--quick", action="store_true", help="Run a small smoke-test grid")
@@ -830,20 +894,40 @@ def main():
 
     start_date = parse_date(args.start_date) if args.start_date else None
     end_date = parse_date(args.end_date) if args.end_date else None
+    eval_markets = parse_markets(args.markets)
+    candidate_markets = parse_markets(args.candidate_markets)
 
-    matches = load_historical_matches(args.leagues, args.seasons, refresh_cache=args.refresh_cache)
-    candidate_batches = build_weekly_candidate_batches(
-        matches=matches,
+    cache_path = candidate_cache_path(
         leagues=args.leagues,
-        markets=[m.strip().upper() for m in args.markets.split(",") if m.strip()],
+        seasons=args.seasons,
+        markets=candidate_markets,
         train_size=args.train_size,
         min_train_size=args.min_train_size,
         batch_days=args.batch_days,
         start_date=start_date,
         end_date=end_date,
-        fit_workers=args.fit_workers or args.workers,
-        verbose=args.verbose,
     )
+    candidate_batches = None
+    if not args.no_candidate_cache and not args.refresh_cache:
+        candidate_batches = load_candidate_batches(cache_path)
+
+    if candidate_batches is None:
+        matches = load_historical_matches(args.leagues, args.seasons, refresh_cache=args.refresh_cache)
+        candidate_batches = build_weekly_candidate_batches(
+            matches=matches,
+            leagues=args.leagues,
+            markets=candidate_markets,
+            train_size=args.train_size,
+            min_train_size=args.min_train_size,
+            batch_days=args.batch_days,
+            start_date=start_date,
+            end_date=end_date,
+            fit_workers=args.fit_workers or args.workers,
+            verbose=args.verbose,
+        )
+        if not args.no_candidate_cache:
+            save_candidate_batches(cache_path, candidate_batches)
+
     configs = build_config_grid(args)
     print(f"\nPrepared {len(candidate_batches)} weekly batches and {len(configs)} configs")
 
