@@ -150,3 +150,54 @@ Confirm GPU use while it is running:
 ```bash
 nvidia-smi
 ```
+
+## Overnight AutoLoop
+
+`research/autoloop.py` is the overnight researcher. It runs broad GPU experiments, reads the resulting breakdown CSVs, chooses adaptive follow-up experiments from positive slices, and writes a morning report.
+
+Smoke test:
+
+```bash
+python research/autoloop.py \
+  --quick \
+  --device cuda \
+  --initial-experiments 1 \
+  --adaptive-experiments 1 \
+  --top 5
+```
+
+Overnight run:
+
+```bash
+nohup python research/autoloop.py \
+  --seasons 2122 2223 2324 2425 2526 \
+  --leagues EPL L1 Bundesliga SerieA LaLiga \
+  --device cuda \
+  --candidate-markets 1X2,OU \
+  --train-size-per-league 300 \
+  --min-train-size-per-league 120 \
+  --batch-days 14 \
+  --epochs 500 \
+  --c-max-picks 0,1,2 \
+  --d-max-picks 1,2,3 \
+  --min-edges 0.15,0.25,0.35 \
+  --initial-experiments 3 \
+  --adaptive-experiments 4 \
+  --timeout-minutes 240 \
+  --top 20 \
+  > research/results/autoloop_nohup.log 2>&1 &
+```
+
+Check progress:
+
+```bash
+tail -f research/results/autoloop_nohup.log
+nvidia-smi
+```
+
+Morning outputs:
+
+```text
+research/results/autoloop_report_*.md
+research/results/autoloop_results_*.json
+```
