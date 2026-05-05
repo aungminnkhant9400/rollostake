@@ -7,45 +7,45 @@ Scheduled fixtures: 48
 - AH: 5
 - BTTS: 16
 - OU: 50
-- TT: 8
+- TT: 7
 
 ## Official Picks by Market
-- 1X2: 20
+- 1X2: 18
 - AH: 1
-- BTTS: 1
-- OU: 5
+- BTTS: 4
+- OU: 4
 - TT: 2
 
 ## Official Card
-- C | 2026-05-04 22:00 | Chelsea vs Nott'm Forest | 1X2 Draw @4.90 | STRONG | edge 66.1%
-- C | 2026-05-04 22:00 | Chelsea vs Nott'm Forest | OU Under 1.5 @4.60 | STRONG | edge 33.7%
-- C | 2026-05-05 03:00 | Everton vs Man City | 1X2 Draw @4.70 | STRONG | edge 60.7%
-- C | 2026-05-05 03:00 | Sevilla vs Sociedad | 1X2 Sociedad Win @2.85 | STRONG | edge 31.7%
-- C | 2026-05-09 02:45 | Torino vs Sassuolo | 1X2 Sassuolo Win @3.15 | STRONG | edge 61.9%
-- C | 2026-05-09 03:00 | Levante vs Osasuna | 1X2 Osasuna Win @2.80 | STRONG | edge 28.8%
-- C | 2026-05-09 22:00 | Sunderland vs Man United | 1X2 Draw @3.80 | KEEP | edge 22.0%
-- C | 2026-05-10 18:30 | Verona vs Como | OU Over 3.0 @2.55 | KEEP | edge 24.6%
-- C | 2026-05-10 20:00 | Mallorca vs Villarreal | 1X2 Villarreal Win @2.85 | KEEP | edge 22.8%
-- C | 2026-05-10 21:00 | Fiorentina vs Genoa | 1X2 Genoa Win @3.80 | STRONG | edge 71.0%
-- C | 2026-05-10 22:15 | Ath Bilbao vs Valencia | 1X2 Valencia Win @4.80 | STRONG | edge 49.3%
-- C | 2026-05-11 00:30 | Real Oviedo vs Getafe | 1X2 Real Oviedo Win @3.05 | STRONG | edge 40.9%
-- C | 2026-05-11 01:30 | Mainz vs Union Berlin | OU Under 1.5 @3.85 | STRONG | edge 47.4%
-- C | 2026-05-11 03:00 | Toulouse vs Lyon | 1X2 Toulouse Win @4.30 | STRONG | edge 46.6%
-- C | 2026-05-11 03:00 | Monaco vs Lille | 1X2 Lille Win @2.85 | KEEP | edge 24.3%
-- C | 2026-05-11 03:00 | Barcelona vs Real Madrid | 1X2 Real Madrid Win @3.75 | KEEP | edge 22.6%
-- D | 2026-05-05 00:30 | Cremonese vs Lazio | 1X2 Lazio Win @2.48 | KEEP | edge 22.3%
-- D | 2026-05-09 21:30 | RB Leipzig vs St Pauli | OU Under 3.0 @1.98 | KEEP | edge 21.2%
-- D | 2026-05-09 22:00 | Fulham vs Bournemouth | TT Bournemouth U1.5 @1.88 | KEEP | edge 11.8%
-- D | 2026-05-10 00:00 | Lazio vs Inter Milan | 1X2 Inter Milan Win @1.81 | STRONG | edge 63.1%
-- D | 2026-05-10 02:45 | Lecce vs Juventus | TT Lecce U0.5 @2.11 | STRONG | edge 31.2%
-- D | 2026-05-10 03:00 | Sociedad vs Betis | 1X2 Sociedad Win @2.24 | KEEP | edge 11.1%
-- D | 2026-05-10 18:30 | Verona vs Como | BTTS BTTS No @1.70 | KEEP | edge 22.6%
-- D | 2026-05-10 21:00 | Crystal Palace vs Everton | 1X2 Everton Win @2.65 | KEEP | edge 20.0%
-- D | 2026-05-10 21:00 | Nott'm Forest vs Newcastle | 1X2 Nott'm Forest Win @2.50 | KEEP | edge 12.8%
-- D | 2026-05-10 23:30 | West Ham vs Arsenal | AH Arsenal AH -1 @2.08 | CAUTION | edge 8.6%
-- D | 2026-05-11 00:00 | Parma vs Roma | 1X2 Roma Win @1.73 | KEEP | edge 20.2%
-- D | 2026-05-11 03:00 | Metz vs Lorient | 1X2 Lorient Win @2.19 | KEEP | edge 22.6%
-- D | 2026-05-11 03:00 | Monaco vs Lille | OU Under 3.0 @1.80 | KEEP | edge 12.1%
+- C | 2026-05-04 22:00 | Chelsea vs Nott'm Forest | 1X2 Draw @4.90 | STRONG | edge 41.1%
+- C | 2026-05-05 03:00 | Sevilla vs Sociedad | 1X2 Sociedad Win @2.85 | STRONG | edge 47.6%
+- C | 2026-05-05 03:00 | Everton vs Man City | 1X2 Draw @4.70 | STRONG | edge 46.6%
+- C | 2026-05-09 02:45 | Torino vs Sassuolo | 1X2 Sassuolo Win @3.15 | STRONG | edge 66.0%
+- C | 2026-05-09 03:00 | Levante vs Osasuna | OU Under 1.5 @3.35 | STRONG | edge 27.4%
+- C | 2026-05-10 00:00 | Lazio vs Inter Milan | 1X2 Lazio Win @4.50 | STRONG | edge 109.2%
+- C | 2026-05-10 18:30 | Verona vs Como | OU Over 3.0 @2.55 | KEEP | edge 23.5%
+- C | 2026-05-10 20:00 | Mallorca vs Villarreal | 1X2 Villarreal Win @2.85 | STRONG | edge 30.0%
+- C | 2026-05-10 21:00 | Fiorentina vs Genoa | 1X2 Genoa Win @3.80 | STRONG | edge 63.0%
+- C | 2026-05-10 21:00 | Nott'm Forest vs Newcastle | 1X2 Nott'm Forest Win @2.50 | STRONG | edge 42.0%
+- C | 2026-05-10 21:00 | Crystal Palace vs Everton | 1X2 Everton Win @2.65 | STRONG | edge 34.9%
+- C | 2026-05-10 22:15 | Ath Bilbao vs Valencia | 1X2 Valencia Win @4.80 | STRONG | edge 43.5%
+- C | 2026-05-10 23:30 | FC Koln vs Heidenheim | 1X2 Heidenheim Win @4.10 | KEEP | edge 21.8%
+- C | 2026-05-11 00:30 | Real Oviedo vs Getafe | 1X2 Real Oviedo Win @3.05 | STRONG | edge 41.8%
+- C | 2026-05-11 03:00 | Toulouse vs Lyon | 1X2 Toulouse Win @4.30 | STRONG | edge 57.0%
+- D | 2026-05-04 22:00 | Chelsea vs Nott'm Forest | BTTS BTTS Yes @1.80 | KEEP | edge 19.0%
+- D | 2026-05-05 00:30 | Cremonese vs Lazio | 1X2 Lazio Win @2.48 | STRONG | edge 34.4%
+- D | 2026-05-09 19:30 | Liverpool vs Chelsea | 1X2 Liverpool Win @1.94 | KEEP | edge 20.1%
+- D | 2026-05-09 20:00 | Elche vs Alaves | 1X2 Elche Win @2.28 | KEEP | edge 18.3%
+- D | 2026-05-09 21:30 | RB Leipzig vs St Pauli | OU Under 3.0 @1.98 | STRONG | edge 27.1%
+- D | 2026-05-09 22:00 | Fulham vs Bournemouth | TT Bournemouth U1.5 @1.88 | KEEP | edge 12.5%
+- D | 2026-05-09 22:00 | Brighton vs Wolves | TT Wolves U0.5 @2.00 | KEEP | edge 12.4%
+- D | 2026-05-10 02:45 | Lecce vs Juventus | BTTS BTTS No @1.85 | KEEP | edge 14.7%
+- D | 2026-05-10 18:30 | Verona vs Como | BTTS BTTS No @1.70 | KEEP | edge 22.2%
+- D | 2026-05-10 23:30 | West Ham vs Arsenal | AH Arsenal AH -1 @2.08 | STRONG | edge 28.7%
+- D | 2026-05-11 00:00 | Parma vs Roma | 1X2 Roma Win @1.73 | KEEP | edge 17.3%
+- D | 2026-05-11 00:00 | Parma vs Roma | BTTS BTTS No @1.76 | KEEP | edge 16.0%
+- D | 2026-05-11 03:00 | Monaco vs Lille | OU Under 3.0 @1.80 | KEEP | edge 20.7%
+- D | 2026-05-11 03:00 | Metz vs Lorient | 1X2 Lorient Win @2.19 | KEEP | edge 15.6%
 
 ## Missing Top Team Totals
 - 2026-05-10 21:00 | Cremonese vs Pisa | Cremonese O0.5 | need >= 1.705
