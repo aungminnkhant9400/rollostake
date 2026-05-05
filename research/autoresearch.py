@@ -17,7 +17,7 @@ import json
 import math
 import statistics
 import sys
-from concurrent.futures import ProcessPoolExecutor
+from concurrent.futures import ProcessPoolExecutor, as_completed
 from contextlib import nullcontext, redirect_stdout
 from dataclasses import asdict, dataclass, field
 from datetime import date, datetime, timedelta
@@ -448,6 +448,23 @@ def train_match_results(matches: Iterable[HistoricalMatch]) -> List[MatchResult]
     ]
 
 
+def build_candidate_task(task) -> Tuple[str, List[Candidate]]:
+    batch_id, league, train, test, markets, verbose = task
+    model = DixonColesModel()
+    fit_context = nullcontext() if verbose else redirect_stdout(io.StringIO())
+    with fit_context:
+        model.fit(train_match_results(train))
+
+    if verbose:
+        print(f"{batch_id} {league}: train={len(train)} test={len(test)}", flush=True)
+
+    candidates: List[Candidate] = []
+    for match in test:
+        preds = model.predict(match.home_team, match.away_team)
+        candidates.extend(build_candidates_for_match(batch_id, match, preds, markets))
+    return batch_id, candidates
+
+
 def build_weekly_candidate_batches(
     matches: Sequence[HistoricalMatch],
     leagues: Sequence[str],
@@ -457,6 +474,7 @@ def build_weekly_candidate_batches(
     batch_days: int,
     start_date: Optional[date],
     end_date: Optional[date],
+    fit_workers: int = 1,
     verbose: bool = False,
 ) -> List[List[Candidate]]:
     by_league: Dict[str, List[HistoricalMatch]] = {
@@ -468,32 +486,47 @@ def build_weekly_candidate_batches(
 
     first_date = start_date or min(m.match_date for m in matches)
     last_date = end_date or max(m.match_date for m in matches)
-    batches: List[List[Candidate]] = []
+    tasks = []
     current = first_date
     while current <= last_date:
         window_end = current + timedelta(days=batch_days)
         batch_id = f"{current.isoformat()}_{(window_end - timedelta(days=1)).isoformat()}"
-        batch_candidates: List[Candidate] = []
         for league, league_matches in by_league.items():
             train = [m for m in league_matches if m.match_date < current][-train_size:]
             test = [m for m in league_matches if current <= m.match_date < window_end]
             if len(train) < min_train_size or not test:
                 continue
-
-            model = DixonColesModel()
-            fit_context = nullcontext() if verbose else redirect_stdout(io.StringIO())
-            with fit_context:
-                model.fit(train_match_results(train))
-            if verbose:
-                print(f"{batch_id} {league}: train={len(train)} test={len(test)}")
-
-            for match in test:
-                preds = model.predict(match.home_team, match.away_team)
-                batch_candidates.extend(build_candidates_for_match(batch_id, match, preds, markets))
-
-        if batch_candidates:
-            batches.append(batch_candidates)
+            tasks.append((batch_id, league, train, test, tuple(markets), verbose))
         current = window_end
+
+    print(
+        f"Building historical candidate batches: {len(tasks)} rolling model fits "
+        f"({fit_workers} worker{'s' if fit_workers != 1 else ''})",
+        flush=True,
+    )
+
+    batches_by_id: Dict[str, List[Candidate]] = {}
+    completed = 0
+    if fit_workers > 1 and len(tasks) > 1:
+        with ProcessPoolExecutor(max_workers=fit_workers) as pool:
+            futures = [pool.submit(build_candidate_task, task) for task in tasks]
+            for future in as_completed(futures):
+                batch_id, candidates = future.result()
+                if candidates:
+                    batches_by_id.setdefault(batch_id, []).extend(candidates)
+                completed += 1
+                if completed == 1 or completed % 25 == 0 or completed == len(tasks):
+                    print(f"  Completed {completed}/{len(tasks)} model fits", flush=True)
+    else:
+        for task in tasks:
+            batch_id, candidates = build_candidate_task(task)
+            if candidates:
+                batches_by_id.setdefault(batch_id, []).extend(candidates)
+            completed += 1
+            if completed == 1 or completed % 25 == 0 or completed == len(tasks):
+                print(f"  Completed {completed}/{len(tasks)} model fits", flush=True)
+
+    batches = [batches_by_id[key] for key in sorted(batches_by_id)]
     return batches
 
 
@@ -779,7 +812,8 @@ def main():
     parser.add_argument("--min-edges", default="0.05,0.08,0.10")
     parser.add_argument("--max-picks-per-match", default="1,2")
     parser.add_argument("--max-family-per-match", default="1")
-    parser.add_argument("--workers", type=int, default=1)
+    parser.add_argument("--workers", type=int, default=1, help="Workers for model fitting and config scoring")
+    parser.add_argument("--fit-workers", type=int, default=0, help="Override workers for rolling model fits")
     parser.add_argument("--top", type=int, default=10)
     parser.add_argument("--refresh-cache", action="store_true")
     parser.add_argument("--quick", action="store_true", help="Run a small smoke-test grid")
@@ -807,6 +841,7 @@ def main():
         batch_days=args.batch_days,
         start_date=start_date,
         end_date=end_date,
+        fit_workers=args.fit_workers or args.workers,
         verbose=args.verbose,
     )
     configs = build_config_grid(args)

@@ -24,6 +24,17 @@ python research/autoresearch.py \
   --top 20
 ```
 
+If you want a faster first full pass, use 14-day batches:
+
+```bash
+python research/autoresearch.py \
+  --seasons 2324 2425 2526 \
+  --leagues EPL L1 Bundesliga SerieA LaLiga \
+  --workers 8 \
+  --batch-days 14 \
+  --top 20
+```
+
 For a quick smoke test:
 
 ```bash
