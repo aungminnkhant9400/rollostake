@@ -204,7 +204,9 @@ research/results/autoloop_results_*.json
 
 ## LLM Code-Editing Agent Loop
 
-`research/agent_loop.py` is the true code-editing research loop. It uses DeepSeek to propose small patches, applies each patch in an isolated git worktree, runs GPU AutoResearch, and keeps a report of patches that beat the baseline. It does not push or modify production by default.
+`research/agent_loop.py` is the true code-editing research loop. It uses DeepSeek to propose small code changes, applies each change in an isolated git worktree, runs GPU AutoResearch, and keeps a report of changes that beat the baseline. It does not push or modify production by default.
+
+By default the loop asks DeepSeek for a complete replacement of one allowlisted file, then turns that replacement into a real `git diff`. This is more reliable than asking the model to hand-write a unified patch. Raw patch mode is still available with `--edit-mode patch`.
 
 Set the API key on the server:
 
@@ -219,6 +221,7 @@ Smoke test with a short evaluation command:
 python research/agent_loop.py \
   --iterations 1 \
   --model deepseek-v4-pro \
+  --edit-mode file \
   --eval-timeout-minutes 30 \
   --eval-command "python research/gpu_autoresearch.py --quick --device cuda --markets 1X2,OU --candidate-markets 1X2,OU --top 5"
 ```
@@ -229,6 +232,7 @@ Overnight code-editing run:
 nohup python research/agent_loop.py \
   --iterations 5 \
   --model deepseek-v4-pro \
+  --edit-mode file \
   --eval-timeout-minutes 240 \
   --min-roi 1.0 \
   --min-picks 40 \
@@ -249,11 +253,12 @@ Morning outputs:
 research/results/agent_loop_report_*.md
 research/results/agent_loop_results_*.json
 research/agent_runs/*/iter_*.patch
+research/agent_runs/*/iter_*_raw_response.txt
 ```
 
 Accepted patches remain in their worktree so they can be reviewed before manually applying them to `main`.
 
-If an LLM patch fails to apply, the loop asks DeepSeek for one repair by default. Raw responses and patch files are saved under:
+If you run `--edit-mode patch` and an LLM patch fails to apply, the loop asks DeepSeek for one repair by default. Raw responses and patch files are saved under:
 
 ```text
 research/agent_runs/*/iter_*_raw_response.txt

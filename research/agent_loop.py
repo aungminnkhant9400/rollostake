@@ -8,7 +8,7 @@ against a baseline, and writes a report with the best patch.
 
 Safety model:
 - Requires DEEPSEEK_API_KEY.
-- Only allows patches to an explicit file allowlist.
+- Only allows edits to an explicit file allowlist.
 - Runs in detached git worktrees under research/agent_runs/.
 - Does not push or modify production by default.
 """
@@ -230,6 +230,7 @@ def proposal_prompt(
     previous_results: Sequence[IterationResult],
     allowed_files: Sequence[str],
     max_file_chars: int,
+    edit_mode: str,
     repair_error: str = "",
     failed_patch: str = "",
 ) -> List[Dict[str, str]]:
@@ -253,12 +254,38 @@ code patch that could improve holdout ROI without exploding drawdown. You must
 return only valid JSON.
 
 Rules:
-- Patch only files in the allowlist.
+- Edit only files in the allowlist.
 - Prefer small, testable changes.
 - Keep the Dixon-Coles idea: score distribution, 1X2, and over/under.
 - Do not remove safety checks, caching, output reports, or CLI compatibility.
 - Do not hard-code one lucky result file or future results.
 - Optimize for robust ROI, enough picks, and lower drawdown.
+""".strip()
+
+    if edit_mode == "file":
+        edit_contract = """
+Return JSON with this schema:
+{
+  "hypothesis": "short explanation",
+  "file": "one exact path from the allowlist",
+  "content": "complete replacement content for that file",
+  "expected_effect": "what metric should improve and why",
+  "risk": "what could go wrong"
+}
+
+The content field must contain the full file contents, not a diff. Do not use
+markdown fences inside the JSON. Keep imports, CLI compatibility, output paths,
+and existing safety checks unless the experiment needs a small targeted change.
+""".strip()
+    else:
+        edit_contract = """
+Return JSON with this schema:
+{
+  "hypothesis": "short explanation",
+  "patch": "unified diff starting with diff --git ...",
+  "expected_effect": "what metric should improve and why",
+  "risk": "what could go wrong"
+}
 """.strip()
 
     user = f"""
@@ -274,13 +301,7 @@ Previous agent attempts:
 Allowed files:
 {chr(10).join(allowed_files)}
 
-Return JSON with this schema:
-{{
-  "hypothesis": "short explanation",
-  "patch": "unified diff starting with diff --git ...",
-  "expected_effect": "what metric should improve and why",
-  "risk": "what could go wrong"
-}}
+{edit_contract}
 
 Relevant code:
 {chr(10).join(file_context)}
@@ -319,6 +340,7 @@ def ask_for_proposal(
         previous_results,
         allowed_files,
         args.max_file_chars,
+        args.edit_mode,
         repair_error=repair_error,
         failed_patch=failed_patch,
     )
@@ -353,6 +375,31 @@ def validate_patch_files(patch: str, allowed_files: Sequence[str]) -> None:
     disallowed = [path for path in changed if path not in set(allowed_files)]
     if disallowed:
         raise ValueError(f"Patch modifies disallowed files: {', '.join(disallowed)}")
+
+
+def apply_file_replacement(
+    proposal: Dict,
+    worktree: Path,
+    allowed_files: Sequence[str],
+    patch_path: Path,
+) -> List[str]:
+    rel_path = str(proposal.get("file", "")).strip()
+    content = proposal.get("content")
+    if rel_path not in set(allowed_files):
+        raise ValueError(f"File replacement targets disallowed file: {rel_path}")
+    if not isinstance(content, str) or not content.strip():
+        raise ValueError("File replacement response did not include non-empty content")
+
+    target = worktree / rel_path
+    target.write_text(content, encoding="utf-8")
+
+    diff = run_cmd(["git", "diff", "--", rel_path], worktree, 60)
+    if diff.returncode != 0:
+        raise RuntimeError(diff.stderr)
+    if not diff.stdout.strip():
+        raise ValueError("File replacement produced no diff")
+    patch_path.write_text(diff.stdout, encoding="utf-8")
+    return [rel_path]
 
 
 def create_worktree(path: Path) -> None:
@@ -401,56 +448,65 @@ def run_iteration(
         args,
         raw_path,
     )
-    patch = proposal.get("patch", "")
     result.hypothesis = str(proposal.get("hypothesis", ""))
-    patch_path.write_text(patch, encoding="utf-8")
-
-    try:
-        validate_patch_files(patch, allowed_files)
-    except Exception as exc:
-        result.errors.append(str(exc))
-        result.reason = "invalid_patch_files"
-        return result
 
     create_worktree(worktree)
     try:
-        check = run_cmd(["git", "apply", "--check", str(patch_path)], worktree, 60)
-        if check.returncode != 0:
-            result.errors.append(check.stderr)
-            if args.repair_patch:
-                repair_raw_path = run_dir / f"iter_{iteration:02d}_repair_raw_response.txt"
-                repair_patch_path = run_dir / f"iter_{iteration:02d}_repair.patch"
-                try:
-                    repair = ask_for_proposal(
-                        baseline,
-                        previous_results,
-                        allowed_files,
-                        args,
-                        repair_raw_path,
-                        repair_error=check.stderr,
-                        failed_patch=patch,
-                    )
-                    patch = repair.get("patch", "")
-                    result.hypothesis = str(repair.get("hypothesis", result.hypothesis))
-                    patch_path = repair_patch_path
-                    result.patch_path = str(patch_path)
-                    patch_path.write_text(patch, encoding="utf-8")
-                    validate_patch_files(patch, allowed_files)
-                    check = run_cmd(["git", "apply", "--check", str(patch_path)], worktree, 60)
-                except Exception as exc:
-                    result.errors.append(f"repair_failed: {exc!r}")
-            if check.returncode != 0:
-                result.errors.append(f"Patch path: {patch_path}")
-                result.reason = "patch_check_failed"
+        if args.edit_mode == "file":
+            try:
+                changed = apply_file_replacement(proposal, worktree, allowed_files, patch_path)
+                result.apply_ok = True
+            except Exception as exc:
+                result.errors.append(str(exc))
+                result.reason = "file_replacement_failed"
                 return result
-        apply = run_cmd(["git", "apply", str(patch_path)], worktree, 60)
-        result.apply_ok = apply.returncode == 0
-        if apply.returncode != 0:
-            result.errors.append(apply.stderr)
-            result.reason = "patch_apply_failed"
-            return result
+        else:
+            patch = proposal.get("patch", "")
+            patch_path.write_text(patch, encoding="utf-8")
+            try:
+                validate_patch_files(patch, allowed_files)
+            except Exception as exc:
+                result.errors.append(str(exc))
+                result.reason = "invalid_patch_files"
+                return result
 
-        changed = changed_files_from_patch(patch)
+            check = run_cmd(["git", "apply", "--check", str(patch_path)], worktree, 60)
+            if check.returncode != 0:
+                result.errors.append(check.stderr)
+                if args.repair_patch:
+                    repair_raw_path = run_dir / f"iter_{iteration:02d}_repair_raw_response.txt"
+                    repair_patch_path = run_dir / f"iter_{iteration:02d}_repair.patch"
+                    try:
+                        repair = ask_for_proposal(
+                            baseline,
+                            previous_results,
+                            allowed_files,
+                            args,
+                            repair_raw_path,
+                            repair_error=check.stderr,
+                            failed_patch=patch,
+                        )
+                        patch = repair.get("patch", "")
+                        result.hypothesis = str(repair.get("hypothesis", result.hypothesis))
+                        patch_path = repair_patch_path
+                        result.patch_path = str(patch_path)
+                        patch_path.write_text(patch, encoding="utf-8")
+                        validate_patch_files(patch, allowed_files)
+                        check = run_cmd(["git", "apply", "--check", str(patch_path)], worktree, 60)
+                    except Exception as exc:
+                        result.errors.append(f"repair_failed: {exc!r}")
+                if check.returncode != 0:
+                    result.errors.append(f"Patch path: {patch_path}")
+                    result.reason = "patch_check_failed"
+                    return result
+            apply = run_cmd(["git", "apply", str(patch_path)], worktree, 60)
+            result.apply_ok = apply.returncode == 0
+            if apply.returncode != 0:
+                result.errors.append(apply.stderr)
+                result.reason = "patch_apply_failed"
+                return result
+
+            changed = changed_files_from_patch(patch)
         compile_result = compile_changed_files(worktree, changed, args.compile_timeout_seconds)
         result.compile_ok = compile_result.returncode == 0
         if compile_result.returncode != 0:
@@ -547,7 +603,7 @@ def main():
     parser.add_argument("--base-url", default=os.environ.get("DEEPSEEK_BASE_URL", "https://api.deepseek.com"))
     parser.add_argument("--api-key-env", default="DEEPSEEK_API_KEY")
     parser.add_argument("--temperature", type=float, default=0.4)
-    parser.add_argument("--max-tokens", type=int, default=6000)
+    parser.add_argument("--max-tokens", type=int, default=16000)
     parser.add_argument("--llm-timeout-seconds", type=int, default=180)
     parser.add_argument("--compile-timeout-seconds", type=int, default=60)
     parser.add_argument("--eval-timeout-minutes", type=int, default=240)
@@ -556,6 +612,12 @@ def main():
     parser.add_argument("--max-file-chars", type=int, default=18000)
     parser.add_argument("--remove-rejected-worktrees", action="store_true")
     parser.add_argument("--repair-patch", action=argparse.BooleanOptionalAction, default=True)
+    parser.add_argument(
+        "--edit-mode",
+        choices=("file", "patch"),
+        default="file",
+        help="Ask the LLM for a full-file replacement by default; raw patch mode is kept as fallback.",
+    )
     parser.add_argument(
         "--allowed-files",
         nargs="+",
