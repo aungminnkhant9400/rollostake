@@ -123,6 +123,16 @@ def handicap_candidates(min_edge: float, max_rows: int) -> list:
 def export_template(path: str, min_edge: float, max_rows: int) -> list:
     ensure_runtime_dirs()
     rows = handicap_candidates(min_edge=min_edge, max_rows=max_rows)
+    existing_odds = {}
+    existing_path = Path(path)
+    if existing_path.exists():
+        with existing_path.open(newline="", encoding="utf-8-sig") as f:
+            for row in csv.DictReader(f):
+                odds = (row.get("odds") or "").strip()
+                if odds:
+                    existing_odds[(row.get("match_id"), row.get("selection"))] = odds
+    for row in rows:
+        row["odds"] = existing_odds.get((row.get("match_id"), row.get("selection")), row["odds"])
     with open(path, "w", newline="", encoding="utf-8") as f:
         writer = csv.DictWriter(f, fieldnames=FIELDNAMES)
         writer.writeheader()

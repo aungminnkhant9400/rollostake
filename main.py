@@ -21,6 +21,74 @@ from tests.backtest import Backtester
 from config.paths import DB_PATH
 from config.settings import load_settings
 
+
+def _decision_from_probs(win_condition: bool, loss_condition: bool) -> str:
+    if win_condition:
+        return 'win'
+    if loss_condition:
+        return 'loss'
+    return 'push'
+
+
+def _settle_selection(selection, market, home_team, away_team, home_goals, away_goals):
+    """Return win/loss/push for a pick from the final score."""
+    import re
+
+    total_goals = home_goals + away_goals
+
+    if market == '1X2':
+        if selection == 'Draw':
+            return 'win' if home_goals == away_goals else 'loss'
+        if home_team in selection:
+            return 'win' if home_goals > away_goals else 'loss'
+        if away_team in selection:
+            return 'win' if away_goals > home_goals else 'loss'
+
+    if market == 'BTTS':
+        both_scored = home_goals > 0 and away_goals > 0
+        if 'BTTS Yes' in selection:
+            return 'win' if both_scored else 'loss'
+        if 'BTTS No' in selection:
+            return 'loss' if both_scored else 'win'
+
+    if market == 'OU':
+        match = re.search(r'\b(Over|Under)\s+(\d+(?:\.\d+)?)\b', selection, re.IGNORECASE)
+        if match:
+            direction = match.group(1).lower()
+            line = float(match.group(2))
+            if direction == 'over':
+                return _decision_from_probs(total_goals > line, total_goals < line)
+            return _decision_from_probs(total_goals < line, total_goals > line)
+
+    if market == 'TT':
+        match = re.search(r'\b(O|U|Over|Under)\s*(\d+(?:\.\d+)?)\b', selection, re.IGNORECASE)
+        if match:
+            if home_team in selection:
+                team_goals = home_goals
+            elif away_team in selection:
+                team_goals = away_goals
+            else:
+                return None
+            direction = match.group(1).lower()
+            line = float(match.group(2))
+            if direction in ('o', 'over'):
+                return _decision_from_probs(team_goals > line, team_goals < line)
+            return _decision_from_probs(team_goals < line, team_goals > line)
+
+    if market == 'AH':
+        match = re.search(r'\bAH\s*([+-]?\d+(?:\.\d+)?)\b', selection, re.IGNORECASE)
+        if match:
+            handicap = float(match.group(1))
+            if home_team in selection:
+                margin = home_goals + handicap - away_goals
+            elif away_team in selection:
+                margin = away_goals + handicap - home_goals
+            else:
+                return None
+            return _decision_from_probs(margin > 0, margin < 0)
+
+    return None
+
 def run_pipeline(leagues=None, skip_scrape=False, use_fatigue=True):
     """
     Run the full betting model pipeline.
@@ -329,43 +397,62 @@ def get_upcoming_matches():
     conn.close()
     return matches
 
-def update_results(match_id, result, home_goals=None, away_goals=None):
-    """Update match results and calculate P&L."""
+def update_results(match_id, result=None, home_goals=None, away_goals=None):
+    """Update match score and settle each pick against its own market rules."""
     import sqlite3
     conn = sqlite3.connect(DB_PATH)
     c = conn.cursor()
+
+    c.execute('SELECT home_team, away_team FROM matches WHERE match_id = ?', (match_id,))
+    match_row = c.fetchone()
+    if not match_row:
+        conn.close()
+        raise ValueError(f"No match found with id {match_id}")
+    home_team, away_team = match_row
     
     # Update match status
     c.execute('''
         UPDATE matches SET status = ?, home_goals = ?, away_goals = ?
         WHERE match_id = ?
     ''', ('completed', home_goals, away_goals, match_id))
-    
-    # Update picks P&L
+
     c.execute('''
-        UPDATE picks SET status = 'settled', result = ?
+        SELECT id, selection, market, odds, stake, range_code, quality
+        FROM picks
         WHERE match_id = ?
-    ''', (result, match_id))
-    
-    # Calculate P&L for each pick
-    c.execute('''
-        SELECT id, odds, stake, range_code, quality FROM picks WHERE match_id = ?
     ''', (match_id,))
-    
-    for pick_id, odds, stake, range_code, quality in c.fetchall():
-        if result == 'win':
+
+    settled = []
+    for pick_id, selection, market, odds, stake, range_code, quality in c.fetchall():
+        pick_result = None
+        if home_goals is not None and away_goals is not None:
+            pick_result = _settle_selection(
+                selection, market, home_team, away_team, home_goals, away_goals
+            )
+        if pick_result is None:
+            pick_result = result
+        if pick_result not in {'win', 'loss', 'push'}:
+            conn.close()
+            raise ValueError(f"Could not settle pick {pick_id}: {market} {selection}")
+
+        if pick_result == 'win':
             pnl = stake * (odds - 1)
             payout = stake + pnl
-        elif result == 'loss':
+        elif pick_result == 'loss':
             pnl = -stake
             payout = 0
         else:
             pnl = 0
             payout = stake
-        
+
         c.execute(
-            'UPDATE picks SET pnl = ?, payout = ?, settled_at = CURRENT_TIMESTAMP WHERE id = ?',
-            (pnl, payout, pick_id)
+            '''
+            UPDATE picks
+            SET status = 'settled', result = ?, pnl = ?, payout = ?,
+                settled_at = CURRENT_TIMESTAMP
+            WHERE id = ?
+            ''',
+            (pick_result, pnl, payout, pick_id)
         )
         c.execute('DELETE FROM results WHERE pick_id = ?', (pick_id,))
         c.execute(
@@ -375,14 +462,17 @@ def update_results(match_id, result, home_goals=None, away_goals=None):
              stake, odds, payout, pnl)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             ''',
-            (pick_id, match_id, range_code, quality, result, home_goals, away_goals,
+            (pick_id, match_id, range_code, quality, pick_result, home_goals, away_goals,
              stake, odds, payout, pnl)
         )
+        settled.append((pick_id, selection, pick_result, pnl))
     
     conn.commit()
     conn.close()
     
-    print(f"Updated results for {match_id}: {result}")
+    print(f"Updated result for {match_id}: {home_team} {home_goals}-{away_goals} {away_team}")
+    for pick_id, selection, pick_result, pnl in settled:
+        print(f"  Pick {pick_id} {selection}: {pick_result} ({pnl:+.2f})")
 
 
 def settle_pick(pick_id, result):

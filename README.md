@@ -88,6 +88,16 @@ total / handicap prices.
 python scripts\odds_coverage_report.py --output odds_coverage_report.md
 ```
 
+### Match Results
+
+Completed scores are tracked in `match_results.csv` so the ignored SQLite
+database can be updated on any machine.
+
+```powershell
+python scripts\import_match_results.py match_results.csv
+python main.py --skip-scrape --no-fatigue
+```
+
 ## Architecture
 
 ```
