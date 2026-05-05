@@ -26,5 +26,9 @@ Thumbs.db
 # Logs
 *.log
 
+# Research outputs
+research/cache/
+research/results/
+
 # Config (contains secrets)
 config/settings.json
