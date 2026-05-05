@@ -29,6 +29,7 @@ Thumbs.db
 # Research outputs
 research/cache/
 research/results/
+research/agent_runs/
 
 # Config (contains secrets)
 config/settings.json

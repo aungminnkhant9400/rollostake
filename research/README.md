@@ -201,3 +201,54 @@ Morning outputs:
 research/results/autoloop_report_*.md
 research/results/autoloop_results_*.json
 ```
+
+## LLM Code-Editing Agent Loop
+
+`research/agent_loop.py` is the true code-editing research loop. It uses DeepSeek to propose small patches, applies each patch in an isolated git worktree, runs GPU AutoResearch, and keeps a report of patches that beat the baseline. It does not push or modify production by default.
+
+Set the API key on the server:
+
+```bash
+export DEEPSEEK_API_KEY="your_key_here"
+export DEEPSEEK_MODEL="deepseek-v4-pro"
+```
+
+Smoke test with a short evaluation command:
+
+```bash
+python research/agent_loop.py \
+  --iterations 1 \
+  --model deepseek-v4-pro \
+  --eval-timeout-minutes 30 \
+  --eval-command "python research/gpu_autoresearch.py --quick --device cuda --markets 1X2,OU --candidate-markets 1X2,OU --top 5"
+```
+
+Overnight code-editing run:
+
+```bash
+nohup python research/agent_loop.py \
+  --iterations 5 \
+  --model deepseek-v4-pro \
+  --eval-timeout-minutes 240 \
+  --min-roi 1.0 \
+  --min-picks 40 \
+  --remove-rejected-worktrees \
+  > research/results/agent_loop_nohup.log 2>&1 &
+```
+
+Check progress:
+
+```bash
+tail -f research/results/agent_loop_nohup.log
+nvidia-smi
+```
+
+Morning outputs:
+
+```text
+research/results/agent_loop_report_*.md
+research/results/agent_loop_results_*.json
+research/agent_runs/*/iter_*.patch
+```
+
+Accepted patches remain in their worktree so they can be reviewed before manually applying them to `main`.
