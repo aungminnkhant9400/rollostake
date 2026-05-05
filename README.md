@@ -67,6 +67,17 @@ For direct prompting instead of editing CSV:
 python scripts\team_total_odds_cli.py --interactive --max-rows 40
 ```
 
+### Handicap / +0.5 Odds
+
+Friend-style `Team +0.5` picks are handled as Asian handicap picks. Export the
+shortlist, fill the `odds` column, import it, then rerun the model.
+
+```powershell
+python scripts\handicap_odds_cli.py --export-template handicap_odds.csv
+python scripts\handicap_odds_cli.py --import-file handicap_odds.csv
+python main.py --skip-scrape --no-fatigue
+```
+
 ## Architecture
 
 ```
