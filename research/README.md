@@ -46,9 +46,29 @@ Outputs are written to:
 ```text
 research/results/leaderboard_*.csv
 research/results/best_config_*.json
+research/results/breakdown_*.csv
+research/results/best_picks_*.csv
 ```
 
 These generated outputs are ignored by Git. Commit code changes, not every experiment output.
+
+The breakdown CSV is the main diagnostic file. It reports the best config by:
+
+```text
+league
+season
+range
+market
+quality
+odds_bucket
+edge_bucket
+selection_type
+league_range
+league_selection
+season_league
+range_odds_bucket
+range_edge_bucket
+```
 
 ## Speed
 

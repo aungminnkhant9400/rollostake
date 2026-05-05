@@ -745,6 +745,180 @@ def evaluate_config(
     }
 
 
+def season_code(match_date: str) -> str:
+    parsed = datetime.strptime(match_date, "%Y-%m-%d").date()
+    start_year = parsed.year if parsed.month >= 7 else parsed.year - 1
+    return f"{str(start_year)[-2:]}{str(start_year + 1)[-2:]}"
+
+
+def odds_bucket(odds: float) -> str:
+    buckets = [
+        (1.70, 2.00, "1.70-1.99"),
+        (2.00, 2.50, "2.00-2.49"),
+        (2.50, 3.00, "2.50-2.99"),
+        (3.00, 3.50, "3.00-3.49"),
+        (3.50, 4.00, "3.50-3.99"),
+        (4.00, 5.01, "4.00-5.00"),
+    ]
+    for low, high, label in buckets:
+        if low <= odds < high:
+            return label
+    return "outside-range"
+
+
+def edge_bucket(edge_pct: float) -> str:
+    if edge_pct < 10:
+        return "00-09"
+    if edge_pct < 15:
+        return "10-14"
+    if edge_pct < 20:
+        return "15-19"
+    if edge_pct < 25:
+        return "20-24"
+    if edge_pct < 30:
+        return "25-29"
+    if edge_pct < 35:
+        return "30-34"
+    if edge_pct < 40:
+        return "35-39"
+    if edge_pct < 50:
+        return "40-49"
+    return "50+"
+
+
+def selection_type(candidate: Candidate) -> str:
+    if candidate.market == "1X2":
+        return candidate.selection_key
+    if candidate.market == "AH":
+        return candidate.selection_key.split("_", 1)[0]
+    return candidate.selection_key
+
+
+def pick_pnl(candidate: Candidate, stake: float) -> float:
+    if candidate.result == "win":
+        return stake * (candidate.odds - 1)
+    if candidate.result == "loss":
+        return -stake
+    return 0.0
+
+
+def build_breakdown_rows(
+    config: ResearchConfig,
+    batches: Sequence[Sequence[Candidate]],
+    stake: float,
+) -> Tuple[List[Dict], List[Dict]]:
+    selected = []
+    for batch in batches:
+        selected.extend(select_batch_picks(batch, config))
+    selected.sort(key=lambda item: (item[1].match_date, item[0], item[1].match_id, item[1].market))
+
+    groups: Dict[Tuple[str, str], Dict] = {}
+    pick_rows = []
+
+    def add_group(group_type: str, group: str, candidate: Candidate, range_code: str, pnl: float):
+        key = (group_type, group)
+        stats = groups.setdefault(
+            key,
+            {
+                "group_type": group_type,
+                "group": group,
+                "picks": 0,
+                "wins": 0,
+                "losses": 0,
+                "pushes": 0,
+                "pnl": 0.0,
+                "staked": 0.0,
+                "odds_sum": 0.0,
+                "edge_sum": 0.0,
+                "range_codes": set(),
+            },
+        )
+        stats["picks"] += 1
+        stats["pnl"] += pnl
+        stats["staked"] += stake
+        stats["odds_sum"] += candidate.odds
+        stats["edge_sum"] += candidate.edge_pct
+        stats["range_codes"].add(range_code)
+        if candidate.result == "win":
+            stats["wins"] += 1
+        elif candidate.result == "loss":
+            stats["losses"] += 1
+        else:
+            stats["pushes"] += 1
+
+    for range_code, candidate in selected:
+        pnl = pick_pnl(candidate, stake)
+        season = season_code(candidate.match_date)
+        odds_group = odds_bucket(candidate.odds)
+        edge_group = edge_bucket(candidate.edge_pct)
+        q = quality(candidate.edge_pct)
+        sel_type = selection_type(candidate)
+
+        pick_rows.append(
+            {
+                "range_code": range_code,
+                "match_date": candidate.match_date,
+                "season": season,
+                "league": candidate.league,
+                "home_team": candidate.home_team,
+                "away_team": candidate.away_team,
+                "market": candidate.market,
+                "selection_type": sel_type,
+                "selection": candidate.selection,
+                "odds": candidate.odds,
+                "edge_pct": candidate.edge_pct,
+                "quality": q,
+                "result": candidate.result,
+                "stake": stake,
+                "pnl": round(pnl, 4),
+            }
+        )
+
+        dimensions = [
+            ("league", candidate.league),
+            ("season", season),
+            ("range", range_code),
+            ("market", candidate.market),
+            ("quality", q),
+            ("odds_bucket", odds_group),
+            ("edge_bucket", edge_group),
+            ("selection_type", sel_type),
+            ("league_range", f"{candidate.league}:{range_code}"),
+            ("league_selection", f"{candidate.league}:{sel_type}"),
+            ("season_league", f"{season}:{candidate.league}"),
+            ("range_odds_bucket", f"{range_code}:{odds_group}"),
+            ("range_edge_bucket", f"{range_code}:{edge_group}"),
+        ]
+        for group_type, group in dimensions:
+            add_group(group_type, group, candidate, range_code, pnl)
+
+    breakdown_rows = []
+    for stats in groups.values():
+        settled = stats["wins"] + stats["losses"]
+        roi = stats["pnl"] / stats["staked"] * 100 if stats["staked"] else 0.0
+        win_rate = stats["wins"] / settled * 100 if settled else 0.0
+        breakdown_rows.append(
+            {
+                "group_type": stats["group_type"],
+                "group": stats["group"],
+                "picks": stats["picks"],
+                "wins": stats["wins"],
+                "losses": stats["losses"],
+                "pushes": stats["pushes"],
+                "pnl": round(stats["pnl"], 4),
+                "staked": round(stats["staked"], 4),
+                "roi_pct": round(roi, 4),
+                "win_rate_pct": round(win_rate, 4),
+                "avg_odds": round(stats["odds_sum"] / stats["picks"], 4),
+                "avg_edge_pct": round(stats["edge_sum"] / stats["picks"], 4),
+                "range_codes": ",".join(sorted(stats["range_codes"])),
+            }
+        )
+
+    breakdown_rows.sort(key=lambda row: (row["group_type"], -row["roi_pct"], -row["picks"], row["group"]))
+    return breakdown_rows, pick_rows
+
+
 def build_config_grid(args) -> List[ResearchConfig]:
     configs = []
     markets = tuple(m.strip().upper() for m in args.markets.split(",") if m.strip())
@@ -771,11 +945,19 @@ def build_config_grid(args) -> List[ResearchConfig]:
     return configs
 
 
-def write_outputs(results: List[Dict], output_dir: Path, top: int) -> Tuple[Path, Path]:
+def write_outputs(
+    results: List[Dict],
+    output_dir: Path,
+    top: int,
+    candidate_batches: Sequence[Sequence[Candidate]],
+    stake: float,
+) -> Tuple[Path, Path, Optional[Path], Optional[Path]]:
     output_dir.mkdir(parents=True, exist_ok=True)
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     leaderboard_path = output_dir / f"leaderboard_{timestamp}.csv"
     best_path = output_dir / f"best_config_{timestamp}.json"
+    breakdown_path = output_dir / f"breakdown_{timestamp}.csv" if results else None
+    picks_path = output_dir / f"best_picks_{timestamp}.csv" if results else None
 
     fieldnames = [
         "rank",
@@ -801,6 +983,53 @@ def write_outputs(results: List[Dict], output_dir: Path, top: int) -> Tuple[Path
             row["rank"] = rank
             writer.writerow(row)
 
+    best_config = None
+    if results:
+        best_config = ResearchConfig(**results[0]["config"])
+        breakdown_rows, pick_rows = build_breakdown_rows(best_config, candidate_batches, stake)
+
+        breakdown_fieldnames = [
+            "group_type",
+            "group",
+            "picks",
+            "wins",
+            "losses",
+            "pushes",
+            "pnl",
+            "staked",
+            "roi_pct",
+            "win_rate_pct",
+            "avg_odds",
+            "avg_edge_pct",
+            "range_codes",
+        ]
+        with breakdown_path.open("w", newline="", encoding="utf-8") as handle:
+            writer = csv.DictWriter(handle, fieldnames=breakdown_fieldnames)
+            writer.writeheader()
+            writer.writerows(breakdown_rows)
+
+        pick_fieldnames = [
+            "range_code",
+            "match_date",
+            "season",
+            "league",
+            "home_team",
+            "away_team",
+            "market",
+            "selection_type",
+            "selection",
+            "odds",
+            "edge_pct",
+            "quality",
+            "result",
+            "stake",
+            "pnl",
+        ]
+        with picks_path.open("w", newline="", encoding="utf-8") as handle:
+            writer = csv.DictWriter(handle, fieldnames=pick_fieldnames)
+            writer.writeheader()
+            writer.writerows(pick_rows)
+
     best_payload = {
         "generated_at": datetime.now().isoformat(timespec="seconds"),
         "note": (
@@ -809,9 +1038,11 @@ def write_outputs(results: List[Dict], output_dir: Path, top: int) -> Tuple[Path
         ),
         "best": results[0] if results else None,
         "top": results[:top],
+        "breakdown_csv": str(breakdown_path) if breakdown_path else None,
+        "best_picks_csv": str(picks_path) if picks_path else None,
     }
     best_path.write_text(json.dumps(best_payload, indent=2), encoding="utf-8")
-    return leaderboard_path, best_path
+    return leaderboard_path, best_path, breakdown_path, picks_path
 
 
 def print_summary(
@@ -950,10 +1181,20 @@ def main():
         ]
 
     results.sort(key=lambda r: (r["score"], r["picks"], r["roi_pct"]), reverse=True)
-    leaderboard_path, best_path = write_outputs(results, RESULTS_DIR, args.top)
+    leaderboard_path, best_path, breakdown_path, picks_path = write_outputs(
+        results,
+        RESULTS_DIR,
+        args.top,
+        candidate_batches,
+        args.stake,
+    )
     print_summary(results, candidate_batches, args.top, args.stake)
     print(f"\nLeaderboard: {leaderboard_path}")
     print(f"Best config JSON: {best_path}")
+    if breakdown_path:
+        print(f"Breakdown CSV: {breakdown_path}")
+    if picks_path:
+        print(f"Best picks CSV: {picks_path}")
 
 
 if __name__ == "__main__":
