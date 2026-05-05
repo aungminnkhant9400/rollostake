@@ -30,7 +30,10 @@
       "min_odds": 1.7,
       "max_odds": 2.7,
       "max_picks": 12,
-      "min_edge": 0.05
+      "min_edge": 0.05,
+      "market_min_picks": {
+        "TT": 2
+      }
     }
   },
   "base_stake": 50,

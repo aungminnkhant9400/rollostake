@@ -8,7 +8,7 @@ import re
 import sqlite3
 import sys
 from typing import List, Dict, Optional, Tuple
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
 
@@ -46,6 +46,7 @@ class RangeConfig:
     max_odds: float
     max_picks: int
     min_edge: float
+    market_min_picks: Dict[str, int] = field(default_factory=dict)
 
 class EdgeCalculator:
     """
@@ -93,6 +94,10 @@ class EdgeCalculator:
                 max_odds=float(raw.get('max_odds', 999.0)),
                 max_picks=int(raw.get('max_picks', settings.get('max_picks', 12))),
                 min_edge=float(raw.get('min_edge', settings.get('min_edge', 0.05))),
+                market_min_picks={
+                    str(market).upper(): int(count)
+                    for market, count in raw.get('market_min_picks', {}).items()
+                },
             )
         return configs or EdgeCalculator.DEFAULT_RANGES
     
@@ -301,10 +306,12 @@ class EdgeCalculator:
             range_candidates.sort(key=lambda p: (p.edge_pct, p.model_prob), reverse=True)
 
             count = 0
-            for pick in range_candidates:
+
+            def add_pick(pick: Pick) -> bool:
+                nonlocal count
                 exposure_key = (pick.home_team, pick.away_team, pick.market, pick.selection)
                 if exposure_key in exposure:
-                    continue
+                    return False
 
                 pick.range_code = code
                 pick.stake = self.flat_range_stake(config)
@@ -312,9 +319,23 @@ class EdgeCalculator:
                 selected.append(pick)
                 exposure.add(exposure_key)
                 count += 1
+                return True
 
+            for market, minimum in config.market_min_picks.items():
+                market_count = 0
+                for pick in range_candidates:
+                    if count >= config.max_picks or market_count >= minimum:
+                        break
+                    if pick.market != market:
+                        continue
+                    if add_pick(pick):
+                        market_count += 1
+
+            for pick in range_candidates:
                 if count >= config.max_picks:
                     break
+                if add_pick(pick):
+                    continue
 
         self._annotate_correlated_exposure(selected)
         selected.sort(key=lambda p: (p.range_code, p.kickoff, -p.edge_pct))

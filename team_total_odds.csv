@@ -3,10 +3,10 @@ D,football_data_544550,LaLiga,2026-05-05 03:00,Sevilla,Sociedad,Sevilla,Under,1.
 D,football_data_544554,LaLiga,2026-05-09 03:00,Levante,Osasuna,Osasuna,Under,1.5,Osasuna U1.5,0.6162,1.623,1.704,
 D,football_data_540697,Bundesliga,2026-05-10 21:30,Hamburg,Freiburg,Hamburg,Under,1.5,Hamburg U1.5,0.6155,1.625,1.706,
 D,football_data_538136,EPL,2026-05-09 22:00,Brighton,Wolves,Brighton,Under,1.5,Brighton U1.5,0.6145,1.627,1.709,
-D,football_data_537174,SerieA,2026-05-10 02:45,Lecce,Juventus,Lecce,Under,0.5,Lecce U0.5,0.6139,1.629,1.711,
-D,football_data_538144,EPL,2026-05-10 23:30,West Ham,Arsenal,West Ham,Over,0.5,West Ham O0.5,0.6136,1.63,1.711,
+D,football_data_537174,SerieA,2026-05-10 02:45,Lecce,Juventus,Lecce,Under,0.5,Lecce U0.5,0.6139,1.629,1.711,2.11
+D,football_data_538144,EPL,2026-05-10 23:30,West Ham,Arsenal,West Ham,Over,0.5,West Ham O0.5,0.6136,1.63,1.711,1.55
 D,football_data_544556,LaLiga,2026-05-09 20:00,Elche,Alaves,Alaves,Under,1.5,Alaves U1.5,0.6134,1.63,1.712,
-D,football_data_538139,EPL,2026-05-09 22:00,Fulham,Bournemouth,Fulham,Under,1.5,Fulham U1.5,0.6099,1.64,1.722,
+D,football_data_538139,EPL,2026-05-09 22:00,Fulham,Bournemouth,Fulham,Under,1.5,Fulham U1.5,0.6099,1.64,1.722,1.79
 D,football_data_540700,Bundesliga,2026-05-11 01:30,Mainz,Union Berlin,Mainz,Under,1.5,Mainz U1.5,0.6089,1.642,1.725,
 D,football_data_542702,L1,2026-05-11 03:00,Rennes,Paris FC,Rennes,Over,1.5,Rennes O1.5,0.6079,1.645,1.727,
 D,football_data_542697,L1,2026-05-11 03:00,Metz,Lorient,Metz,Over,0.5,Metz O0.5,0.6078,1.645,1.728,
@@ -19,13 +19,13 @@ D,football_data_544554,LaLiga,2026-05-09 03:00,Levante,Osasuna,Levante,Over,0.5,
 D,football_data_540697,Bundesliga,2026-05-10 21:30,Hamburg,Freiburg,Freiburg,Under,1.5,Freiburg U1.5,0.5967,1.676,1.76,
 D,football_data_542701,L1,2026-05-11 03:00,Angers,Strasbourg,Angers,Over,0.5,Angers O0.5,0.5963,1.677,1.761,
 D,football_data_538130,EPL,2026-05-05 03:00,Everton,Man City,Man City,Under,1.5,Man City U1.5,0.5953,1.68,1.764,
-D,football_data_538139,EPL,2026-05-09 22:00,Fulham,Bournemouth,Bournemouth,Under,1.5,Bournemouth U1.5,0.5943,1.683,1.767,
+D,football_data_538139,EPL,2026-05-09 22:00,Fulham,Bournemouth,Bournemouth,Under,1.5,Bournemouth U1.5,0.5943,1.683,1.767,1.88
 D,football_data_537155,SerieA,2026-05-05 02:45,Roma,Fiorentina,Roma,Over,1.5,Roma O1.5,0.5924,1.688,1.773,
 D,football_data_544553,LaLiga,2026-05-11 03:00,Barcelona,Real Madrid,Real Madrid,Under,1.5,Real Madrid U1.5,0.5908,1.693,1.777,
 D,football_data_538143,EPL,2026-05-12 03:00,Tottenham,Leeds,Leeds,Over,1.5,Leeds O1.5,0.588,1.701,1.786,
 D,football_data_544557,LaLiga,2026-05-10 03:00,Sociedad,Betis,Sociedad,Over,1.5,Sociedad O1.5,0.5877,1.701,1.787,
 D,football_data_537171,SerieA,2026-05-11 00:00,Parma,Roma,Parma,Under,0.5,Parma U0.5,0.5816,1.719,1.805,
-D,football_data_537174,SerieA,2026-05-10 02:45,Lecce,Juventus,Juventus,Over,1.5,Juventus O1.5,0.58,1.724,1.81,
+D,football_data_537174,SerieA,2026-05-10 02:45,Lecce,Juventus,Juventus,Over,1.5,Juventus O1.5,0.58,1.724,1.81,1.61
 D,football_data_540702,Bundesliga,2026-05-10 23:30,FC Koln,Heidenheim,FC Koln,Under,2.5,FC Koln U2.5,0.5789,1.727,1.814,
 D,football_data_537164,SerieA,2026-05-05 00:30,Cremonese,Lazio,Cremonese,Under,0.5,Cremonese U0.5,0.5775,1.732,1.818,
 D,football_data_544558,LaLiga,2026-05-09 22:15,Sevilla,Espanol,Sevilla,Under,1.5,Sevilla U1.5,0.5774,1.732,1.818,
