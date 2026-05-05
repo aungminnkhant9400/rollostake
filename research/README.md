@@ -108,4 +108,45 @@ Use `--refresh-cache` when you intentionally want to rebuild from source CSVs an
 
 ## Important Constraint
 
-The current Dixon-Coles model uses SciPy/NumPy CPU optimization. The A100 GPU is not used yet. The server is still useful because it can run long, parallel research jobs, but true GPU acceleration would require a future PyTorch/JAX model.
+The production pipeline still uses the original SciPy/NumPy Dixon-Coles model. GPU research is available through `research/gpu_autoresearch.py`, but production probabilities should only be switched after the GPU model beats the current model on holdout seasons.
+
+## GPU Dixon-Coles
+
+`research/gpu_autoresearch.py` uses `models/torch_dixon_coles.py`, a PyTorch Dixon-Coles style model with team attack/defense parameters, league effects, home advantage, time decay, and score-distribution outputs for 1X2 and over/under.
+
+Smoke test on the server:
+
+```bash
+python research/gpu_autoresearch.py \
+  --quick \
+  --device cuda \
+  --markets 1X2,OU \
+  --candidate-markets 1X2,OU \
+  --top 5
+```
+
+Full A100 research run for all five leagues and totals:
+
+```bash
+python research/gpu_autoresearch.py \
+  --seasons 2122 2223 2324 2425 2526 \
+  --leagues EPL L1 Bundesliga SerieA LaLiga \
+  --device cuda \
+  --markets 1X2,OU \
+  --candidate-markets 1X2,OU \
+  --train-size-per-league 300 \
+  --min-train-size-per-league 120 \
+  --batch-days 14 \
+  --epochs 500 \
+  --c-max-picks 0,1,2 \
+  --d-max-picks 1,2,3 \
+  --min-edges 0.15,0.25,0.35 \
+  --max-picks-per-match 1 \
+  --top 20
+```
+
+Confirm GPU use while it is running:
+
+```bash
+nvidia-smi
+```
