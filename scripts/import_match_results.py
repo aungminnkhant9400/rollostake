@@ -9,6 +9,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from main import update_results
 from models.core import init_db
+from utils.match_resolver import resolve_match_id
 
 
 def import_results(path: str) -> dict:
@@ -17,7 +18,7 @@ def import_results(path: str) -> dict:
     skipped = 0
     with open(path, newline="", encoding="utf-8-sig") as f:
         for row in csv.DictReader(f):
-            match_id = (row.get("match_id") or "").strip()
+            match_id = resolve_match_id(row, statuses=("scheduled",))
             if not match_id:
                 skipped += 1
                 continue

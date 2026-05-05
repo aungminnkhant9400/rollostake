@@ -17,6 +17,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from config.paths import DB_PATH, ensure_runtime_dirs
 from models.core import init_db
 from scripts.export_market_watchlist import build_watchlist
+from utils.match_resolver import resolve_match_id
 
 
 FIELDNAMES = [
@@ -100,29 +101,7 @@ def export_template(path: str, min_edge: float, max_rows: int) -> list:
 
 
 def _lookup_match_id(row: dict) -> str:
-    match_id = (row.get("match_id") or "").strip()
-    if match_id:
-        return match_id
-
-    home_team = (row.get("home_team") or "").strip()
-    away_team = (row.get("away_team") or "").strip()
-    kickoff = (row.get("kickoff") or "").strip()
-    if not home_team or not away_team or not kickoff:
-        return ""
-
-    conn = sqlite3.connect(DB_PATH)
-    c = conn.cursor()
-    c.execute(
-        """
-        SELECT match_id
-        FROM matches
-        WHERE home_team = ? AND away_team = ? AND kickoff = ?
-        """,
-        (home_team, away_team, kickoff),
-    )
-    found = c.fetchone()
-    conn.close()
-    return found[0] if found else ""
+    return resolve_match_id(row, statuses=("scheduled",))
 
 
 def _float_or_none(value: str):

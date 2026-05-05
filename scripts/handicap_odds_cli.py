@@ -15,6 +15,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from config.paths import DB_PATH, ensure_runtime_dirs
 from models.core import init_db
 from scripts.export_market_watchlist import _decision_prob, _range_for_required_odds, _score_distribution
+from utils.match_resolver import resolve_match_id
 
 
 HANDICAP_LINES = (-1.5, -1.0, -0.5, 0.0, 0.5, 1.0, 1.5)
@@ -155,7 +156,7 @@ def save_ah_odds(rows: list, overwrite: bool = True, bookmaker: str = "manual") 
     skipped = 0
 
     for row in rows:
-        match_id = (row.get("match_id") or "").strip()
+        match_id = resolve_match_id(row, statuses=("scheduled",))
         selection = (row.get("selection") or "").strip()
         odds = _float_or_none(row.get("odds"))
         if not match_id or not selection or odds is None or odds <= 0:
