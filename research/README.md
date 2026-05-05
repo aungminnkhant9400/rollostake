@@ -252,3 +252,10 @@ research/agent_runs/*/iter_*.patch
 ```
 
 Accepted patches remain in their worktree so they can be reviewed before manually applying them to `main`.
+
+If an LLM patch fails to apply, the loop asks DeepSeek for one repair by default. Raw responses and patch files are saved under:
+
+```text
+research/agent_runs/*/iter_*_raw_response.txt
+research/agent_runs/*/iter_*.patch
+```

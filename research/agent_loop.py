@@ -67,6 +67,7 @@ class IterationResult:
     compile_ok: bool = False
     apply_ok: bool = False
     errors: List[str] = field(default_factory=list)
+    raw_response_path: Optional[str] = None
 
 
 def run_cmd(
@@ -229,6 +230,8 @@ def proposal_prompt(
     previous_results: Sequence[IterationResult],
     allowed_files: Sequence[str],
     max_file_chars: int,
+    repair_error: str = "",
+    failed_patch: str = "",
 ) -> List[Dict[str, str]]:
     file_context = []
     for rel_path in allowed_files:
@@ -283,7 +286,56 @@ Relevant code:
 {chr(10).join(file_context)}
 """.strip()
 
+    if repair_error:
+        user += f"""
+
+The previous patch failed `git apply --check` with this error:
+```text
+{repair_error}
+```
+
+Previous failed patch:
+```diff
+{failed_patch}
+```
+
+Return a corrected full unified diff. Do not return explanations outside JSON.
+""".rstrip()
+
     return [{"role": "system", "content": system}, {"role": "user", "content": user}]
+
+
+def ask_for_proposal(
+    baseline: EvalResult,
+    previous_results: Sequence[IterationResult],
+    allowed_files: Sequence[str],
+    args,
+    raw_path: Path,
+    repair_error: str = "",
+    failed_patch: str = "",
+) -> Dict:
+    messages = proposal_prompt(
+        baseline,
+        previous_results,
+        allowed_files,
+        args.max_file_chars,
+        repair_error=repair_error,
+        failed_patch=failed_patch,
+    )
+    api_key = os.environ.get(args.api_key_env)
+    if not api_key:
+        raise RuntimeError(f"Missing {args.api_key_env}")
+    raw = deepseek_chat(
+        messages=messages,
+        model=args.model,
+        base_url=args.base_url,
+        api_key=api_key,
+        temperature=args.temperature,
+        max_tokens=args.max_tokens,
+        timeout_seconds=args.llm_timeout_seconds,
+    )
+    raw_path.write_text(raw, encoding="utf-8")
+    return extract_json_object(raw)
 
 
 def changed_files_from_patch(patch: str) -> List[str]:
@@ -330,6 +382,7 @@ def run_iteration(
 ) -> IterationResult:
     worktree = run_dir / f"iter_{iteration:02d}_worktree"
     patch_path = run_dir / f"iter_{iteration:02d}.patch"
+    raw_path = run_dir / f"iter_{iteration:02d}_raw_response.txt"
     allowed_files = tuple(args.allowed_files)
     result = IterationResult(
         iteration=iteration,
@@ -339,24 +392,15 @@ def run_iteration(
         accepted=False,
         reason="not evaluated",
     )
+    result.raw_response_path = str(raw_path)
 
-    api_key = os.environ.get(args.api_key_env)
-    if not api_key:
-        result.errors.append(f"Missing {args.api_key_env}")
-        result.reason = "missing_api_key"
-        return result
-
-    messages = proposal_prompt(baseline, previous_results, allowed_files, args.max_file_chars)
-    raw = deepseek_chat(
-        messages=messages,
-        model=args.model,
-        base_url=args.base_url,
-        api_key=api_key,
-        temperature=args.temperature,
-        max_tokens=args.max_tokens,
-        timeout_seconds=args.llm_timeout_seconds,
+    proposal = ask_for_proposal(
+        baseline,
+        previous_results,
+        allowed_files,
+        args,
+        raw_path,
     )
-    proposal = extract_json_object(raw)
     patch = proposal.get("patch", "")
     result.hypothesis = str(proposal.get("hypothesis", ""))
     patch_path.write_text(patch, encoding="utf-8")
@@ -373,8 +417,32 @@ def run_iteration(
         check = run_cmd(["git", "apply", "--check", str(patch_path)], worktree, 60)
         if check.returncode != 0:
             result.errors.append(check.stderr)
-            result.reason = "patch_check_failed"
-            return result
+            if args.repair_patch:
+                repair_raw_path = run_dir / f"iter_{iteration:02d}_repair_raw_response.txt"
+                repair_patch_path = run_dir / f"iter_{iteration:02d}_repair.patch"
+                try:
+                    repair = ask_for_proposal(
+                        baseline,
+                        previous_results,
+                        allowed_files,
+                        args,
+                        repair_raw_path,
+                        repair_error=check.stderr,
+                        failed_patch=patch,
+                    )
+                    patch = repair.get("patch", "")
+                    result.hypothesis = str(repair.get("hypothesis", result.hypothesis))
+                    patch_path = repair_patch_path
+                    result.patch_path = str(patch_path)
+                    patch_path.write_text(patch, encoding="utf-8")
+                    validate_patch_files(patch, allowed_files)
+                    check = run_cmd(["git", "apply", "--check", str(patch_path)], worktree, 60)
+                except Exception as exc:
+                    result.errors.append(f"repair_failed: {exc!r}")
+            if check.returncode != 0:
+                result.errors.append(f"Patch path: {patch_path}")
+                result.reason = "patch_check_failed"
+                return result
         apply = run_cmd(["git", "apply", str(patch_path)], worktree, 60)
         result.apply_ok = apply.returncode == 0
         if apply.returncode != 0:
@@ -487,6 +555,7 @@ def main():
     parser.add_argument("--min-picks", type=int, default=40)
     parser.add_argument("--max-file-chars", type=int, default=18000)
     parser.add_argument("--remove-rejected-worktrees", action="store_true")
+    parser.add_argument("--repair-patch", action=argparse.BooleanOptionalAction, default=True)
     parser.add_argument(
         "--allowed-files",
         nargs="+",
