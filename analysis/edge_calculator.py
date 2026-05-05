@@ -49,6 +49,8 @@ class RangeConfig:
     market_min_picks: Dict[str, int] = field(default_factory=dict)
     max_picks_per_match: int = 2
     max_family_per_match: int = 1
+    allowed_markets: Tuple[str, ...] = field(default_factory=tuple)
+    allowed_selection_types: Tuple[str, ...] = field(default_factory=tuple)
 
 class EdgeCalculator:
     """
@@ -102,6 +104,14 @@ class EdgeCalculator:
                 },
                 max_picks_per_match=int(raw.get('max_picks_per_match', settings.get('max_picks_per_match', 2))),
                 max_family_per_match=int(raw.get('max_family_per_match', settings.get('max_family_per_match', 1))),
+                allowed_markets=tuple(
+                    str(market).upper()
+                    for market in raw.get('allowed_markets', settings.get('allowed_markets', []))
+                ),
+                allowed_selection_types=tuple(
+                    str(selection_type).lower()
+                    for selection_type in raw.get('allowed_selection_types', settings.get('allowed_selection_types', []))
+                ),
             )
         return configs or EdgeCalculator.DEFAULT_RANGES
     
@@ -307,7 +317,9 @@ class EdgeCalculator:
         for code, config in self.range_configs.items():
             range_candidates = [
                 p for p in all_candidates
-                if config.min_odds <= p.odds <= config.max_odds and p.edge_pct / 100 >= config.min_edge
+                if config.min_odds <= p.odds <= config.max_odds
+                and p.edge_pct / 100 >= config.min_edge
+                and self._range_filter_match(p, config)
             ]
             range_candidates.sort(key=lambda p: (p.edge_pct, p.model_prob), reverse=True)
 
@@ -353,6 +365,34 @@ class EdgeCalculator:
         self._annotate_correlated_exposure(selected)
         selected.sort(key=lambda p: (p.range_code, p.kickoff, -p.edge_pct))
         return selected
+
+    def _selection_type(self, pick: Pick) -> str:
+        if pick.market == '1X2':
+            if pick.selection == 'Draw':
+                return 'draw'
+            if pick.home_team in pick.selection:
+                return 'home'
+            if pick.away_team in pick.selection:
+                return 'away'
+        if pick.market == 'AH':
+            if pick.home_team in pick.selection:
+                return 'home'
+            if pick.away_team in pick.selection:
+                return 'away'
+        if pick.market in ('OU', 'TT', 'BTTS'):
+            family = self._exposure_family(pick)
+            if family == 'low-goals':
+                return 'under'
+            if family == 'high-goals':
+                return 'over'
+        return 'other'
+
+    def _range_filter_match(self, pick: Pick, config: RangeConfig) -> bool:
+        if config.allowed_markets and pick.market.upper() not in config.allowed_markets:
+            return False
+        if config.allowed_selection_types and self._selection_type(pick) not in config.allowed_selection_types:
+            return False
+        return True
     
     def _get_model_prob(self, row) -> Optional[float]:
         """

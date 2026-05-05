@@ -8,7 +8,7 @@
   "historical_seasons": ["2526"],
   "stake_use_scraper": false,
   "stake_proxy": null,
-  "leagues": ["EPL", "L1", "Bundesliga", "SerieA", "LaLiga"],
+  "leagues": ["SerieA", "LaLiga"],
   "bankroll": 100,
   "staking_mode": "flat",
   "flat_stake": 10,
@@ -20,30 +20,30 @@
       "flat_stake": 10,
       "min_odds": 2.5,
       "max_odds": 5.0,
-      "max_picks": 12,
-      "min_edge": 0.05,
-      "max_picks_per_match": 2,
-      "max_family_per_match": 1
+      "max_picks": 0,
+      "min_edge": 0.35,
+      "max_picks_per_match": 1,
+      "max_family_per_match": 1,
+      "allowed_markets": ["1X2"],
+      "allowed_selection_types": ["home", "away"]
     },
     "D": {
       "name": "Range D",
       "bankroll": 100,
       "flat_stake": 10,
-      "min_odds": 1.7,
-      "max_odds": 2.7,
-      "max_picks": 12,
-      "min_edge": 0.05,
-      "max_picks_per_match": 2,
+      "min_odds": 2.0,
+      "max_odds": 2.49,
+      "max_picks": 3,
+      "min_edge": 0.35,
+      "max_picks_per_match": 1,
       "max_family_per_match": 1,
-      "market_min_picks": {
-        "TT": 2,
-        "AH": 1
-      }
+      "allowed_markets": ["1X2"],
+      "allowed_selection_types": ["home", "away"]
     }
   },
-  "base_stake": 50,
-  "strong_stake": 75,
-  "min_edge": 0.05,
+  "base_stake": 10,
+  "strong_stake": 10,
+  "min_edge": 0.35,
   "use_fatigue": true,
   "dashboard_auto_open": false
 }
