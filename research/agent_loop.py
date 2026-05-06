@@ -225,6 +225,32 @@ def extract_json_object(text: str) -> Dict:
     return json.loads(text[start : end + 1])
 
 
+def extract_tag(text: str, tag: str, required: bool = True) -> str:
+    match = re.search(rf"<{tag}>\s*(.*?)\s*</{tag}>", text, re.DOTALL | re.IGNORECASE)
+    if match:
+        return match.group(1).strip()
+    if required:
+        raise ValueError(f"LLM response did not contain <{tag}>...</{tag}>")
+    return ""
+
+
+def strip_code_fence(text: str) -> str:
+    match = re.fullmatch(r"```(?:python)?\s*(.*?)\s*```", text.strip(), re.DOTALL)
+    if match:
+        return match.group(1).strip() + "\n"
+    return text
+
+
+def extract_file_proposal(text: str) -> Dict:
+    return {
+        "hypothesis": extract_tag(text, "HYPOTHESIS", required=False),
+        "file": extract_tag(text, "FILE"),
+        "content": strip_code_fence(extract_tag(text, "CONTENT")),
+        "expected_effect": extract_tag(text, "EXPECTED_EFFECT", required=False),
+        "risk": extract_tag(text, "RISK", required=False),
+    }
+
+
 def proposal_prompt(
     baseline: EvalResult,
     previous_results: Sequence[IterationResult],
@@ -264,18 +290,18 @@ Rules:
 
     if edit_mode == "file":
         edit_contract = """
-Return JSON with this schema:
-{
-  "hypothesis": "short explanation",
-  "file": "one exact path from the allowlist",
-  "content": "complete replacement content for that file",
-  "expected_effect": "what metric should improve and why",
-  "risk": "what could go wrong"
-}
+Return exactly this tag format, with no markdown outside the tags:
+<HYPOTHESIS>short explanation</HYPOTHESIS>
+<FILE>one exact path from the allowlist</FILE>
+<CONTENT>
+complete replacement content for that file
+</CONTENT>
+<EXPECTED_EFFECT>what metric should improve and why</EXPECTED_EFFECT>
+<RISK>what could go wrong</RISK>
 
-The content field must contain the full file contents, not a diff. Do not use
-markdown fences inside the JSON. Keep imports, CLI compatibility, output paths,
-and existing safety checks unless the experiment needs a small targeted change.
+The CONTENT section must contain the full file contents, not a diff. Keep
+imports, CLI compatibility, output paths, and existing safety checks unless the
+experiment needs a small targeted change.
 """.strip()
     else:
         edit_contract = """
@@ -357,6 +383,8 @@ def ask_for_proposal(
         timeout_seconds=args.llm_timeout_seconds,
     )
     raw_path.write_text(raw, encoding="utf-8")
+    if args.edit_mode == "file" and not repair_error:
+        return extract_file_proposal(raw)
     return extract_json_object(raw)
 
 
@@ -665,6 +693,7 @@ def main():
         try:
             result = run_iteration(iteration, baseline, results, args, run_dir)
         except Exception as exc:
+            error_text = repr(exc)
             result = IterationResult(
                 iteration=iteration,
                 worktree="",
@@ -672,8 +701,9 @@ def main():
                 patch_path=str(run_dir / f"iter_{iteration:02d}.patch"),
                 accepted=False,
                 reason="exception",
-                errors=[repr(exc)],
+                errors=[error_text],
             )
+            print(f"exception: {error_text}", flush=True)
         results.append(result)
         print(result.reason, flush=True)
 

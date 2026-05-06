@@ -206,7 +206,7 @@ research/results/autoloop_results_*.json
 
 `research/agent_loop.py` is the true code-editing research loop. It uses DeepSeek to propose small code changes, applies each change in an isolated git worktree, runs GPU AutoResearch, and keeps a report of changes that beat the baseline. It does not push or modify production by default.
 
-By default the loop asks DeepSeek for a complete replacement of one allowlisted file, then turns that replacement into a real `git diff`. This is more reliable than asking the model to hand-write a unified patch. Raw patch mode is still available with `--edit-mode patch`.
+By default the loop asks DeepSeek for a complete replacement of one allowlisted file using simple tags, then turns that replacement into a real `git diff`. This is more reliable than asking the model to hand-write a unified patch or JSON-escape a full Python file. Raw patch mode is still available with `--edit-mode patch`.
 
 Set the API key on the server:
 
