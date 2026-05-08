@@ -26,7 +26,7 @@ class DashboardGenerator:
         self.range_configs = EdgeCalculator.range_configs_from_settings(self.settings)
 
     def get_picks(self) -> List[Dict]:
-        """Fetch picks with match details."""
+        """Fetch the current pending card with match details."""
         conn = sqlite3.connect(DB_PATH)
         conn.row_factory = sqlite3.Row
         c = conn.cursor()
@@ -37,7 +37,7 @@ class DashboardGenerator:
                    m.home_fatigue_score, m.away_fatigue_score, m.fatigue_advantage
             FROM picks p
             JOIN matches m ON p.match_id = m.match_id
-            WHERE p.status IN ('pending', 'settled')
+            WHERE p.status = 'pending'
             ORDER BY COALESCE(p.range_code, 'D'), m.kickoff, p.edge_pct DESC
             """
         )
@@ -78,6 +78,23 @@ class DashboardGenerator:
                 f"<div><span>{quality}</span><strong>{wins}W-{losses}L"
                 f"{('-' + str(pushes) + 'P') if pushes else ''}</strong>"
                 f"<small>{win_rate:.1f}% · ${pnl:+,.0f}</small></div>"
+            )
+        return f"<div class=\"quality-summary\">{''.join(rows)}</div>"
+
+    def _quality_summary_from_results(self, results: List[Dict]) -> str:
+        rows = []
+        for quality in ("STRONG", "KEEP", "CAUTION"):
+            settled = [r for r in results if r.get("result") in ("win", "loss", "push") and r.get("quality") == quality]
+            wins = sum(1 for r in settled if r.get("result") == "win")
+            losses = sum(1 for r in settled if r.get("result") == "loss")
+            pushes = sum(1 for r in settled if r.get("result") == "push")
+            decisions = wins + losses
+            win_rate = (wins / decisions * 100) if decisions else 0
+            pnl = sum(float(r.get("pnl") or 0) for r in settled)
+            rows.append(
+                f"<div><span>{quality}</span><strong>{wins}W-{losses}L"
+                f"{('-' + str(pushes) + 'P') if pushes else ''}</strong>"
+                f"<small>{win_rate:.1f}% Â· ${pnl:+,.0f}</small></div>"
             )
         return f"<div class=\"quality-summary\">{''.join(rows)}</div>"
 
@@ -394,6 +411,7 @@ class DashboardGenerator:
 
         generated = datetime.now().strftime("%A, %B %d, %Y at %H:%M")
         total_picks = len(picks)
+        flat_stake = float(self.settings.get("flat_stake", 0))
 
         html_doc = f"""<!DOCTYPE html>
 <html lang="en">
@@ -588,9 +606,9 @@ button.loss {{ color:var(--bad); border-color:#ef444433; }}
     <button class="tab" onclick="switchRange('D')">Range D</button>
   </div>
   <div class="intro">
-    <strong>Range C/D workflow.</strong> Same betting concept: odds bands, flat $200 staking, quality flags, correlated-exposure notes, and browser-side result settlement. The presentation now follows the RolloForge visual system instead of your friend's dashboard skin.
+    <strong>Range C/D workflow.</strong> Same betting concept: odds bands, flat ${flat_stake:,.0f} staking, quality flags, correlated-exposure notes, and browser-side result settlement. The presentation now follows the RolloForge visual system instead of your friend's dashboard skin.
   </div>
-  {self._quality_summary(picks)}
+  {self._quality_summary_from_results(results_history)}
   {self._render_range('C', by_range['C'], True)}
   {self._render_range('D', by_range['D'], False)}
   {self._history_table(results_history)}
