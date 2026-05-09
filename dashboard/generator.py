@@ -297,6 +297,7 @@ class DashboardGenerator:
         date_key = self._date_key(pick.get("kickoff"))
         kickoff = html.escape(str(pick.get("kickoff") or "TBD"))
         selection = html.escape(str(pick.get("selection") or ""))
+        market = html.escape(str(pick.get("market") or ""))
         matchup = html.escape(f"{pick.get('home_team')} vs {pick.get('away_team')}")
         league = html.escape(str(pick.get("league") or ""))
         pick_id = int(pick["id"])
@@ -313,7 +314,7 @@ class DashboardGenerator:
   <div class="pick-summary" onclick="toggleDetails({pick_id})">
     <div class="rank">#{index}</div>
     <div class="pick-main">
-      <div class="pick-title">{selection} <span class="badge {quality_class}">{self._quality_label(quality)}</span></div>
+      <div class="pick-title"><span class="market-pill">{market}</span>{selection} <span class="badge {quality_class}">{self._quality_label(quality)}</span></div>
       <div class="pick-meta">{matchup} · <span>{kickoff}</span> · {league}</div>
     </div>
     <div class="numbers">
@@ -421,21 +422,6 @@ class DashboardGenerator:
 <title>Rollo Stake Model - Range C/D</title>
 <style>
 :root {{
-  --background:#f5efe4;
-  --panel:#fffaf2;
-  --panel-strong:#f1e4d0;
-  --ink:#20201c;
-  --muted:#68624e;
-  --accent:#a44b1a;
-  --accent-soft:#d77b46;
-  --line:#20201c1a;
-  --shadow:#0000000d;
-  --good:#15803d;
-  --bad:#b91c1c;
-  --warn:#b45309;
-  --blue:#2563eb;
-}}
-[data-theme=dark] {{
   --background:#1a1a18;
   --panel:#2a2a26;
   --panel-strong:#3a3a34;
@@ -456,9 +442,6 @@ body {{ background:var(--background); color:var(--ink); min-height:100vh; font-f
 .site-header {{ display:flex; justify-content:space-between; align-items:flex-start; gap:16px; margin:0 auto 28px; max-width:1200px; padding:24px 16px 0; }}
 .brand h1 {{ color:var(--ink); font-size:2rem; line-height:1.1; font-weight:700; margin-bottom:8px; }}
 .brand p {{ color:var(--muted); }}
-.theme-toggle {{ border:1px solid var(--line); background:var(--panel); color:var(--ink); cursor:pointer; border-radius:9999px; align-items:center; gap:8px; padding:8px 16px; font-family:inherit; font-size:.875rem; transition:all .2s; display:flex; }}
-.theme-toggle:hover {{ background:var(--panel-strong); border-color:var(--accent); }}
-.theme-icon {{ width:16px; height:16px; display:inline-block; text-align:center; }}
 .tabs {{ border-bottom:1px solid var(--line); display:flex; gap:4px; margin-bottom:24px; }}
 .tab {{ background:transparent; border:0; color:var(--muted); border-radius:8px 8px 0 0; padding:12px 16px; font-family:inherit; font-size:1rem; cursor:pointer; transition:all .2s; }}
 .tab:hover {{ color:var(--ink); background:var(--panel); }}
@@ -499,14 +482,12 @@ body {{ background:var(--background); color:var(--ink); min-height:100vh; font-f
 .rank {{ color:var(--accent); font-size:1.6rem; font-weight:700; min-width:42px; }}
 .pick-main {{ flex:1; min-width:190px; }}
 .pick-title {{ color:var(--ink); font-weight:600; font-size:1.125rem; }}
+.market-pill {{ display:inline-block; margin-right:8px; border:1px solid var(--line); border-radius:9999px; padding:2px 8px; color:var(--accent); background:var(--panel-strong); font-size:.72rem; font-weight:700; vertical-align:middle; }}
 .pick-meta {{ color:var(--muted); font-size:.875rem; margin-top:4px; }}
 .badge {{ display:inline-block; margin-left:8px; border-radius:9999px; padding:4px 10px; font-size:.75rem; font-weight:600; vertical-align:middle; }}
-.badge.strong {{ color:#166534; background:#dcfce7; }}
-.badge.keep {{ color:#1d4ed8; background:#dbeafe; }}
-.badge.caution {{ color:#9a3412; background:#ffedd5; }}
-[data-theme=dark] .badge.strong {{ color:#86efac; background:#22c55e33; }}
-[data-theme=dark] .badge.keep {{ color:#93c5fd; background:#3b82f633; }}
-[data-theme=dark] .badge.caution {{ color:#fdba74; background:#f9731633; }}
+.badge.strong {{ color:#86efac; background:#22c55e33; }}
+.badge.keep {{ color:#93c5fd; background:#3b82f633; }}
+.badge.caution {{ color:#fdba74; background:#f9731633; }}
 .numbers {{ display:flex; gap:10px; text-align:center; flex-wrap:wrap; justify-content:flex-end; }}
 .numbers div {{ min-width:62px; background:var(--panel-strong); border-radius:12px; padding:8px 10px; }}
 .numbers strong {{ display:block; font-size:1rem; color:var(--ink); }}
@@ -540,12 +521,9 @@ button.loss {{ color:var(--bad); border-color:#ef444433; }}
 .recent-form h3 {{ font-size:.75rem; color:var(--muted); text-transform:uppercase; letter-spacing:.05em; margin-bottom:8px; }}
 .form-row {{ display:flex; gap:12px; align-items:center; flex-wrap:wrap; }}
 .form-row span {{ display:inline-flex; align-items:center; justify-content:center; width:24px; height:24px; border-radius:9999px; font-size:.75rem; font-weight:700; }}
-.form-row .form-w {{ color:#166534; background:#dcfce7; }}
-.form-row .form-d {{ color:#9a3412; background:#ffedd5; }}
-.form-row .form-l {{ color:#991b1b; background:#fee2e2; }}
-[data-theme=dark] .form-row .form-w {{ color:#86efac; background:#22c55e33; }}
-[data-theme=dark] .form-row .form-d {{ color:#fdba74; background:#f9731633; }}
-[data-theme=dark] .form-row .form-l {{ color:#fca5a5; background:#ef444433; }}
+.form-row .form-w {{ color:#86efac; background:#22c55e33; }}
+.form-row .form-d {{ color:#fdba74; background:#f9731633; }}
+.form-row .form-l {{ color:#fca5a5; background:#ef444433; }}
 .form-row small {{ color:var(--muted); font-size:.75rem; margin-left:2px; }}
 ::-webkit-scrollbar {{ width:8px; height:8px; }}
 ::-webkit-scrollbar-track {{ background:var(--panel); }}
@@ -592,13 +570,6 @@ button.loss {{ color:var(--bad); border-color:#ef444433; }}
     <h1>RolloStake</h1>
     <p>Football edge intelligence &middot; {total_picks} picks &middot; generated {html.escape(generated)}</p>
   </div>
-  <button class="theme-toggle" type="button" onclick="toggleTheme()" aria-label="Toggle theme">
-    <svg class="theme-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-      <circle cx="12" cy="12" r="4"></circle>
-      <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path>
-    </svg>
-    <span id="theme-label">Dark</span>
-  </button>
 </header>
 <main class="shell">
   <div class="tabs">
@@ -615,21 +586,9 @@ button.loss {{ color:var(--bad); border-color:#ef444433; }}
 </main>
 <script>
 const KEY = 'rollo-range-results-v1';
-const THEME_KEY = 'rollo-dashboard-theme';
 const PICKS = {json.dumps(js_picks)};
 const BANK = {json.dumps(js_bank)};
 let state = JSON.parse(localStorage.getItem(KEY) || '{{}}');
-
-function applyTheme(theme) {{
-  document.documentElement.dataset.theme = theme;
-  document.getElementById('theme-label').textContent = theme === 'dark' ? 'Dark' : 'Light';
-}}
-
-function toggleTheme() {{
-  const next = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
-  localStorage.setItem(THEME_KEY, next);
-  applyTheme(next);
-}}
 
 function switchRange(code) {{
   document.querySelectorAll('.tab').forEach((tab, index) => {{
@@ -719,7 +678,6 @@ function updateRange(range) {{
   bankEl.className = pnl >= 0 ? 'good' : 'bad';
 }}
 
-applyTheme(localStorage.getItem(THEME_KEY) || 'dark');
 ['C', 'D'].forEach(updateRange);
 </script>
 </body>

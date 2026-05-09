@@ -19,6 +19,23 @@ from models.core import init_db
 
 MATCH_TOTAL_LINES = (0.5, 1.5, 2.5, 3.0, 3.5)
 TEAM_TOTAL_LINES = (0.5, 1.5, 2.5)
+FIELDNAMES = [
+    "range_hint",
+    "match_id",
+    "league",
+    "kickoff",
+    "home_team",
+    "away_team",
+    "market",
+    "selection",
+    "model_prob",
+    "fair_odds",
+    "min_odds_for_edge",
+    "lambda_h",
+    "lambda_a",
+    "bookmaker",
+    "odds",
+]
 
 
 def _poisson_pmf(goals: int, expected: float) -> float:
@@ -173,34 +190,102 @@ def build_watchlist(min_edge: float = 0.05, max_rows: int = 160) -> list:
 
 def export_watchlist(path: str, min_edge: float, max_rows: int) -> list:
     rows = build_watchlist(min_edge=min_edge, max_rows=max_rows)
-    fieldnames = [
-        "range_hint",
-        "match_id",
-        "league",
-        "kickoff",
-        "home_team",
-        "away_team",
-        "market",
-        "selection",
-        "model_prob",
-        "fair_odds",
-        "min_odds_for_edge",
-        "lambda_h",
-        "lambda_a",
-    ]
+    existing = {}
+    existing_path = Path(path)
+    if existing_path.exists():
+        with existing_path.open(newline="", encoding="utf-8-sig") as f:
+            for row in csv.DictReader(f):
+                odds = (row.get("odds") or "").strip()
+                bookmaker = (row.get("bookmaker") or "").strip() or "manual"
+                if odds:
+                    existing[(row.get("match_id"), row.get("market"), row.get("selection"), bookmaker)] = odds
+
+    for row in rows:
+        row["bookmaker"] = "manual"
+        row["odds"] = existing.get(
+            (row.get("match_id"), row.get("market"), row.get("selection"), row["bookmaker"]),
+            "",
+        )
+
     with open(path, "w", newline="", encoding="utf-8") as f:
-        writer = csv.DictWriter(f, fieldnames=fieldnames)
+        writer = csv.DictWriter(f, fieldnames=FIELDNAMES)
         writer.writeheader()
         writer.writerows(rows)
     return rows
 
 
+def _float_or_none(value: str):
+    if value is None or str(value).strip() == "":
+        return None
+    return float(str(value).strip())
+
+
+def import_watchlist(path: str, bookmaker: str = "manual", overwrite: bool = True) -> dict:
+    init_db()
+    saved = 0
+    skipped = 0
+    conn = sqlite3.connect(DB_PATH)
+    c = conn.cursor()
+
+    with open(path, newline="", encoding="utf-8-sig") as f:
+        for row in csv.DictReader(f):
+            odds = _float_or_none(row.get("odds"))
+            match_id = (row.get("match_id") or "").strip()
+            market = (row.get("market") or "").strip().upper()
+            selection = (row.get("selection") or "").strip()
+            row_bookmaker = (row.get("bookmaker") or "").strip() or bookmaker
+            if not match_id or not market or not selection or odds is None or odds <= 0:
+                skipped += 1
+                continue
+
+            if overwrite:
+                c.execute(
+                    """
+                    DELETE FROM odds
+                    WHERE match_id = ? AND market = ? AND selection = ? AND bookmaker = ?
+                    """,
+                    (match_id, market, selection, row_bookmaker),
+                )
+            else:
+                c.execute(
+                    """
+                    SELECT id FROM odds
+                    WHERE match_id = ? AND market = ? AND selection = ? AND bookmaker = ?
+                    """,
+                    (match_id, market, selection, row_bookmaker),
+                )
+                if c.fetchone():
+                    skipped += 1
+                    continue
+
+            c.execute(
+                """
+                INSERT INTO odds (match_id, bookmaker, market, selection, odds, implied_prob)
+                VALUES (?, ?, ?, ?, ?, ?)
+                """,
+                (match_id, row_bookmaker, market, selection, odds, round(1.0 / odds, 4)),
+            )
+            saved += 1
+
+    conn.commit()
+    conn.close()
+    return {"saved": saved, "skipped": skipped}
+
+
 def main():
     parser = argparse.ArgumentParser(description="Export model-ranked markets that need bookmaker odds")
     parser.add_argument("--output", default="market_watchlist.csv", help="CSV output path")
+    parser.add_argument("--import-file", default=None, help="Import a filled market watchlist CSV")
     parser.add_argument("--min-edge", type=float, default=0.05, help="Required edge, e.g. 0.05 for 5%%")
     parser.add_argument("--max-rows", type=int, default=160, help="Maximum rows to export")
+    parser.add_argument("--bookmaker", default="manual", help="Default bookmaker label for imported rows")
+    parser.add_argument("--no-overwrite", action="store_true", help="Keep existing identical odds rows")
     args = parser.parse_args()
+
+    if args.import_file:
+        summary = import_watchlist(args.import_file, bookmaker=args.bookmaker, overwrite=not args.no_overwrite)
+        print(f"Imported market odds: saved={summary['saved']} skipped={summary['skipped']}")
+        return
 
     rows = export_watchlist(args.output, args.min_edge, args.max_rows)
     print(f"Exported {len(rows)} market candidates to {args.output}")

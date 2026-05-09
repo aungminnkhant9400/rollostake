@@ -27,6 +27,23 @@ def _read_missing(path: str, limit: int) -> list:
         return rows
 
 
+def _read_missing_market(path: str, market: str, limit: int) -> list:
+    file_path = Path(path)
+    if not file_path.exists():
+        return []
+    with file_path.open(newline="", encoding="utf-8-sig") as f:
+        rows = []
+        for row in csv.DictReader(f):
+            if (row.get("market") or "").upper() != market:
+                continue
+            if (row.get("odds") or "").strip():
+                continue
+            rows.append(row)
+            if len(rows) >= limit:
+                break
+        return rows
+
+
 def _format_candidate(row: dict) -> str:
     needed = row.get("min_odds_for_edge") or "?"
     selection = row.get("selection") or ""
@@ -52,7 +69,7 @@ def build_report(limit: int = 20) -> str:
         """
     )
     odds_by_market = c.fetchall()
-    c.execute("SELECT market, COUNT(*) FROM picks GROUP BY market ORDER BY market")
+    c.execute("SELECT market, COUNT(*) FROM picks WHERE status = 'pending' GROUP BY market ORDER BY market")
     picks_by_market = c.fetchall()
     c.execute(
         """
@@ -60,6 +77,7 @@ def build_report(limit: int = 20) -> str:
                m.home_team, m.away_team, m.kickoff
         FROM picks p
         JOIN matches m ON p.match_id = m.match_id
+        WHERE p.status = 'pending'
         ORDER BY p.range_code, m.kickoff, p.edge_pct DESC
         """
     )
@@ -91,11 +109,17 @@ def build_report(limit: int = 20) -> str:
             f"{market} {selection} @{odds:.2f} | {quality} | edge {edge:.1f}%"
         )
 
-    lines.extend(["", "## Missing Top Team Totals"])
-    missing_tt = _read_missing("team_total_odds.csv", limit)
-    lines.extend(_format_candidate(row) for row in missing_tt)
-    if not missing_tt:
-        lines.append("- none")
+    market_sections = [
+        ("Missing Top Match Totals", "OU"),
+        ("Missing Top BTTS", "BTTS"),
+        ("Missing Top Team Totals", "TT"),
+    ]
+    for title, market in market_sections:
+        lines.extend(["", f"## {title}"])
+        missing_market = _read_missing_market("market_watchlist.csv", market, limit)
+        lines.extend(_format_candidate(row) for row in missing_market)
+        if not missing_market:
+            lines.append("- none")
 
     lines.extend(["", "## Missing Top Handicap / +0.5"])
     missing_ah = _read_missing("handicap_odds.csv", limit)
@@ -107,8 +131,9 @@ def build_report(limit: int = 20) -> str:
         [
             "",
             "## Next Action",
-            "- Fill the odds column for the missing TT/AH rows you can find.",
-            "- Import with scripts/team_total_odds_cli.py or scripts/handicap_odds_cli.py.",
+            "- Fill the odds column in market_watchlist.csv for OU, BTTS, and TT rows you can find.",
+            "- Import with scripts/export_market_watchlist.py --import-file market_watchlist.csv.",
+            "- Fill/import handicap rows separately with scripts/handicap_odds_cli.py when needed.",
             "- Rerun python main.py --skip-scrape --no-fatigue.",
         ]
     )

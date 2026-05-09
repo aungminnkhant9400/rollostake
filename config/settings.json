@@ -21,11 +21,13 @@
       "min_odds": 2.5,
       "max_odds": 5.0,
       "max_picks": 12,
-      "min_edge": 0.35,
+      "min_edge": 0.05,
       "max_picks_per_match": 1,
       "max_family_per_match": 1,
-      "allowed_markets": ["1X2"],
-      "allowed_selection_types": ["home", "away"]
+      "market_min_picks": {"OU": 3, "BTTS": 2, "TT": 2},
+      "market_max_picks": {"1X2": 6},
+      "allowed_markets": ["1X2", "OU", "BTTS", "TT"],
+      "allowed_selection_types": ["home", "away", "over", "under"]
     },
     "D": {
       "name": "Range D",
@@ -34,11 +36,13 @@
       "min_odds": 1.7,
       "max_odds": 2.7,
       "max_picks": 12,
-      "min_edge": 0.35,
+      "min_edge": 0.05,
       "max_picks_per_match": 1,
       "max_family_per_match": 1,
-      "allowed_markets": ["1X2"],
-      "allowed_selection_types": ["home", "away"]
+      "market_min_picks": {"OU": 3, "BTTS": 2, "TT": 2},
+      "market_max_picks": {"1X2": 6},
+      "allowed_markets": ["1X2", "OU", "BTTS", "TT"],
+      "allowed_selection_types": ["home", "away", "over", "under"]
     }
   },
   "base_stake": 10,

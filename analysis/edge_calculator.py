@@ -47,6 +47,7 @@ class RangeConfig:
     max_picks: int
     min_edge: float
     market_min_picks: Dict[str, int] = field(default_factory=dict)
+    market_max_picks: Dict[str, int] = field(default_factory=dict)
     max_picks_per_match: int = 2
     max_family_per_match: int = 1
     allowed_markets: Tuple[str, ...] = field(default_factory=tuple)
@@ -101,6 +102,10 @@ class EdgeCalculator:
                 market_min_picks={
                     str(market).upper(): int(count)
                     for market, count in raw.get('market_min_picks', {}).items()
+                },
+                market_max_picks={
+                    str(market).upper(): int(count)
+                    for market, count in raw.get('market_max_picks', {}).items()
                 },
                 max_picks_per_match=int(raw.get('max_picks_per_match', settings.get('max_picks_per_match', 2))),
                 max_family_per_match=int(raw.get('max_family_per_match', settings.get('max_family_per_match', 1))),
@@ -324,11 +329,15 @@ class EdgeCalculator:
             range_candidates.sort(key=lambda p: (p.edge_pct, p.model_prob), reverse=True)
 
             count = 0
+            market_counts = {}
 
             def add_pick(pick: Pick) -> bool:
                 nonlocal count
                 exposure_key = (pick.home_team, pick.away_team, pick.market, pick.selection)
                 if exposure_key in exposure:
+                    return False
+                market_limit = config.market_max_picks.get(pick.market.upper())
+                if market_limit is not None and market_counts.get(pick.market, 0) >= market_limit:
                     return False
                 if match_counts.get(pick.match_id, 0) >= config.max_picks_per_match:
                     return False
@@ -342,6 +351,7 @@ class EdgeCalculator:
                 selected.append(pick)
                 exposure.add(exposure_key)
                 match_counts[pick.match_id] = match_counts.get(pick.match_id, 0) + 1
+                market_counts[pick.market] = market_counts.get(pick.market, 0) + 1
                 family_counts[family_key] = family_counts.get(family_key, 0) + 1
                 count += 1
                 return True
