@@ -98,6 +98,74 @@ class DashboardGenerator:
             )
         return f"<div class=\"quality-summary\">{''.join(rows)}</div>"
 
+    def _range_performance_summary(self, results: List[Dict]) -> str:
+        settled = [r for r in results if r.get("result") in ("win", "loss", "push")]
+
+        def stats(rows: List[Dict]) -> Dict:
+            wins = sum(1 for r in rows if r.get("result") == "win")
+            losses = sum(1 for r in rows if r.get("result") == "loss")
+            pushes = sum(1 for r in rows if r.get("result") == "push")
+            staked = sum(float(r.get("stake") or 0) for r in rows)
+            pnl = sum(float(r.get("pnl") or 0) for r in rows)
+            roi = (pnl / staked * 100) if staked else 0.0
+            return {
+                "settled": len(rows),
+                "wins": wins,
+                "losses": losses,
+                "pushes": pushes,
+                "staked": staked,
+                "pnl": pnl,
+                "roi": roi,
+            }
+
+        def record(item: Dict) -> str:
+            push = f"-{item['pushes']}P" if item["pushes"] else ""
+            return f"{item['wins']}W-{item['losses']}L{push}"
+
+        def money(value: float) -> str:
+            return f"${value:+,.2f}"
+
+        overall = stats(settled)
+        by_code = {
+            "C": stats([r for r in settled if (r.get("range_code") or "").upper() == "C"]),
+            "D": stats([r for r in settled if (r.get("range_code") or "").upper() == "D"]),
+        }
+
+        usable = {code: item for code, item in by_code.items() if item["staked"] > 0}
+        leader_code = max(usable, key=lambda code: usable[code]["roi"]) if usable else ""
+        leader_text = (
+            f"Best so far: Range {leader_code} at {usable[leader_code]['roi']:+.1f}% ROI."
+            if leader_code
+            else "No settled range results yet."
+        )
+
+        cards = []
+        for label, item, code in (
+            ("Overall", overall, ""),
+            ("Range C", by_code["C"], "C"),
+            ("Range D", by_code["D"], "D"),
+        ):
+            card_class = " performance-leader" if code and code == leader_code else ""
+            tone = "good" if item["roi"] >= 0 else "bad"
+            cards.append(
+                f'<div class="performance-card{card_class}">'
+                f"<span>{label}</span>"
+                f'<strong class="{tone}">{item["roi"]:+.1f}%</strong>'
+                f"<small>{item['settled']} settled - {record(item)}</small>"
+                f"<div>Staked ${item['staked']:,.0f} / P&amp;L {money(item['pnl'])}</div>"
+                "</div>"
+            )
+
+        return (
+            '<section class="range-performance">'
+            '<div class="performance-heading">'
+            '<div><span>Settled performance</span><h2>Total ROI and range comparison</h2></div>'
+            f"<p>{leader_text}</p>"
+            "</div>"
+            f'<div class="performance-grid">{"".join(cards)}</div>'
+            "</section>"
+        )
+
     def _history_table(self, results: List[Dict]) -> str:
         if not results:
             return '<div class="history empty-history">No settled picks yet.</div>'
@@ -409,6 +477,20 @@ class DashboardGenerator:
             for code, range_picks in by_range.items()
         }
         js_bank = {code: self.range_configs[code].bankroll for code in ("C", "D")}
+        js_settled = {}
+        for code in ("C", "D"):
+            range_results = [
+                r for r in results_history
+                if (r.get("range_code") or "").upper() == code
+                and r.get("result") in ("win", "loss", "push")
+            ]
+            js_settled[code] = {
+                "wins": sum(1 for r in range_results if r.get("result") == "win"),
+                "losses": sum(1 for r in range_results if r.get("result") == "loss"),
+                "pushes": sum(1 for r in range_results if r.get("result") == "push"),
+                "staked": sum(float(r.get("stake") or 0) for r in range_results),
+                "pnl": sum(float(r.get("pnl") or 0) for r in range_results),
+            }
 
         generated = datetime.now().strftime("%A, %B %d, %Y at %H:%M")
         total_picks = len(picks)
@@ -453,6 +535,18 @@ body {{ background:var(--background); color:var(--ink); min-height:100vh; font-f
 .quality-summary span {{ display:block; color:var(--muted); font-size:.75rem; font-weight:700; text-transform:uppercase; letter-spacing:.05em; margin-bottom:4px; }}
 .quality-summary strong {{ display:block; color:var(--ink); font-size:1.5rem; line-height:1.2; }}
 .quality-summary small {{ color:var(--muted); font-size:.875rem; }}
+.range-performance {{ background:var(--panel); border:1px solid var(--line); border-radius:16px; box-shadow:0 1px 3px var(--shadow); padding:20px; margin:0 0 16px; }}
+.performance-heading {{ display:flex; justify-content:space-between; align-items:flex-start; gap:16px; margin-bottom:16px; }}
+.performance-heading span {{ display:block; color:var(--muted); font-size:.75rem; font-weight:700; text-transform:uppercase; letter-spacing:.05em; margin-bottom:4px; }}
+.performance-heading h2 {{ color:var(--ink); font-size:1.25rem; line-height:1.2; font-weight:600; }}
+.performance-heading p {{ color:var(--accent); font-size:.95rem; text-align:right; max-width:320px; }}
+.performance-grid {{ display:grid; grid-template-columns:repeat(3,minmax(150px,1fr)); gap:12px; }}
+.performance-card {{ background:var(--panel-strong); border:1px solid var(--line); border-radius:12px; padding:16px; }}
+.performance-card.performance-leader {{ border-color:#86efac66; box-shadow:0 0 0 1px #86efac1f inset; }}
+.performance-card span {{ display:block; color:var(--muted); font-size:.75rem; font-weight:700; text-transform:uppercase; letter-spacing:.05em; margin-bottom:4px; }}
+.performance-card strong {{ display:block; font-size:1.7rem; line-height:1.15; margin-bottom:2px; }}
+.performance-card small {{ display:block; color:var(--ink); font-size:.9rem; margin-bottom:8px; }}
+.performance-card div {{ color:var(--muted); font-size:.875rem; }}
 .range {{ display:none; }}
 .range.on {{ display:block; }}
 .pnl-bar {{ display:grid; grid-template-columns:repeat(5,minmax(110px,1fr)); gap:16px; margin-bottom:16px; }}
@@ -533,6 +627,9 @@ button.loss {{ color:var(--bad); border-color:#ef444433; }}
   .site-header {{ gap:12px; align-items:flex-start; flex-direction:column; }}
   .pnl-bar {{ grid-template-columns:repeat(2,minmax(120px,1fr)); gap:10px; }}
   .quality-summary {{ grid-template-columns:1fr; }}
+  .performance-heading {{ flex-direction:column; }}
+  .performance-heading p {{ max-width:none; text-align:left; }}
+  .performance-grid {{ grid-template-columns:1fr; }}
   .pick-summary {{ align-items:flex-start; flex-direction:column; }}
   .numbers {{ width:100%; justify-content:space-between; }}
   .actions {{ width:100%; justify-content:flex-start; }}
@@ -579,6 +676,7 @@ button.loss {{ color:var(--bad); border-color:#ef444433; }}
   <div class="intro">
     <strong>Range C/D workflow.</strong> Same betting concept: odds bands, flat ${flat_stake:,.0f} staking, quality flags, correlated-exposure notes, and browser-side result settlement. The presentation now follows the RolloForge visual system instead of your friend's dashboard skin.
   </div>
+  {self._range_performance_summary(results_history)}
   {self._quality_summary_from_results(results_history)}
   {self._render_range('C', by_range['C'], True)}
   {self._render_range('D', by_range['D'], False)}
@@ -588,6 +686,7 @@ button.loss {{ color:var(--bad); border-color:#ef444433; }}
 const KEY = 'rollo-range-results-v1';
 const PICKS = {json.dumps(js_picks)};
 const BANK = {json.dumps(js_bank)};
+const SETTLED = {json.dumps(js_settled)};
 let state = JSON.parse(localStorage.getItem(KEY) || '{{}}');
 
 function switchRange(code) {{
@@ -627,7 +726,12 @@ function filterRange(range, date) {{
 }}
 
 function updateRange(range) {{
-  let wins = 0, losses = 0, pushes = 0, pnl = 0, staked = 0;
+  const settled = SETTLED[range] || {{ wins: 0, losses: 0, pushes: 0, pnl: 0, staked: 0 }};
+  let wins = settled.wins || 0;
+  let losses = settled.losses || 0;
+  let pushes = settled.pushes || 0;
+  let pnl = settled.pnl || 0;
+  let staked = settled.staked || 0;
   PICKS[range].forEach(pick => {{
     const status = currentStatus(pick);
     const card = document.getElementById('pick-' + pick.id);

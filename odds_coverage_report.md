@@ -1,37 +1,25 @@
 # Odds Coverage Report
 
-Scheduled fixtures: 50
+Scheduled fixtures: 39
 
 ## Odds by Market
-- 1X2: 147
-- AH: 5
-- BTTS: 16
-- OU: 50
-- TT: 8
+- 1X2: 114
+- AH: 2
+- BTTS: 10
+- OU: 36
+- TT: 3
 
 ## Official Picks by Market
-- 1X2: 12
-- BTTS: 1
-- OU: 5
-- TT: 2
+- 1X2: 7
+- OU: 3
 
 ## Official Card
-- C | 2026-05-09 02:45 | Torino vs Sassuolo | 1X2 Sassuolo Win @2.85 | STRONG | edge 50.2%
-- C | 2026-05-09 03:00 | Levante vs Osasuna | OU Under 1.5 @3.35 | STRONG | edge 27.6%
-- C | 2026-05-10 00:30 | Atletico Madrid vs Celta | 1X2 Celta Win @3.45 | STRONG | edge 59.4%
 - C | 2026-05-10 18:30 | Verona vs Como | OU Over 3.0 @2.55 | KEEP | edge 22.6%
 - C | 2026-05-10 21:00 | Fiorentina vs Genoa | 1X2 Genoa Win @3.65 | STRONG | edge 60.6%
 - C | 2026-05-10 21:00 | Nott'm Forest vs Newcastle | 1X2 Nott'm Forest Win @2.65 | STRONG | edge 49.2%
 - C | 2026-05-11 00:00 | Parma vs Roma | OU Under 1.5 @3.10 | KEEP | edge 11.9%
 - C | 2026-05-11 03:00 | Toulouse vs Lyon | 1X2 Toulouse Win @4.40 | STRONG | edge 50.9%
 - C | 2026-05-12 03:00 | Tottenham vs Leeds | 1X2 Leeds Win @4.00 | STRONG | edge 113.2%
-- D | 2026-05-09 02:30 | Dortmund vs Ein Frankfurt | 1X2 Dortmund Win @1.70 | STRONG | edge 28.9%
-- D | 2026-05-09 21:30 | RB Leipzig vs St Pauli | OU Under 3.0 @1.98 | STRONG | edge 26.1%
-- D | 2026-05-09 22:00 | Fulham vs Bournemouth | TT Fulham U1.5 @1.79 | KEEP | edge 15.5%
-- D | 2026-05-09 22:00 | Brighton vs Wolves | TT Wolves U0.5 @2.00 | KEEP | edge 12.9%
-- D | 2026-05-10 00:00 | Lazio vs Inter Milan | 1X2 Inter Milan Win @1.80 | STRONG | edge 67.0%
-- D | 2026-05-10 02:45 | Lecce vs Juventus | BTTS BTTS No @1.85 | KEEP | edge 14.9%
-- D | 2026-05-10 03:00 | Sociedad vs Betis | 1X2 Sociedad Win @2.55 | STRONG | edge 26.0%
 - D | 2026-05-10 21:00 | Crystal Palace vs Everton | 1X2 Everton Win @2.60 | STRONG | edge 40.9%
 - D | 2026-05-11 02:45 | AC Milan vs Atalanta | 1X2 AC Milan Win @2.12 | STRONG | edge 108.4%
 - D | 2026-05-11 03:00 | Monaco vs Lille | OU Under 3.0 @1.80 | KEEP | edge 17.4%
