@@ -14,13 +14,14 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from config.paths import DB_PATH
+from config.settings import load_settings
 from models.core import init_db
 
 
 MATCH_TOTAL_LINES = (0.5, 1.5, 2.5, 3.0, 3.5)
 TEAM_TOTAL_LINES = (0.5, 1.5, 2.5)
 FIELDNAMES = [
-    "range_hint",
+    "risk_band",
     "match_id",
     "league",
     "kickoff",
@@ -98,11 +99,19 @@ def _team_total_prob(dist: dict, home_side: bool, line: float, over: bool):
 
 
 def _range_for_required_odds(required_odds: float) -> str:
-    if 2.50 <= required_odds <= 5.00:
-        return "C"
-    if 1.70 <= required_odds <= 2.70:
+    if required_odds <= 2.70:
         return "D"
+    if required_odds <= 5.00:
+        return "C"
     return "WATCH"
+
+
+def _risk_band_label(code: str) -> str:
+    return {
+        "C": "High Risk",
+        "D": "Low Risk",
+        "WATCH": "Watch",
+    }.get(code, code)
 
 
 def _add_candidate(candidates: list, fixture: dict, market: str, selection: str, model_prob, min_edge: float):
@@ -189,7 +198,15 @@ def build_watchlist(min_edge: float = 0.05, max_rows: int = 160) -> list:
 
 
 def export_watchlist(path: str, min_edge: float, max_rows: int) -> list:
+    settings = load_settings()
+    default_bookmaker = settings.get("default_bookmaker", "polymarket")
+    active_ranges = {
+        str(code).upper()
+        for code in settings.get("active_ranges", [])
+    }
     rows = build_watchlist(min_edge=min_edge, max_rows=max_rows)
+    if active_ranges:
+        rows = [row for row in rows if row.get("range_hint") in active_ranges]
     existing = {}
     existing_path = Path(path)
     if existing_path.exists():
@@ -201,14 +218,15 @@ def export_watchlist(path: str, min_edge: float, max_rows: int) -> list:
                     existing[(row.get("match_id"), row.get("market"), row.get("selection"), bookmaker)] = odds
 
     for row in rows:
-        row["bookmaker"] = "manual"
+        row["bookmaker"] = default_bookmaker
+        row["risk_band"] = _risk_band_label(row.get("range_hint"))
         row["odds"] = existing.get(
             (row.get("match_id"), row.get("market"), row.get("selection"), row["bookmaker"]),
             "",
         )
 
     with open(path, "w", newline="", encoding="utf-8") as f:
-        writer = csv.DictWriter(f, fieldnames=FIELDNAMES)
+        writer = csv.DictWriter(f, fieldnames=FIELDNAMES, extrasaction="ignore")
         writer.writeheader()
         writer.writerows(rows)
     return rows
@@ -260,7 +278,7 @@ def import_watchlist(path: str, bookmaker: str = "manual", overwrite: bool = Tru
 
             c.execute(
                 """
-                INSERT INTO odds (match_id, bookmaker, market, selection, odds, implied_prob)
+            INSERT INTO odds (match_id, bookmaker, market, selection, odds, implied_prob)
                 VALUES (?, ?, ?, ?, ?, ?)
                 """,
                 (match_id, row_bookmaker, market, selection, odds, round(1.0 / odds, 4)),
@@ -273,12 +291,17 @@ def import_watchlist(path: str, bookmaker: str = "manual", overwrite: bool = Tru
 
 
 def main():
+    settings = load_settings()
     parser = argparse.ArgumentParser(description="Export model-ranked markets that need bookmaker odds")
     parser.add_argument("--output", default="market_watchlist.csv", help="CSV output path")
     parser.add_argument("--import-file", default=None, help="Import a filled market watchlist CSV")
     parser.add_argument("--min-edge", type=float, default=0.05, help="Required edge, e.g. 0.05 for 5%%")
     parser.add_argument("--max-rows", type=int, default=160, help="Maximum rows to export")
-    parser.add_argument("--bookmaker", default="manual", help="Default bookmaker label for imported rows")
+    parser.add_argument(
+        "--bookmaker",
+        default=settings.get("default_bookmaker", "polymarket"),
+        help="Default bookmaker label for imported rows",
+    )
     parser.add_argument("--no-overwrite", action="store_true", help="Keep existing identical odds rows")
     args = parser.parse_args()
 
@@ -291,7 +314,7 @@ def main():
     print(f"Exported {len(rows)} market candidates to {args.output}")
     for row in rows[:20]:
         print(
-            f"{row['range_hint']} {row['league']} {row['home_team']} vs {row['away_team']} "
+            f"{row['risk_band']} {row['league']} {row['home_team']} vs {row['away_team']} "
             f"{row['selection']} model={row['model_prob']:.1%} "
             f"fair={row['fair_odds']:.2f} need>={row['min_odds_for_edge']:.2f}"
         )

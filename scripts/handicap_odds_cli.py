@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Export and import Asian handicap odds for Range C/D picks.
+"""Export and import Asian handicap odds for risk-band picks.
 
 Friend-style +0.5 selections are represented as AH +0.5. For example,
 "Nott'm Forest AH +0.5" is equivalent to Nott'm Forest or draw.
@@ -220,7 +220,7 @@ def interactive_input(min_edge: float, max_rows: int, overwrite: bool, bookmaker
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Asian handicap odds workflow for Range C/D picks")
+    parser = argparse.ArgumentParser(description="Asian handicap odds workflow for risk-band picks")
     parser.add_argument("--export-template", default=None, help="Write an AH odds CSV template")
     parser.add_argument("--import-file", default=None, help="Import a filled AH odds CSV")
     parser.add_argument("--interactive", action="store_true", help="Prompt for AH odds candidate by candidate")

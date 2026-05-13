@@ -13,9 +13,11 @@
   "staking_mode": "flat",
   "flat_stake": 10,
   "use_ranges": true,
+  "active_ranges": ["C", "D"],
+  "default_bookmaker": "polymarket",
   "ranges": {
     "C": {
-      "name": "Range C",
+      "name": "High Risk",
       "bankroll": 100,
       "flat_stake": 10,
       "min_odds": 2.5,
@@ -24,13 +26,13 @@
       "min_edge": 0.05,
       "max_picks_per_match": 1,
       "max_family_per_match": 1,
-      "market_min_picks": {"OU": 3, "BTTS": 2, "TT": 2},
+      "market_min_picks": {},
       "market_max_picks": {"1X2": 6},
-      "allowed_markets": ["1X2", "OU", "BTTS", "TT"],
+      "allowed_markets": ["1X2", "OU", "BTTS", "TT", "AH"],
       "allowed_selection_types": ["home", "away", "over", "under"]
     },
     "D": {
-      "name": "Range D",
+      "name": "Low Risk",
       "bankroll": 100,
       "flat_stake": 10,
       "min_odds": 1.7,
@@ -39,9 +41,9 @@
       "min_edge": 0.05,
       "max_picks_per_match": 1,
       "max_family_per_match": 1,
-      "market_min_picks": {"OU": 3, "BTTS": 2, "TT": 2},
+      "market_min_picks": {},
       "market_max_picks": {"1X2": 6},
-      "allowed_markets": ["1X2", "OU", "BTTS", "TT"],
+      "allowed_markets": ["1X2", "OU", "BTTS", "TT", "AH"],
       "allowed_selection_types": ["home", "away", "over", "under"]
     }
   },

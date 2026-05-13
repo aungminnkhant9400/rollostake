@@ -24,12 +24,14 @@ def load_settings():
         "staking_mode": "kelly",
         "flat_stake": 200,
         "use_ranges": False,
+        "active_ranges": ["C", "D"],
+        "default_bookmaker": "polymarket",
         "min_edge": 0.05,
         "max_picks": 12,
         "use_fatigue": True,
         "ranges": {
             "C": {
-                "name": "Range C",
+                "name": "High Risk",
                 "bankroll": 10000,
                 "flat_stake": 200,
                 "min_odds": 2.50,
@@ -38,7 +40,7 @@ def load_settings():
                 "min_edge": 0.05,
             },
             "D": {
-                "name": "Range D",
+                "name": "Low Risk",
                 "bankroll": 10000,
                 "flat_stake": 200,
                 "min_odds": 1.70,

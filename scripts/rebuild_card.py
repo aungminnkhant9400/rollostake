@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Rebuild Range C/D picks and dashboard from saved predictions and odds."""
+"""Rebuild risk-band picks and dashboard from saved predictions and odds."""
 
 import argparse
 import sys
@@ -19,11 +19,12 @@ def rebuild_card(league: str = None) -> list:
         staking_mode=settings.get("staking_mode", "flat"),
         flat_stake=float(settings.get("flat_stake", 200)),
         range_configs=EdgeCalculator.range_configs_from_settings(settings),
+        bookmaker=settings.get("default_bookmaker", "polymarket"),
     )
     picks = calc.generate_range_picks(league=league)
     calc.save_range_picks(picks)
     DashboardGenerator().generate()
-    return picks
+    return picks, calc
 
 
 def main():
@@ -31,11 +32,12 @@ def main():
     parser.add_argument("--league", default=None, help="Optional league filter")
     args = parser.parse_args()
 
-    picks = rebuild_card(league=args.league)
+    picks, calc = rebuild_card(league=args.league)
     print(f"Rebuilt dashboard with {len(picks)} picks")
     for pick in picks:
+        risk_name = calc.range_configs[pick.range_code].name
         print(
-            f"{pick.range_code} {pick.market} {pick.home_team} vs {pick.away_team} | "
+            f"{risk_name} {pick.market} {pick.home_team} vs {pick.away_team} | "
             f"{pick.selection} @{pick.odds:.2f} | {pick.quality} | edge {pick.edge_pct:.1f}%"
         )
 

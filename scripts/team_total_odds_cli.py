@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Export and import team-total odds for official Range C/D picks.
+"""Export and import team-total odds for official risk-band picks.
 
 The model can price team totals without bookmaker data, but picks should only be
 created after real odds are entered. This script exports the best team-total
@@ -183,7 +183,7 @@ def interactive_input(min_edge: float, max_rows: int, overwrite: bool, bookmaker
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Team-total odds workflow for Range C/D picks")
+    parser = argparse.ArgumentParser(description="Team-total odds workflow for risk-band picks")
     parser.add_argument("--export-template", default=None, help="Write a team-total odds CSV template")
     parser.add_argument("--import-file", default=None, help="Import a filled team-total odds CSV")
     parser.add_argument("--interactive", action="store_true", help="Prompt for team-total odds candidate by candidate")

@@ -87,11 +87,13 @@ TEAM_NAME_MAP = {
     "Udinese Calcio": "Udinese",
     "Como 1907": "Como",
     "AC Pisa 1909": "Pisa",
+    "Pisa SC": "Pisa",
     "Genoa CFC": "Genoa",
     "Atalanta BC": "Atalanta",
     
     # Bundesliga
     "Borussia Dortmund": "Dortmund",
+    "BV Borussia 09 Dortmund": "Dortmund",
     "FC Bayern Munchen": "Bayern Munich",
     "FC Bayern Munich": "Bayern Munich",
     "Bayer 04 Leverkusen": "Leverkusen",

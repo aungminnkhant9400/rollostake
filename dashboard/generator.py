@@ -1,4 +1,4 @@
-"""Static Range C/D dashboard generator."""
+"""Static risk-band dashboard generator."""
 
 import html
 import json
@@ -17,13 +17,20 @@ from config.settings import load_settings
 
 
 class DashboardGenerator:
-    """Generates a static HTML dashboard for the Range C/D workflow."""
+    """Generates a static HTML dashboard for the risk-band workflow."""
 
     def __init__(self):
         ensure_runtime_dirs()
         self.output_file = DASHBOARD_DIR / "index.html"
         self.settings = load_settings()
         self.range_configs = EdgeCalculator.range_configs_from_settings(self.settings)
+        self.active_range_codes = list(self.range_configs.keys())
+
+    def _risk_name(self, code: str) -> str:
+        config = self.range_configs.get((code or "").upper())
+        if config:
+            return config.name
+        return {"C": "High Risk", "D": "Low Risk"}.get((code or "").upper(), code or "")
 
     def get_picks(self) -> List[Dict]:
         """Fetch the current pending card with match details."""
@@ -53,7 +60,12 @@ class DashboardGenerator:
         c = conn.cursor()
         c.execute(
             """
-            SELECT r.*, m.home_team, m.away_team, p.selection
+            SELECT r.id, r.pick_id, r.match_id,
+                   COALESCE(r.range_code, p.range_code) AS range_code,
+                   COALESCE(r.quality, p.quality) AS quality,
+                   r.result, r.home_goals, r.away_goals, r.stake, r.odds,
+                   r.payout, r.pnl, r.settled_at,
+                   m.home_team, m.away_team, p.selection
             FROM results r
             LEFT JOIN matches m ON r.match_id = m.match_id
             LEFT JOIN picks p ON r.pick_id = p.id
@@ -81,7 +93,17 @@ class DashboardGenerator:
             )
         return f"<div class=\"quality-summary\">{''.join(rows)}</div>"
 
-    def _quality_summary_from_results(self, results: List[Dict]) -> str:
+    def _results_for_code(self, results: List[Dict], code: str) -> List[Dict]:
+        return [
+            r for r in results
+            if (r.get("range_code") or "").upper() == code
+            and r.get("result") in ("win", "loss", "push")
+        ]
+
+    def _quality_summary_from_results(self, results: List[Dict], code: str = None) -> str:
+        if code:
+            results = self._results_for_code(results, code)
+
         rows = []
         for quality in ("STRONG", "KEEP", "CAUTION"):
             settled = [r for r in results if r.get("result") in ("win", "loss", "push") and r.get("quality") == quality]
@@ -97,6 +119,62 @@ class DashboardGenerator:
                 f"<small>{win_rate:.1f}% Â· ${pnl:+,.0f}</small></div>"
             )
         return f"<div class=\"quality-summary\">{''.join(rows)}</div>"
+
+    def _stats(self, rows: List[Dict]) -> Dict:
+        wins = sum(1 for r in rows if r.get("result") == "win")
+        losses = sum(1 for r in rows if r.get("result") == "loss")
+        pushes = sum(1 for r in rows if r.get("result") == "push")
+        staked = sum(float(r.get("stake") or 0) for r in rows)
+        pnl = sum(float(r.get("pnl") or 0) for r in rows)
+        roi = (pnl / staked * 100) if staked else 0.0
+        return {
+            "settled": len(rows),
+            "wins": wins,
+            "losses": losses,
+            "pushes": pushes,
+            "staked": staked,
+            "pnl": pnl,
+            "roi": roi,
+        }
+
+    def _record(self, item: Dict) -> str:
+        push = f"-{item['pushes']}P" if item["pushes"] else ""
+        return f"{item['wins']}W-{item['losses']}L{push}"
+
+    def _money(self, value: float) -> str:
+        return f"${value:+,.2f}"
+
+    def _risk_performance_summary(self, code: str, results: List[Dict]) -> str:
+        range_results = self._results_for_code(results, code)
+        total = self._stats(range_results)
+        label = html.escape(self._risk_name(code))
+        cards = []
+        for card_label, rows, is_leader in [
+            (label, range_results, True),
+            ("STRONG", [r for r in range_results if r.get("quality") == "STRONG"], False),
+            ("KEEP", [r for r in range_results if r.get("quality") == "KEEP"], False),
+            ("CAUTION", [r for r in range_results if r.get("quality") == "CAUTION"], False),
+        ]:
+            item = self._stats(rows)
+            tone = "good" if item["roi"] >= 0 else "bad"
+            card_class = " performance-leader" if is_leader else ""
+            cards.append(
+                f'<div class="performance-card{card_class}">'
+                f"<span>{card_label}</span>"
+                f'<strong class="{tone}">{item["roi"]:+.1f}%</strong>'
+                f"<small>{item['settled']} settled - {self._record(item)}</small>"
+                f"<div>Staked ${item['staked']:,.0f} / P&amp;L {self._money(item['pnl'])}</div>"
+                "</div>"
+            )
+        return (
+            '<section class="range-performance">'
+            '<div class="performance-heading">'
+            f'<div><span>Settled performance</span><h2>{label} results</h2></div>'
+            f"<p>{total['settled']} settled picks in this risk band, split by quality.</p>"
+            "</div>"
+            f'<div class="performance-grid">{"".join(cards)}</div>'
+            "</section>"
+        )
 
     def _range_performance_summary(self, results: List[Dict]) -> str:
         settled = [r for r in results if r.get("result") in ("win", "loss", "push")]
@@ -126,15 +204,16 @@ class DashboardGenerator:
             return f"${value:+,.2f}"
 
         overall = stats(settled)
+        codes = ["C", "D"]
         by_code = {
-            "C": stats([r for r in settled if (r.get("range_code") or "").upper() == "C"]),
-            "D": stats([r for r in settled if (r.get("range_code") or "").upper() == "D"]),
+            code: stats([r for r in settled if (r.get("range_code") or "").upper() == code])
+            for code in codes
         }
 
         usable = {code: item for code, item in by_code.items() if item["staked"] > 0}
         leader_code = max(usable, key=lambda code: usable[code]["roi"]) if usable else ""
         leader_text = (
-            f"Best so far: Range {leader_code} at {usable[leader_code]['roi']:+.1f}% ROI."
+            f"Best so far: {self._risk_name(leader_code)} at {usable[leader_code]['roi']:+.1f}% ROI."
             if leader_code
             else "No settled range results yet."
         )
@@ -142,8 +221,8 @@ class DashboardGenerator:
         cards = []
         for label, item, code in (
             ("Overall", overall, ""),
-            ("Range C", by_code["C"], "C"),
-            ("Range D", by_code["D"], "D"),
+            (self._risk_name("C"), by_code["C"], "C"),
+            (self._risk_name("D"), by_code["D"], "D"),
         ):
             card_class = " performance-leader" if code and code == leader_code else ""
             tone = "good" if item["roi"] >= 0 else "bad"
@@ -159,16 +238,19 @@ class DashboardGenerator:
         return (
             '<section class="range-performance">'
             '<div class="performance-heading">'
-            '<div><span>Settled performance</span><h2>Total ROI and range comparison</h2></div>'
+            '<div><span>Settled performance</span><h2>Total ROI and risk-band comparison</h2></div>'
             f"<p>{leader_text}</p>"
             "</div>"
             f'<div class="performance-grid">{"".join(cards)}</div>'
             "</section>"
         )
 
-    def _history_table(self, results: List[Dict]) -> str:
+    def _history_table(self, results: List[Dict], code: str = None) -> str:
+        if code:
+            results = self._results_for_code(results, code)
+
         if not results:
-            return '<div class="history empty-history">No settled picks yet.</div>'
+            return '<div class="history empty-history">No settled picks yet for this risk band.</div>'
 
         running = 0.0
         rows = []
@@ -176,10 +258,11 @@ class DashboardGenerator:
             running += float(result.get("pnl") or 0)
             match = html.escape(f"{result.get('home_team') or ''} vs {result.get('away_team') or ''}".strip())
             selection = html.escape(str(result.get("selection") or ""))
+            risk_name = html.escape(self._risk_name(str(result.get("range_code") or "")))
             rows.append(
                 "<tr>"
                 f"<td>{html.escape(str(result.get('settled_at') or ''))}</td>"
-                f"<td>{html.escape(str(result.get('range_code') or ''))}</td>"
+                f"<td>{risk_name}</td>"
                 f"<td>{html.escape(str(result.get('quality') or ''))}</td>"
                 f"<td>{match}</td>"
                 f"<td>{selection}</td>"
@@ -190,8 +273,8 @@ class DashboardGenerator:
             )
 
         return (
-            '<div class="history"><h2>Settled History</h2><table><thead><tr>'
-            '<th>Settled</th><th>Range</th><th>Quality</th><th>Match</th>'
+            f'<div class="history"><h2>{html.escape(self._risk_name(code)) if code else "Settled"} History</h2><table><thead><tr>'
+            '<th>Settled</th><th>Risk Band</th><th>Quality</th><th>Match</th>'
             '<th>Pick</th><th>Result</th><th>P&L</th><th>Cumulative</th>'
             '</tr></thead><tbody>'
             + ''.join(rows[-20:])
@@ -413,12 +496,18 @@ class DashboardGenerator:
 </div>
 """
 
-    def _render_range(self, code: str, picks: List[Dict], active: bool) -> str:
+    def _render_range(self, code: str, picks: List[Dict], results_history: List[Dict], active: bool) -> str:
         config = self.range_configs[code]
         grouped = self._group_by_date(picks)
         strong = sum(1 for p in picks if p.get("quality") == "STRONG")
+        keep = sum(1 for p in picks if p.get("quality") == "KEEP")
         caution = sum(1 for p in picks if p.get("quality") == "CAUTION")
         total_stake = sum(float(p["stake"]) for p in picks)
+        settled = self._stats(self._results_for_code(results_history, code))
+        settled_record = self._record(settled) if settled["settled"] else "-"
+        settled_roi = (f'{settled["roi"]:+.1f}%' if settled["staked"] else "-")
+        settled_pnl_class = "good" if settled["pnl"] >= 0 else "bad"
+        settled_bank = config.bankroll + settled["pnl"]
         cards = []
         index = 1
 
@@ -433,25 +522,28 @@ class DashboardGenerator:
                 index += 1
 
         if not cards:
-            cards.append('<div class="empty">No picks generated for this range yet.</div>')
+            cards.append('<div class="empty">No picks generated for this risk band yet.</div>')
 
         return f"""
 <section class="range {'on' if active else ''}" id="range-{code}">
+  {self._risk_performance_summary(code, results_history)}
   <div class="pnl-bar">
     <div><span>Base Bank</span><strong>${config.bankroll:,.0f}</strong></div>
     <div><span>Flat Stake</span><strong>${config.flat_stake:,.0f}</strong></div>
     <div><span>Odds Band</span><strong>{config.min_odds:.2f}-{config.max_odds:.2f}</strong></div>
     <div><span>Strong</span><strong class="good">{strong}</strong></div>
+    <div><span>Keep</span><strong>{keep}</strong></div>
     <div><span>Caution</span><strong class="warn">{caution}</strong></div>
-    <div><span>Record</span><strong id="{code}-record">-</strong></div>
-    <div><span>Staked</span><strong id="{code}-staked">$0</strong></div>
-    <div><span>P&amp;L</span><strong id="{code}-pnl">$0</strong></div>
-    <div><span>ROI</span><strong id="{code}-roi">-</strong></div>
-    <div><span>Bank</span><strong id="{code}-bank">${config.bankroll:,.0f}</strong></div>
+    <div><span>Record</span><strong id="{code}-record">{settled_record}</strong></div>
+    <div><span>Staked</span><strong id="{code}-staked">${settled["staked"]:,.0f}</strong></div>
+    <div><span>P&amp;L</span><strong id="{code}-pnl" class="{settled_pnl_class}">{self._money(settled["pnl"])}</strong></div>
+    <div><span>ROI</span><strong id="{code}-roi" class="{settled_pnl_class if settled["staked"] else ""}">{settled_roi}</strong></div>
+    <div><span>Bank</span><strong id="{code}-bank" class="{settled_pnl_class}">${settled_bank:,.2f}</strong></div>
   </div>
   <div class="range-note">{len(picks)} picks · planned stake ${total_stake:,.0f} · correlated same-match exposure is flagged in each pick's risk note.</div>
   {self._render_filter(code, picks)}
   {''.join(cards)}
+  {self._history_table(results_history, code)}
 </section>
 """
 
@@ -460,8 +552,8 @@ class DashboardGenerator:
         picks = self.get_picks()
         results_history = self.get_results_history()
         by_range = {
-            "C": [p for p in picks if (p.get("range_code") or "D").upper() == "C"],
-            "D": [p for p in picks if (p.get("range_code") or "D").upper() == "D"],
+            code: [p for p in picks if (p.get("range_code") or "D").upper() == code]
+            for code in self.active_range_codes
         }
 
         js_picks = {
@@ -476,9 +568,9 @@ class DashboardGenerator:
             ]
             for code, range_picks in by_range.items()
         }
-        js_bank = {code: self.range_configs[code].bankroll for code in ("C", "D")}
+        js_bank = {code: self.range_configs[code].bankroll for code in self.active_range_codes}
         js_settled = {}
-        for code in ("C", "D"):
+        for code in self.active_range_codes:
             range_results = [
                 r for r in results_history
                 if (r.get("range_code") or "").upper() == code
@@ -495,13 +587,24 @@ class DashboardGenerator:
         generated = datetime.now().strftime("%A, %B %d, %Y at %H:%M")
         total_picks = len(picks)
         flat_stake = float(self.settings.get("flat_stake", 0))
+        source_label = html.escape(str(self.settings.get("default_bookmaker", "polymarket")).title())
+        tab_buttons = "".join(
+            f'<button class="tab {"on" if index == 0 else ""}" onclick="switchRange(\'{code}\')">'
+            f"{html.escape(self.range_configs[code].name)}</button>"
+            for index, code in enumerate(self.active_range_codes)
+        )
+        active_codes_json = json.dumps(self.active_range_codes)
+        range_sections = "".join(
+            self._render_range(code, by_range[code], results_history, index == 0)
+            for index, code in enumerate(self.active_range_codes)
+        )
 
         html_doc = f"""<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Rollo Stake Model - Range C/D</title>
+<title>RolloStake - Polymarket Risk Bands</title>
 <style>
 :root {{
   --background:#1a1a18;
@@ -665,33 +768,34 @@ button.loss {{ color:var(--bad); border-color:#ef444433; }}
 <header class="site-header">
   <div class="brand">
     <h1>RolloStake</h1>
-    <p>Football edge intelligence &middot; {total_picks} picks &middot; generated {html.escape(generated)}</p>
+    <p>Football edge intelligence &middot; {source_label} odds &middot; {total_picks} picks &middot; generated {html.escape(generated)}</p>
   </div>
 </header>
 <main class="shell">
   <div class="tabs">
-    <button class="tab on" onclick="switchRange('C')">Range C</button>
-    <button class="tab" onclick="switchRange('D')">Range D</button>
+    {tab_buttons}
   </div>
   <div class="intro">
-    <strong>Range C/D workflow.</strong> Same betting concept: odds bands, flat ${flat_stake:,.0f} staking, quality flags, correlated-exposure notes, and browser-side result settlement. The presentation now follows the RolloForge visual system instead of your friend's dashboard skin.
+    <strong>Polymarket risk-band workflow.</strong> High Risk keeps the bigger price band for carefully vetted upside; Low Risk keeps the tighter price band. Both use flat ${flat_stake:,.0f} staking, quality flags, correlated-exposure notes, and browser-side result settlement.
   </div>
-  {self._range_performance_summary(results_history)}
-  {self._quality_summary_from_results(results_history)}
-  {self._render_range('C', by_range['C'], True)}
-  {self._render_range('D', by_range['D'], False)}
-  {self._history_table(results_history)}
+  {range_sections}
 </main>
 <script>
 const KEY = 'rollo-range-results-v1';
 const PICKS = {json.dumps(js_picks)};
 const BANK = {json.dumps(js_bank)};
 const SETTLED = {json.dumps(js_settled)};
-let state = JSON.parse(localStorage.getItem(KEY) || '{{}}');
+const ACTIVE_RANGES = {active_codes_json};
+let state = {{}};
+try {{
+  state = JSON.parse(localStorage.getItem(KEY) || '{{}}');
+}} catch (error) {{
+  localStorage.removeItem(KEY);
+}}
 
 function switchRange(code) {{
-  document.querySelectorAll('.tab').forEach((tab, index) => {{
-    tab.classList.toggle('on', ['C', 'D'][index] === code);
+  document.querySelectorAll('.tab').forEach(tab => {{
+    tab.classList.toggle('on', tab.getAttribute('onclick').includes("'" + code + "'"));
   }});
   document.querySelectorAll('.range').forEach(range => range.classList.remove('on'));
   document.getElementById('range-' + code).classList.add('on');
@@ -782,7 +886,7 @@ function updateRange(range) {{
   bankEl.className = pnl >= 0 ? 'good' : 'bad';
 }}
 
-['C', 'D'].forEach(updateRange);
+ACTIVE_RANGES.forEach(updateRange);
 </script>
 </body>
 </html>

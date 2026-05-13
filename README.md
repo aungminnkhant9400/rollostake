@@ -71,12 +71,13 @@ python scripts\team_total_odds_cli.py --interactive --max-rows 40
 
 For one combined odds-shopping sheet, export the market watchlist. It includes
 1X2, match over/under, BTTS, and team over/under rows ranked by model price.
-Fill any `odds` values you can find from Stake, Rollbit, Shuffle, or another
-bookmaker, then import and rebuild the dashboard.
+Fill only Polymarket prices. The active card uses two risk bands: High Risk for
+bigger prices and Low Risk for tighter prices.
 
 ```powershell
 python scripts\export_market_watchlist.py --output market_watchlist.csv --max-rows 200
-python scripts\export_market_watchlist.py --import-file market_watchlist.csv --bookmaker stake
+python scripts\import_polymarket_odds.py
+python scripts\export_market_watchlist.py --import-file market_watchlist.csv --bookmaker polymarket
 python scripts\rebuild_card.py
 ```
 

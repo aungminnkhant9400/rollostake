@@ -330,6 +330,7 @@ def run_pipeline(leagues=None, skip_scrape=False, use_fatigue=True):
         flat_stake=float(settings.get('flat_stake', 200.0)),
         use_ranges=use_ranges,
         range_configs=range_configs,
+        bookmaker=settings.get('default_bookmaker', 'polymarket'),
     )
     if use_ranges:
         picks = calc.generate_range_picks(requested_leagues[0] if requested_leagues else None)
@@ -347,15 +348,15 @@ def run_pipeline(leagues=None, skip_scrape=False, use_fatigue=True):
     keep = sum(1 for p in saved_picks if p.quality == 'KEEP')
     caution = sum(1 for p in saved_picks if p.quality == 'CAUTION')
     total_stake = sum(p.stake for p in saved_picks)
-    range_c = sum(1 for p in saved_picks if p.range_code == 'C')
-    range_d = sum(1 for p in saved_picks if p.range_code == 'D')
+    high_risk = sum(1 for p in saved_picks if p.range_code == 'C')
+    low_risk = sum(1 for p in saved_picks if p.range_code == 'D')
     
     print(f"Generated {len(saved_picks)} picks:")
     print(f"  STRONG: {strong}")
     print(f"  KEEP: {keep}")
     print(f"  CAUTION: {caution}")
-    print(f"  Range C: {range_c}")
-    print(f"  Range D: {range_d}")
+    print(f"  High Risk: {high_risk}")
+    print(f"  Low Risk: {low_risk}")
     print(f"  Total stake: ${total_stake:.0f}")
     
     # Generate dashboard
