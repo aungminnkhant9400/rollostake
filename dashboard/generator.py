@@ -116,7 +116,7 @@ class DashboardGenerator:
             rows.append(
                 f"<div><span>{quality}</span><strong>{wins}W-{losses}L"
                 f"{('-' + str(pushes) + 'P') if pushes else ''}</strong>"
-                f"<small>{win_rate:.1f}% Â· ${pnl:+,.0f}</small></div>"
+                f"<small>{win_rate:.1f}% / ${pnl:+,.0f}</small></div>"
             )
         return f"<div class=\"quality-summary\">{''.join(rows)}</div>"
 

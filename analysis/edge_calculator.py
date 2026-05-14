@@ -3,6 +3,7 @@ Edge Calculator & Pick Classifier
 Finds value bets by comparing model probabilities to bookmaker odds.
 """
 
+import json
 import math
 import re
 import sqlite3
@@ -13,7 +14,7 @@ from datetime import datetime
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from config.paths import DB_PATH
+from config.paths import DB_PATH, DATA_DIR
 
 @dataclass
 class Pick:
@@ -356,7 +357,12 @@ class EdgeCalculator:
             )
             clean_candidates = [
                 p for p in range_candidates
-                if not self._matches_loss_trap(p, code, loss_traps)
+                if not self._is_hard_loss_trap(p, code, loss_traps)
+                and not self._matches_loss_trap(p, code, loss_traps)
+            ]
+            fallback_candidates = [
+                p for p in range_candidates
+                if not self._is_hard_loss_trap(p, code, loss_traps)
             ]
 
             count = 0
@@ -406,7 +412,7 @@ class EdgeCalculator:
                 if add_pick(pick):
                     continue
 
-            for pick in range_candidates:
+            for pick in fallback_candidates:
                 if count >= config.max_picks:
                     break
                 if add_pick(pick):
@@ -427,6 +433,8 @@ class EdgeCalculator:
             + code_adjustments.get(("selection_type", self._selection_type(pick)), 0.0)
             + code_adjustments.get(("line", self._line_segment_from_values(pick.market, pick.selection)), 0.0)
             + code_adjustments.get(("odds_bucket", self._odds_bucket(pick.odds)), 0.0)
+            + self._market_structure_prior(pick, code)
+            + self._external_card_prior(pick, code)
         )
 
     def _learned_performance_adjustments(self) -> Dict[str, Dict[Tuple[str, str], float]]:
@@ -504,7 +512,12 @@ class EdgeCalculator:
                 segment_roi = (pnl / staked) if staked else 0.0
                 win_rate_delta = max(-0.20, min(0.20, segment_win_rate - range_win_rate))
                 roi_delta = max(-1.0, min(1.0, segment_roi - range_roi))
-                raw_adjustment = (1.25 * win_rate_delta) + (0.03 * roi_delta)
+                raw_adjustment = (1.35 * win_rate_delta) + (0.015 * roi_delta)
+                actual_win_rate = (wins / decisions) if decisions else 0.0
+                if decisions >= 5 and actual_win_rate < 0.45:
+                    raw_adjustment -= min(0.14, (0.45 - actual_win_rate) * 0.70)
+                if code == "C" and decisions >= 4 and losses >= wins:
+                    raw_adjustment -= 0.04
                 cap = caps[key[0]]
                 adjustments[code][key] = max(-cap, min(cap, raw_adjustment))
 
@@ -626,6 +639,38 @@ class EdgeCalculator:
         )
         return any(key in code_traps for key in keys)
 
+    def _is_hard_loss_trap(self, pick: Pick, code: str, traps: Dict[str, set]) -> bool:
+        """Block repeated loss shapes from fallback selection."""
+        code = str(code or "").upper()
+        market = (pick.market or "").upper()
+        side = self._selection_type(pick)
+        line_segment = self._line_segment_from_values(pick.market, pick.selection)
+        trap_keys = traps.get(code, set())
+
+        if code == "C":
+            if market == "OU" and (
+                ("market", "OU") in trap_keys
+                or ("selection_type", "under") in trap_keys
+                or ("family", "low-goals") in trap_keys
+            ):
+                return True
+            if side == "under" and line_segment == "goal-line-1.5":
+                return True
+            if market == "AH":
+                line = self._handicap_line(pick.selection)
+                if line is not None and line <= -1.5:
+                    return True
+            if market == "1X2":
+                supports, downgrades = self._context_signal_counts(pick.reasoning)
+                if side == "away" and downgrades >= supports:
+                    return True
+
+        return self._matches_loss_trap(pick, code, traps) and (
+            (market == "AH" and self._handicap_line(pick.selection) is not None and self._handicap_line(pick.selection) <= -1.5)
+            or (market == "OU" and side == "under")
+            or (market == "1X2" and side == "away")
+        )
+
     def _selection_type_from_values(self, market: str, selection: str, home_team: str, away_team: str) -> str:
         if market == '1X2':
             if selection == 'Draw':
@@ -647,6 +692,147 @@ class EdgeCalculator:
                 return 'over'
         return 'other'
 
+    def _market_structure_prior(self, pick: Pick, code: str) -> float:
+        """Bias ranking toward robust market structures without copying any external card.
+
+        This is deliberately small and generic. The weekly self-learning layer
+        still comes from settled results; this prior only helps the selector
+        prefer markets whose risk shape is clearer when context agrees.
+        """
+        market = (pick.market or "").upper()
+        selection = pick.selection or ""
+        side = self._selection_type(pick)
+        family = self._exposure_family(pick)
+        prior = 0.0
+
+        if market == "TT" and side == "under":
+            prior += 0.12 if code == "D" else 0.10
+        elif market == "BTTS" and "BTTS No" in selection:
+            prior += 0.07 if code == "D" else 0.05
+        elif market == "OU" and side == "under":
+            prior += 0.05 if code == "D" else 0.04
+
+        if market == "AH":
+            line = self._handicap_line(selection)
+            if line is not None:
+                if line in (0.0, 0.5):
+                    prior += 0.06 if code == "D" else 0.04
+                elif line == -1.0:
+                    prior += 0.03
+                elif line <= -1.5:
+                    prior -= 0.02
+
+        if market == "1X2":
+            prior -= 0.08 if code == "D" else 0.04
+            if side == "away":
+                prior -= 0.02
+
+        reasoning = pick.reasoning or ""
+        supports, downgrades = self._context_signal_counts(reasoning)
+        prior += min(0.04, supports * 0.015)
+        prior -= min(0.08, downgrades * 0.025)
+
+        if family == "low-goals" and "H2H supports lower scoring" in reasoning:
+            prior += 0.03
+
+        if code == "C":
+            if market == "AH":
+                line = self._handicap_line(selection)
+                if line is not None and line <= -1.5:
+                    prior -= 0.08
+                    if line <= -2.0:
+                        prior -= 0.04
+                    if downgrades:
+                        prior -= 0.04
+            if market == "OU" and side == "under":
+                goal_line = self._goal_line(selection)
+                if goal_line is not None and goal_line <= 2.5:
+                    prior -= 0.08
+                    if goal_line <= 1.5:
+                        prior -= 0.08
+            if market == "BTTS" and side == "under":
+                prior -= 0.02
+                if not supports or downgrades > supports:
+                    prior -= 0.04
+            if market == "1X2":
+                if side == "away":
+                    prior -= 0.05
+                if not supports:
+                    prior -= 0.03
+
+        return max(-0.12, min(0.14, prior))
+
+    def _external_card_prior(self, pick: Pick, code: str) -> float:
+        """Use aggregate external-card lessons without copying external picks."""
+        profile = self._external_card_profile()
+        if not profile:
+            return 0.0
+
+        market = (pick.market or "").upper()
+        side = self._selection_type(pick)
+        line = self._handicap_line(pick.selection) if market == "AH" else None
+        prior = 0.0
+
+        profile_range = profile.get("ranges", {}).get(str(code or "").lower(), {})
+        market_share = float(profile_range.get("market_share", {}).get(market, 0.0) or 0.0)
+        if market_share >= 0.20:
+            prior += 0.015
+
+        if market == "AH" and line in (0.0, 0.5):
+            prior += 0.05 if code == "D" else 0.035
+        elif market == "AH" and line is not None and line <= -1.5:
+            prior -= 0.06
+
+        if market == "TT":
+            prior += 0.035 if code == "D" else 0.02
+            if side == "under":
+                prior += 0.015
+
+        if market == "OU" and side == "under":
+            goal_line = self._goal_line(pick.selection)
+            if code == "D" and goal_line is not None and goal_line >= 3.0:
+                prior += 0.03
+            elif code == "C" and goal_line is not None and goal_line <= 2.5:
+                prior -= 0.03
+
+        if market == "1X2" and side == "away":
+            prior -= 0.03
+
+        return max(-0.08, min(0.08, prior))
+
+    def _external_card_profile(self) -> Dict:
+        cache_key = ("external_card_profile",)
+        if cache_key in self._context_cache:
+            return self._context_cache[cache_key]
+
+        path = DATA_DIR / "external_card_profile.json"
+        if not path.exists():
+            self._context_cache[cache_key] = {}
+            return {}
+
+        try:
+            with open(path, "r", encoding="utf-8") as f:
+                profile = json.load(f)
+        except (OSError, json.JSONDecodeError):
+            profile = {}
+
+        self._context_cache[cache_key] = profile
+        return profile
+
+    def _context_signal_counts(self, reasoning: str) -> Tuple[int, int]:
+        reasoning = reasoning or ""
+        supports = (
+            reasoning.count("supports pick")
+            + reasoning.count("supports lower scoring")
+            + reasoning.count("supports goals")
+        )
+        downgrades = (
+            reasoning.count("downgrades pick")
+            + reasoning.count("downgrades lower scoring")
+            + reasoning.count("downgrades goals")
+        )
+        return supports, downgrades
+
     def _line_segment_from_values(self, market: str, selection: str) -> str:
         market = str(market or "").upper()
         selection = str(selection or "")
@@ -656,9 +842,21 @@ class EdgeCalculator:
         if market == 'BTTS':
             return selection
         if market == 'AH':
-            match = re.search(r'\bAH\s*([+-]?\d+(?:\.\d+)?)\b', selection, re.IGNORECASE)
+            if re.search(r'\bDNB\b', selection, re.IGNORECASE):
+                return "ah-0"
+            match = re.search(r'(?:\bAH\s*)?([+-]?\d+(?:\.\d+)?)\s*$', selection, re.IGNORECASE)
             return f"ah-{match.group(1)}" if match else ""
         return market
+
+    def _handicap_line(self, selection: str) -> Optional[float]:
+        if re.search(r'\bDNB\b', selection or "", re.IGNORECASE):
+            return 0.0
+        match = re.search(r'(?:\bAH\s*)?([+-]?\d+(?:\.\d+)?)\s*$', selection or "", re.IGNORECASE)
+        return float(match.group(1)) if match else None
+
+    def _goal_line(self, selection: str) -> Optional[float]:
+        match = re.search(r'\b(?:Over|Under|O|U)\s*(\d+(?:\.\d+)?)\b', selection or "", re.IGNORECASE)
+        return float(match.group(1)) if match else None
 
     def _odds_bucket(self, odds: float) -> str:
         if odds <= 0:
@@ -705,6 +903,10 @@ class EdgeCalculator:
         
         if selection == 'Draw':
             return row['prob_draw']
+
+        dnb_prob = self._dnb_prob(row, selection)
+        if dnb_prob is not None:
+            return dnb_prob
         
         # Team total goals markets. Supports "Team O1.5", "Team U0.5",
         # "Team Over 1.5", and "Team Under 1.5".
@@ -826,7 +1028,7 @@ class EdgeCalculator:
         return self._decision_prob(win_prob, loss_prob)
 
     def _asian_handicap_prob(self, row, selection: str) -> Optional[float]:
-        match = re.search(r'\bAH\s*([+-]?\d+(?:\.\d+)?)\b', selection, re.IGNORECASE)
+        match = re.search(r'(?:\bAH\s*)?([+-]?\d+(?:\.\d+)?)\s*$', selection, re.IGNORECASE)
         if not match:
             return None
 
@@ -857,6 +1059,17 @@ class EdgeCalculator:
             elif margin < 0:
                 loss_prob += prob
         return self._decision_prob(win_prob, loss_prob)
+
+    def _dnb_prob(self, row, selection: str) -> Optional[float]:
+        if not re.search(r'\bDNB\b', selection or "", re.IGNORECASE):
+            return None
+        home_team = row['home_team']
+        away_team = row['away_team']
+        if home_team in selection:
+            return self._decision_prob(float(row['prob_home_win'] or 0), float(row['prob_away_win'] or 0))
+        if away_team in selection:
+            return self._decision_prob(float(row['prob_away_win'] or 0), float(row['prob_home_win'] or 0))
+        return None
 
     def _exposure_family_from_values(self, market: str, selection: str, home_team: str, away_team: str) -> str:
         if market == '1X2':
@@ -974,12 +1187,33 @@ class EdgeCalculator:
         return delta, f"fatigue {direction} pick (home {home_score:.0f}, away {away_score:.0f})"
 
     def _table_context_adjustment(self, row, side: str) -> Tuple[float, str]:
-        if side not in ("home", "away"):
-            return 0.0, ""
         table = self._league_table(str(row['league'] or ""), str(row['kickoff'] or ""))
         home = table.get(str(row['home_team'] or ""))
         away = table.get(str(row['away_team'] or ""))
         if not home or not away or home["played"] < 6 or away["played"] < 6:
+            return 0.0, ""
+
+        if side in ("over", "under"):
+            home_gf = home["gf"] / home["played"]
+            home_ga = home["ga"] / home["played"]
+            away_gf = away["gf"] / away["played"]
+            away_ga = away["ga"] / away["played"]
+            attack_avg = (home_gf + away_gf) / 2
+            concession_avg = (home_ga + away_ga) / 2
+            goal_pressure = attack_avg + concession_avg
+            if side == "under":
+                if goal_pressure <= 2.35:
+                    return 0.025, f"table goal profile supports lower scoring ({goal_pressure:.1f})"
+                if goal_pressure >= 3.05:
+                    return -0.03, f"table goal profile downgrades lower scoring ({goal_pressure:.1f})"
+            if side == "over":
+                if goal_pressure >= 3.05:
+                    return 0.025, f"table goal profile supports goals ({goal_pressure:.1f})"
+                if goal_pressure <= 2.35:
+                    return -0.025, f"table goal profile downgrades goals ({goal_pressure:.1f})"
+            return 0.0, ""
+
+        if side not in ("home", "away"):
             return 0.0, ""
 
         backed = home if side == "home" else away
@@ -1086,11 +1320,33 @@ class EdgeCalculator:
         return delta, f"fixture congestion {direction} pick"
 
     def _team_news_context_adjustment(self, row, side: str) -> Tuple[float, str]:
-        if side not in ("home", "away"):
-            return 0.0, ""
         home_news = self._team_news_items(str(row['home_team'] or ""))
         away_news = self._team_news_items(str(row['away_team'] or ""))
         if not home_news and not away_news:
+            return 0.0, ""
+
+        if side in ("over", "under"):
+            total_hits = len(home_news) + len(away_news)
+            attacking_hits = sum(
+                1
+                for item in home_news + away_news
+                if self._news_attack_hit(item)
+            )
+            defensive_hits = max(0, total_hits - attacking_hits)
+            delta = 0.0
+            if side == "under":
+                delta = attacking_hits * 0.015 - defensive_hits * 0.01
+            elif side == "over":
+                delta = defensive_hits * 0.012 - attacking_hits * 0.012
+            delta = max(-0.05, min(0.05, delta))
+            if abs(delta) < 0.01:
+                return 0.0, ""
+            direction = "supports" if delta > 0 else "downgrades"
+            if side == "under":
+                return delta, f"attack/defence news {direction} lower scoring ({attacking_hits} attack, {defensive_hits} defence items)"
+            return delta, f"attack/defence news {direction} goals ({attacking_hits} attack, {defensive_hits} defence items)"
+
+        if side not in ("home", "away"):
             return 0.0, ""
 
         backed_news = home_news if side == "home" else away_news
@@ -1103,6 +1359,17 @@ class EdgeCalculator:
             return 0.0, ""
         direction = "supports" if delta > 0 else "downgrades"
         return delta, f"injury/suspension news {direction} pick ({backed_hits} backed-team, {opponent_hits} opponent items)"
+
+    def _news_attack_hit(self, item: Dict) -> bool:
+        text = " ".join(
+            str(item.get(field) or "")
+            for field in ("player", "status", "reason")
+        ).lower()
+        attack_words = (
+            "striker", "forward", "winger", "attacker", "playmaker",
+            "top scorer", "scorer", "goals", "hamstring", "calf"
+        )
+        return any(word in text for word in attack_words)
 
     def _league_table(self, league: str, kickoff: str) -> Dict[str, Dict]:
         cache_key = ("table", league, kickoff[:10])

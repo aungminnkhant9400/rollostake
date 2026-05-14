@@ -27,7 +27,7 @@
       "max_picks_per_match": 1,
       "max_family_per_match": 1,
       "market_min_picks": {},
-      "market_max_picks": {"1X2": 6},
+      "market_max_picks": {"1X2": 4, "AH": 4, "OU": 2},
       "allowed_markets": ["1X2", "OU", "BTTS", "TT", "AH"],
       "allowed_selection_types": ["home", "away", "over", "under"]
     },
@@ -42,7 +42,7 @@
       "max_picks_per_match": 1,
       "max_family_per_match": 1,
       "market_min_picks": {},
-      "market_max_picks": {"1X2": 6},
+      "market_max_picks": {"1X2": 2, "AH": 4},
       "allowed_markets": ["1X2", "OU", "BTTS", "TT", "AH"],
       "allowed_selection_types": ["home", "away", "over", "under"]
     }

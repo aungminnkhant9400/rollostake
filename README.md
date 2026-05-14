@@ -83,7 +83,7 @@ python scripts\rebuild_card.py
 
 ### Handicap / +0.5 Odds
 
-Friend-style `Team +0.5` picks are handled as Asian handicap picks. Export the
+Side-protection picks like `Team +0.5` are handled as Asian handicap picks. Export the
 shortlist, fill the `odds` column, import it, then rerun the model.
 
 ```powershell
@@ -110,6 +110,19 @@ database can be updated on any machine.
 ```powershell
 python scripts\import_match_results.py match_results.csv
 python main.py --skip-scrape --no-fatigue
+```
+
+### External Weekly Card Study
+
+When an outside prediction card is available, study it as aggregate market
+structure only. This does not copy external picks; it saves lessons such as
+market mix, DNB/+0.5 usage, team-total usage, and risk-band shape. The model
+uses that profile as a small prior, while settled Rollo losses still override
+it.
+
+```powershell
+python scripts\study_external_card.py C:\Users\aungm\Downloads\week4-predictions-v76.html C:\Users\aungm\Downloads\week5-predictions-v77.html C:\Users\aungm\Downloads\week6-predictions-v77.html
+python scripts\rebuild_card.py
 ```
 
 ## Architecture

@@ -33,6 +33,14 @@ def _settle_selection(selection, market, home_team, away_team, home_goals, away_
         if away_team in selection:
             return "win" if away_goals > home_goals else "loss"
 
+    if "DNB" in selection:
+        if home_goals == away_goals:
+            return "push"
+        if home_team in selection:
+            return "win" if home_goals > away_goals else "loss"
+        if away_team in selection:
+            return "win" if away_goals > home_goals else "loss"
+
     if market == "BTTS":
         both_scored = home_goals > 0 and away_goals > 0
         if "BTTS Yes" in selection:
@@ -65,7 +73,7 @@ def _settle_selection(selection, market, home_team, away_team, home_goals, away_
             return _decision(team_goals < line, team_goals > line)
 
     if market == "AH":
-        match = re.search(r"\bAH\s*([+-]?\d+(?:\.\d+)?)\b", selection, re.IGNORECASE)
+        match = re.search(r"(?:\bAH\s*)?([+-]?\d+(?:\.\d+)?)\s*$", selection, re.IGNORECASE)
         if match:
             handicap = float(match.group(1))
             if home_team in selection:

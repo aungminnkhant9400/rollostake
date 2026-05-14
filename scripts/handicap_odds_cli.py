@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Export and import Asian handicap odds for risk-band picks.
 
-Friend-style +0.5 selections are represented as AH +0.5. For example,
-"Nott'm Forest AH +0.5" is equivalent to Nott'm Forest or draw.
+Safer side-protection selections such as +0.5 are represented as AH +0.5.
+For example, "Nott'm Forest AH +0.5" is equivalent to Nott'm Forest or draw.
 """
 
 import argparse
@@ -64,6 +64,7 @@ def _add_candidate(rows: list, fixture: dict, team: str, line: float, model_prob
     fair_odds = 1.0 / model_prob
     min_odds = (1.0 + min_edge) / model_prob
     line_label = _format_line(line)
+    selection = f"{team} DNB" if line == 0.0 else f"{team} AH {line_label}"
     rows.append(
         {
             "range_hint": _range_for_required_odds(min_odds),
@@ -74,7 +75,7 @@ def _add_candidate(rows: list, fixture: dict, team: str, line: float, model_prob
             "away_team": fixture["away_team"],
             "team": team,
             "line": line_label,
-            "selection": f"{team} AH {line_label}",
+            "selection": selection,
             "model_prob": round(model_prob, 4),
             "fair_odds": round(fair_odds, 3),
             "min_odds_for_edge": round(min_odds, 3),
