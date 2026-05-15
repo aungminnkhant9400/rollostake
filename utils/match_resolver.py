@@ -3,6 +3,7 @@
 import sqlite3
 
 from config.paths import DB_PATH
+from utils.team_normalizer import normalize_team_name
 
 
 def resolve_match_id(row: dict, statuses=None) -> str:
@@ -13,8 +14,8 @@ def resolve_match_id(row: dict, statuses=None) -> str:
     but fall back to teams plus kickoff or teams only when needed.
     """
     match_id = (row.get("match_id") or "").strip()
-    home_team = (row.get("home_team") or "").strip()
-    away_team = (row.get("away_team") or "").strip()
+    home_team = normalize_team_name((row.get("home_team") or "").strip())
+    away_team = normalize_team_name((row.get("away_team") or "").strip())
     kickoff = (row.get("kickoff") or "").strip()
 
     conn = sqlite3.connect(DB_PATH)

@@ -442,6 +442,30 @@ class DashboardGenerator:
 </div>
 """
 
+    def _get_match_news(self, home_team: str, away_team: str) -> Dict[str, List[Dict]]:
+        """Fetch team news for both teams in a match."""
+        conn = sqlite3.connect(DB_PATH)
+        conn.row_factory = sqlite3.Row
+        c = conn.cursor()
+        teams = [home_team, away_team]
+        placeholders = ",".join("?" for _ in teams)
+        c.execute(f"""
+            SELECT player, team, status, reason
+            FROM team_news
+            WHERE team IN ({placeholders})
+            GROUP BY LOWER(player), team
+            ORDER BY team, status
+        """, tuple(teams))
+        rows = [dict(row) for row in c.fetchall()]
+        conn.close()
+        result = {"home": [], "away": []}
+        for row in rows:
+            if row["team"] == home_team:
+                result["home"].append(row)
+            elif row["team"] == away_team:
+                result["away"].append(row)
+        return result
+
     def _render_pick(self, code: str, pick: Dict, index: int) -> str:
         quality = pick.get("quality") or "KEEP"
         quality_class = quality.lower()
@@ -460,12 +484,39 @@ class DashboardGenerator:
         home_form = self._get_recent_form(pick.get('home_team', ''))
         away_form = self._get_recent_form(pick.get('away_team', ''))
 
+        # News indicator
+        news = self._get_match_news(pick.get('home_team', ''), pick.get('away_team', ''))
+        total_news = len(news["home"]) + len(news["away"])
+        news_badge = ""
+        news_details = ""
+        if total_news > 0:
+            # Determine direction from reasoning snippet
+            delta_sign = ""
+            reasoning_lower = (pick.get("reasoning") or "").lower()
+            if "news supports" in reasoning_lower or "injury/suspension news supports" in reasoning_lower:
+                delta_sign = "+"
+            elif "news downgrades" in reasoning_lower or "injury/suspension news downgrades" in reasoning_lower:
+                delta_sign = "−"
+            news_class = "news-good" if delta_sign == "+" else "news-bad" if delta_sign == "−" else "news-neut"
+            news_badge = f'<span class="news-badge {news_class}">{delta_sign}News</span>'
+            # Compact news list for details
+            news_rows = []
+            for side, label in (("home", pick.get('home_team')), ("away", pick.get('away_team'))):
+                items = news[side]
+                if items:
+                    line = "; ".join(f"{html.escape(i['player'] or '—')} ({html.escape(i['status'] or '?')})" for i in items[:3])
+                    if len(items) > 3:
+                        line += f" +{len(items)-3} more"
+                    news_rows.append(f"<small><strong>{html.escape(label)}:</strong> {line}</small>")
+            if news_rows:
+                news_details = f'<div class="news-block">{"<br>".join(news_rows)}</div>'
+
         return f"""
 <div class="pick-card {quality_class}" id="pick-{pick_id}" data-date="{html.escape(date_key)}">
   <div class="pick-summary" onclick="toggleDetails({pick_id})">
     <div class="rank">#{index}</div>
     <div class="pick-main">
-      <div class="pick-title"><span class="market-pill">{market}</span>{selection} <span class="badge {quality_class}">{self._quality_label(quality)}</span></div>
+      <div class="pick-title"><span class="market-pill">{market}</span>{selection} <span class="badge {quality_class}">{self._quality_label(quality)}</span>{news_badge}</div>
       <div class="pick-meta">{matchup} · <span>{kickoff}</span> · {league}</div>
     </div>
     <div class="numbers">
@@ -492,6 +543,7 @@ class DashboardGenerator:
     {h2h_html}
     {home_form}
     {away_form}
+    {news_details}
   </div>
 </div>
 """
@@ -685,6 +737,13 @@ body {{ background:var(--background); color:var(--ink); min-height:100vh; font-f
 .badge.strong {{ color:#86efac; background:#22c55e33; }}
 .badge.keep {{ color:#93c5fd; background:#3b82f633; }}
 .badge.caution {{ color:#fdba74; background:#f9731633; }}
+.news-badge {{ display:inline-block; margin-left:6px; border-radius:9999px; padding:2px 8px; font-size:.65rem; font-weight:700; vertical-align:middle; }}
+.news-badge.news-good {{ color:#86efac; background:#22c55e22; }}
+.news-badge.news-bad {{ color:#fca5a5; background:#ef444422; }}
+.news-badge.news-neut {{ color:#a8a090; background:#f5efe41a; }}
+.news-block {{ margin-top:10px; padding:10px 12px; background:var(--panel-strong); border:1px solid var(--line); border-radius:10px; }}
+.news-block small {{ display:block; color:var(--muted); line-height:1.6; }}
+.news-block strong {{ color:var(--ink); }}
 .numbers {{ display:flex; gap:10px; text-align:center; flex-wrap:wrap; justify-content:flex-end; }}
 .numbers div {{ min-width:62px; background:var(--panel-strong); border-radius:12px; padding:8px 10px; }}
 .numbers strong {{ display:block; font-size:1rem; color:var(--ink); }}

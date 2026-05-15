@@ -2,6 +2,10 @@
 
 Systematic value-betting engine for soccer. Finds +EV bets by comparing Dixon-Coles model probabilities against bookmaker odds.
 
+## Agent Handoff
+
+For workflow notes, model concepts, weekly steps, dashboard behavior, Parley rules, and current limitations, read [AGENTS.md](AGENTS.md) first.
+
 ## Current Status: ✅ WORKING
 
 **What's live:**
@@ -100,6 +104,20 @@ total / handicap prices.
 
 ```powershell
 python scripts\odds_coverage_report.py --output odds_coverage_report.md
+```
+
+### Odds Import Safety
+
+Use dry-run mode before importing bulk odds. The historical importer only saves
+full/half Asian handicap lines because quarter lines need half-win/half-loss
+payout accounting that the current model does not support yet. The Polymarket
+scraper resolves odds to existing fixtures by default; use `--create-missing`
+only when you intentionally want new `pm_*` fixtures created.
+
+```powershell
+python scripts\import_historical_odds.py --seasons 2526 --leagues EPL --dry-run
+python scripts\scrape_polymarket_full.py --days 7 --dry-run
+python scripts\scrape_polymarket_full.py --days 7
 ```
 
 ### Match Results

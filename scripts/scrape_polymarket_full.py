@@ -2,7 +2,7 @@
 """
 Full Polymarket Soccer Odds Scraper
 
-Discovers all upcoming soccer matches on Polymarket, fetches every available market,
+Discovers upcoming soccer matches on Polymarket, fetches supported model markets,
 and imports odds into the Rollo Stake database.
 
 Markets scraped:
@@ -10,14 +10,14 @@ Markets scraped:
 - totals                 -> OU (Over/Under goals)
 - both_teams_to_score    -> BTTS
 - spreads                -> AH (Asian Handicap)
-- soccer_halftime_result -> HT_1X2
-- total_corners          -> CORNERS_OU
-- soccer_exact_score     -> EXACT_SCORE
-- soccer_anytime_goalscorer -> GOALSCORER
+
+Extra markets can be exported/imported with --include-extra-markets, but the
+official edge model currently ignores them.
 
 Usage:
     python scripts/scrape_polymarket_full.py --days 7
     python scripts/scrape_polymarket_full.py --days 7 --leagues EPL LaLiga SerieA
+    python scripts/scrape_polymarket_full.py --days 7 --dry-run
     python scripts/scrape_polymarket_full.py --days 7 --save-csv data/polymarket_odds.csv
 """
 
@@ -34,6 +34,8 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from config.paths import DB_PATH
 from models.core import init_db
+from utils.match_resolver import resolve_match_id
+from utils.team_normalizer import normalize_team_name
 
 
 TEAM_ALIASES = {
@@ -44,6 +46,7 @@ TEAM_ALIASES = {
 }
 
 SUPPORTED_LEAGUES = {"EPL", "L1", "Bundesliga", "SerieA", "LaLiga"}
+MODEL_MARKETS = {"1X2", "OU", "BTTS", "AH"}
 
 URL_LEAGUE_MAP = {
     "epl-": "EPL",
@@ -154,7 +157,7 @@ def discover_matches(days_ahead: int = 7) -> list[dict]:
 
 def extract_match_metadata(html: str) -> dict:
     title_match = re.search(r'"title":"([^"]+)"', html)
-    title = title_match.group(1) if title_match else ""
+    title = decode_json_text(title_match.group(1)) if title_match else ""
 
     start_match = re.search(r'"startDate"\s*:\s*"([^"]+)"', html)
     kickoff = start_match.group(1) if start_match else None
@@ -172,7 +175,14 @@ def extract_match_metadata(html: str) -> dict:
 
 
 def local_team(name: str) -> str:
-    return TEAM_ALIASES.get(name, name.replace(" FC", "").strip())
+    return normalize_team_name(TEAM_ALIASES.get(name, name.strip()))
+
+
+def decode_json_text(value: str) -> str:
+    try:
+        return json.loads(f'"{value}"')
+    except json.JSONDecodeError:
+        return value
 
 
 def line_from_text(value: str):
@@ -205,8 +215,10 @@ def add_price(rows: list[dict], match_id: str, market: str, selection: str, pric
     })
 
 
-def convert_all_markets(match_id: str, objects: list[dict]) -> list[dict]:
+def convert_all_markets(match_id: str, objects: list[dict], include_extra_markets: bool = False) -> tuple[list[dict], dict]:
     rows = []
+    unsupported = 0
+    bad_rows = 0
 
     for obj in objects:
         market_type = obj.get("sportsMarketType")
@@ -248,30 +260,48 @@ def convert_all_markets(match_id: str, objects: list[dict]) -> list[dict]:
                 add_price(rows, match_id, "AH", f"{second_team} AH {-line:+g}", prices[1])
 
         elif market_type == "soccer_halftime_result":
+            if not include_extra_markets:
+                unsupported += 1
+                continue
             if title.startswith("Draw"):
                 add_price(rows, match_id, "HT_1X2", "HT Draw", prices[0])
             else:
                 add_price(rows, match_id, "HT_1X2", f"HT {local_team(title)} Win", prices[0])
 
         elif market_type == "total_corners":
+            if not include_extra_markets:
+                unsupported += 1
+                continue
             line = line_from_text(title)
             if line is not None and len(prices) >= 2:
                 add_price(rows, match_id, "CORNERS_OU", f"Over {line:g}", prices[0])
                 add_price(rows, match_id, "CORNERS_OU", f"Under {line:g}", prices[1])
 
         elif market_type == "soccer_exact_score":
+            if not include_extra_markets:
+                unsupported += 1
+                continue
             score_match = re.search(r"Exact Score:\s*(\d+-\d+)", title)
             if score_match and len(prices) >= 1:
                 score = score_match.group(1)
                 add_price(rows, match_id, "EXACT_SCORE", f"Exact {score}", prices[0])
 
         elif market_type == "soccer_anytime_goalscorer":
+            if not include_extra_markets:
+                unsupported += 1
+                continue
             player_match = re.search(r"Anytime Goalscorer:\s*(.+)", title)
             if player_match and len(prices) >= 1:
                 player = player_match.group(1).strip()
                 add_price(rows, match_id, "GOALSCORER", f"{player} Anytime", prices[0])
+        elif market_type:
+            unsupported += 1
 
-    return rows
+    for row in rows:
+        if row["market"] not in MODEL_MARKETS and not include_extra_markets:
+            bad_rows += 1
+
+    return rows, {"unsupported_markets": unsupported, "bad_rows": bad_rows}
 
 
 def detect_league(slug: str) -> str:
@@ -281,7 +311,10 @@ def detect_league(slug: str) -> str:
     return "Other"
 
 
-def import_rows(rows: list[dict], bookmaker: str, overwrite: bool) -> dict:
+def import_rows(rows: list[dict], bookmaker: str, overwrite: bool, dry_run: bool = False) -> dict:
+    if dry_run:
+        return {"saved": 0, "skipped": 0}
+
     init_db()
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
@@ -330,7 +363,9 @@ def import_rows(rows: list[dict], bookmaker: str, overwrite: bool) -> dict:
     return {"saved": saved, "skipped": skipped}
 
 
-def save_fixture(match_id: str, home_team: str, away_team: str, league: str, kickoff: str):
+def save_fixture(match_id: str, home_team: str, away_team: str, league: str, kickoff: str, dry_run: bool = False):
+    if dry_run:
+        return
     init_db()
     conn = sqlite3.connect(DB_PATH)
     c = conn.cursor()
@@ -344,12 +379,44 @@ def save_fixture(match_id: str, home_team: str, away_team: str, league: str, kic
     conn.close()
 
 
+def fallback_match_id(home_team: str, away_team: str, match_date: str) -> str:
+    home_key = re.sub(r"[^a-z0-9]+", "_", home_team.lower()).strip("_")
+    away_key = re.sub(r"[^a-z0-9]+", "_", away_team.lower()).strip("_")
+    return f"pm_{home_key}_{away_key}_{match_date.replace('-', '')}"
+
+
+def resolve_or_create_match(meta: dict, match: dict, create_missing: bool, dry_run: bool) -> tuple[str, bool]:
+    home = local_team(meta["home_team"])
+    away = local_team(meta["away_team"])
+    league = detect_league(match["slug"])
+    kickoff = meta["kickoff"] or f"{match['match_date']}T00:00:00Z"
+    resolved = resolve_match_id(
+        {
+            "home_team": home,
+            "away_team": away,
+            "kickoff": kickoff,
+        },
+        statuses=("scheduled",),
+    )
+    if resolved:
+        return resolved, False
+    if not create_missing:
+        return "", False
+
+    match_id = fallback_match_id(home, away, match["match_date"])
+    save_fixture(match_id, home, away, league, kickoff, dry_run=dry_run)
+    return match_id, True
+
+
 def main():
     parser = argparse.ArgumentParser(description="Scrape ALL Polymarket soccer odds")
     parser.add_argument("--days", type=int, default=7, help="Days ahead to scrape")
     parser.add_argument("--leagues", nargs="+", default=list(SUPPORTED_LEAGUES), help="Filter by league codes (default: 5 core leagues)")
     parser.add_argument("--all-leagues", action="store_true", help="Scrape ALL leagues, not just the 5 core ones")
+    parser.add_argument("--create-missing", action="store_true", help="Create new pm_* fixtures when no existing fixture can be resolved")
+    parser.add_argument("--include-extra-markets", action="store_true", help="Also import currently unsupported markets such as corners and exact score")
     parser.add_argument("--no-overwrite", action="store_true", help="Skip existing odds")
+    parser.add_argument("--dry-run", action="store_true", help="Discover, resolve, and validate without writing to the database")
     parser.add_argument("--save-csv", help="Also export to CSV file path")
     args = parser.parse_args()
 
@@ -367,6 +434,10 @@ def main():
         print(f"Filtered to {len(matches)} matches for leagues: {sorted(target_leagues)}")
 
     all_odds_rows = []
+    created_fixtures = 0
+    unresolved_matches = 0
+    unsupported_markets = 0
+    bad_rows = 0
 
     print(f"\n[2/4] Fetching match pages...")
     for i, match in enumerate(matches, 1):
@@ -378,24 +449,49 @@ def main():
             meta = extract_match_metadata(html)
             objects = market_objects(html)
 
-            home = local_team(meta["home_team"])
-            away = local_team(meta["away_team"])
-            match_id = f"pm_{home.lower().replace(' ', '_')}_{away.lower().replace(' ', '_')}_{match['match_date'].replace('-', '')}"
+            match_id, created = resolve_or_create_match(
+                meta,
+                match,
+                create_missing=args.create_missing,
+                dry_run=args.dry_run,
+            )
+            if not match_id:
+                unresolved_matches += 1
+                print("    -> skipped: no matching local fixture")
+                continue
+            if created:
+                created_fixtures += 1
 
-            league = detect_league(match["slug"])
-            kickoff = meta["kickoff"] or f"{match['match_date']}T00:00:00Z"
-            save_fixture(match_id, home, away, league, kickoff)
-
-            rows = convert_all_markets(match_id, objects)
+            rows, validation = convert_all_markets(
+                match_id,
+                objects,
+                include_extra_markets=args.include_extra_markets,
+            )
             all_odds_rows.extend(rows)
+            unsupported_markets += validation["unsupported_markets"]
+            bad_rows += validation["bad_rows"]
             print(f"    -> {len(rows)} odds rows ({len(objects)} markets)")
 
         except Exception as e:
             print(f"    -> ERROR: {e}")
 
+    unique_rows = {}
+    for row in all_odds_rows:
+        unique_rows[(row["match_id"], row["market"], row["selection"])] = row
+    all_odds_rows = list(unique_rows.values())
+
     print(f"\n[3/4] Importing {len(all_odds_rows)} odds rows...")
-    summary = import_rows(all_odds_rows, bookmaker="polymarket", overwrite=not args.no_overwrite)
+    summary = import_rows(
+        all_odds_rows,
+        bookmaker="polymarket",
+        overwrite=not args.no_overwrite,
+        dry_run=args.dry_run,
+    )
     print(f"Saved: {summary['saved']}, Skipped: {summary['skipped']}")
+    print(
+        f"Resolved validation: unresolved_matches={unresolved_matches}, "
+        f"created_fixtures={created_fixtures}, unsupported_markets={unsupported_markets}, bad_rows={bad_rows}"
+    )
 
     if args.save_csv:
         print(f"\n[4/4] Exporting to {args.save_csv}...")

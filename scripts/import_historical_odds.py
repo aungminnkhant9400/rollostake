@@ -16,7 +16,7 @@ Supported bookmakers from football-data:
 Supported markets:
   1X2   = Home/Draw/Away
   OU    = Over/Under 2.5 goals
-  AH    = Asian Handicap (from B365AHH/B365AHA)
+  AH    = Asian Handicap (line from AHh/AHCh, odds from *AHH/*AHA)
 
 Usage:
     python scripts/import_historical_odds.py --seasons 2122 2223 2324 2425 2526
@@ -83,16 +83,57 @@ ODDS_COLUMNS = [
     ("Avg<2.5", "Avg", "OU", "Under 2.5"),
     ("BFE>2.5", "BFE", "OU", "Over 2.5"),
     ("BFE<2.5", "BFE", "OU", "Under 2.5"),
-    # Asian Handicap
-    ("B365AHH", "B365", "AH", "{home} AH {{line}}"),
-    ("B365AHA", "B365", "AH", "{away} AH {{line}}"),
-    ("MaxAHH", "Max", "AH", "{home} AH {{line}}"),
-    ("MaxAHA", "Max", "AH", "{away} AH {{line}}"),
-    ("AvgAHH", "Avg", "AH", "{home} AH {{line}}"),
-    ("AvgAHA", "Avg", "AH", "{away} AH {{line}}"),
-    ("BFEAHH", "BFE", "AH", "{home} AH {{line}}"),
-    ("BFEAHA", "BFE", "AH", "{away} AH {{line}}"),
 ]
+
+# Asian handicap odds need the separate handicap-line column. The *AHH/*AHA
+# columns are prices, not handicap values.
+AH_ODDS_COLUMNS = [
+    # Opening odds use AHh
+    ("B365AHH", "B365", "home", "AHh"),
+    ("B365AHA", "B365", "away", "AHh"),
+    ("PAHH", "Pinnacle", "home", "AHh"),
+    ("PAHA", "Pinnacle", "away", "AHh"),
+    ("MaxAHH", "Max", "home", "AHh"),
+    ("MaxAHA", "Max", "away", "AHh"),
+    ("AvgAHH", "Avg", "home", "AHh"),
+    ("AvgAHA", "Avg", "away", "AHh"),
+    ("BFEAHH", "BFE", "home", "AHh"),
+    ("BFEAHA", "BFE", "away", "AHh"),
+    # Closing odds use AHCh
+    ("B365CAHH", "B365C", "home", "AHCh"),
+    ("B365CAHA", "B365C", "away", "AHCh"),
+    ("PCAHH", "PinnacleC", "home", "AHCh"),
+    ("PCAHA", "PinnacleC", "away", "AHCh"),
+    ("MaxCAHH", "MaxC", "home", "AHCh"),
+    ("MaxCAHA", "MaxC", "away", "AHCh"),
+    ("AvgCAHH", "AvgC", "home", "AHCh"),
+    ("AvgCAHA", "AvgC", "away", "AHCh"),
+    ("BFECAHH", "BFEC", "home", "AHCh"),
+    ("BFECAHA", "BFEC", "away", "AHCh"),
+]
+
+
+def safe_float(value) -> float | None:
+    try:
+        if value is None or str(value).strip() == "":
+            return None
+        return float(str(value).strip())
+    except ValueError:
+        return None
+
+
+def valid_odds(odds: float) -> bool:
+    return 1.01 <= odds <= 100.0
+
+
+def valid_handicap_line(line: float) -> bool:
+    # The current model/settlement supports full and half Asian lines. Quarter
+    # lines need half-win/half-loss accounting, so skip them for now.
+    return -5.0 <= line <= 5.0 and abs((line * 2) - round(line * 2)) < 1e-9
+
+
+def format_line(line: float) -> str:
+    return f"{line:+g}"
 
 
 def fetch_csv(league: str, season: str) -> list[dict]:
@@ -117,7 +158,10 @@ def parse_date(date_str: str) -> str:
     return date_str
 
 
-def save_odds_rows(rows: list[dict], overwrite: bool = True) -> dict:
+def save_odds_rows(rows: list[dict], overwrite: bool = True, dry_run: bool = False) -> dict:
+    if dry_run:
+        return {"saved": 0, "skipped": 0}
+
     conn = sqlite3.connect(DB_PATH)
     c = conn.cursor()
     saved = 0
@@ -158,7 +202,7 @@ def save_odds_rows(rows: list[dict], overwrite: bool = True) -> dict:
     return {"saved": saved, "skipped": skipped}
 
 
-def process_season(league: str, season: str, overwrite: bool = True) -> dict:
+def process_season(league: str, season: str, overwrite: bool = True, dry_run: bool = False) -> dict:
     season_label = SEASONS.get(season, season)
     print(f"\nFetching {league} {season_label}...")
     rows = fetch_csv(league, season)
@@ -167,6 +211,8 @@ def process_season(league: str, season: str, overwrite: bool = True) -> dict:
 
     odds_rows = []
     match_count = 0
+    invalid_odds = 0
+    invalid_ah_lines = 0
 
     for row in rows:
         if not row.get("HomeTeam") or not row.get("AwayTeam"):
@@ -183,37 +229,15 @@ def process_season(league: str, season: str, overwrite: bool = True) -> dict:
         match_id = f"{home}_vs_{away}_{date}"
         match_count += 1
 
-        # Extract handicap line if available
-        ah_line = None
-        for col in ("B365AHH", "B365AHA", "AvgAHH", "AvgAHA"):
-            if row.get(col):
-                try:
-                    ah_line = float(row[col])
-                    break
-                except ValueError:
-                    continue
-
         for csv_col, bookmaker, market, selection_template in ODDS_COLUMNS:
-            raw = row.get(csv_col, "").strip()
-            if not raw:
+            odds = safe_float(row.get(csv_col, ""))
+            if odds is None:
                 continue
-            try:
-                odds = float(raw)
-            except ValueError:
-                continue
-            if odds <= 0:
+            if not valid_odds(odds):
+                invalid_odds += 1
                 continue
 
             selection = selection_template.format(home=home, away=away)
-            if "{{line}}" in selection:
-                if ah_line is None:
-                    continue
-                # Determine if this is home or away side of handicap
-                if "AHH" in csv_col:
-                    selection = selection.replace("{{line}}", f"{ah_line:+.1f}")
-                else:
-                    selection = selection.replace("{{line}}", f"{-ah_line:+.1f}")
-
             odds_rows.append({
                 "match_id": match_id,
                 "bookmaker": bookmaker,
@@ -222,9 +246,37 @@ def process_season(league: str, season: str, overwrite: bool = True) -> dict:
                 "odds": round(odds, 3),
             })
 
-    summary = save_odds_rows(odds_rows, overwrite=overwrite)
+        for csv_col, bookmaker, side, line_col in AH_ODDS_COLUMNS:
+            odds = safe_float(row.get(csv_col, ""))
+            if odds is None:
+                continue
+            if not valid_odds(odds):
+                invalid_odds += 1
+                continue
+
+            home_line = safe_float(row.get(line_col, ""))
+            if home_line is None or not valid_handicap_line(home_line):
+                invalid_ah_lines += 1
+                continue
+
+            if side == "home":
+                selection = f"{home} AH {format_line(home_line)}"
+            else:
+                selection = f"{away} AH {format_line(-home_line)}"
+
+            odds_rows.append({
+                "match_id": match_id,
+                "bookmaker": bookmaker,
+                "market": "AH",
+                "selection": selection,
+                "odds": round(odds, 3),
+            })
+
+    summary = save_odds_rows(odds_rows, overwrite=overwrite, dry_run=dry_run)
     summary["matches"] = match_count
     summary["odds_rows"] = len(odds_rows)
+    summary["invalid_odds"] = invalid_odds
+    summary["invalid_ah_lines"] = invalid_ah_lines
     return summary
 
 
@@ -233,6 +285,7 @@ def main():
     parser.add_argument("--seasons", nargs="+", default=["2526"], help="Season codes (e.g., 2122 2223)")
     parser.add_argument("--leagues", nargs="+", default=list(LEAGUE_CODES.keys()), help="League codes")
     parser.add_argument("--no-overwrite", action="store_true", help="Skip existing odds")
+    parser.add_argument("--dry-run", action="store_true", help="Fetch and validate rows without writing to the database")
     args = parser.parse_args()
 
     print("=" * 60)
@@ -248,8 +301,12 @@ def main():
             if league not in LEAGUE_CODES:
                 print(f"Skipping unknown league: {league}")
                 continue
-            result = process_season(league, season, overwrite=not args.no_overwrite)
-            print(f"  Matches: {result['matches']} | Odds rows: {result['odds_rows']} | Saved: {result['saved']} | Skipped: {result['skipped']}")
+            result = process_season(league, season, overwrite=not args.no_overwrite, dry_run=args.dry_run)
+            print(
+                f"  Matches: {result['matches']} | Odds rows: {result['odds_rows']} | "
+                f"Saved: {result['saved']} | Skipped: {result['skipped']} | "
+                f"Bad odds: {result['invalid_odds']} | Bad AH lines: {result['invalid_ah_lines']}"
+            )
             total_saved += result["saved"]
             total_matches += result["matches"]
 
