@@ -25,6 +25,8 @@ class DashboardGenerator:
         self.settings = load_settings()
         self.range_configs = EdgeCalculator.range_configs_from_settings(self.settings)
         self.active_range_codes = list(self.range_configs.keys())
+        if set(self.active_range_codes) == {"C", "D"}:
+            self.active_range_codes = ["D", "C"]
 
     def _risk_name(self, code: str) -> str:
         config = self.range_configs.get((code or "").upper())
@@ -599,6 +601,216 @@ class DashboardGenerator:
 </section>
 """
 
+    def _pick_to_dict(self, pick) -> Dict:
+        return {
+            "match_id": pick.match_id,
+            "home_team": pick.home_team,
+            "away_team": pick.away_team,
+            "league": pick.league,
+            "kickoff": pick.kickoff,
+            "selection": pick.selection,
+            "market": pick.market,
+            "model_prob": pick.model_prob,
+            "book_prob": pick.book_prob,
+            "edge_pct": pick.edge_pct,
+            "odds": pick.odds,
+            "stake": pick.stake,
+            "quality": pick.quality,
+            "reasoning": pick.reasoning,
+            "risk_note": pick.risk_note,
+        }
+
+    def _parley_source_band(self, odds: float) -> str:
+        if odds < 1.70:
+            return "LOW ODDS"
+        if odds <= 2.15:
+            return "LOW RISK"
+        return "BOOSTER"
+
+    def _parley_candidates(self) -> List[Dict]:
+        calc = EdgeCalculator(
+            bankroll=float(self.settings.get("bankroll", 10000)),
+            use_ranges=bool(self.settings.get("use_ranges", False)),
+            staking_mode=self.settings.get("staking_mode"),
+            flat_stake=float(self.settings.get("flat_stake", 10)),
+            range_configs=self.range_configs,
+            bookmaker=self.settings.get("default_bookmaker"),
+        )
+        learned = calc._learned_performance_adjustments()
+        loss_traps = calc._loss_trap_segments()
+        raw_candidates = calc.generate_picks(min_edge=0.02)
+        candidates = []
+        for pick in raw_candidates:
+            odds = float(pick.odds or 0)
+            model_prob = float(pick.model_prob or 0)
+            if odds < 1.25 or odds > 2.70:
+                continue
+            if model_prob < 0.54:
+                continue
+            if pick.edge_pct < 3.0:
+                continue
+            if calc._is_hard_loss_trap(pick, "D", loss_traps) or calc._is_hard_loss_trap(pick, "C", loss_traps):
+                continue
+
+            band = self._parley_source_band(odds)
+            learned_score = (
+                0.65 * calc._historical_pick_score(pick, "D", learned)
+                + 0.35 * calc._historical_pick_score(pick, "C", learned)
+            )
+            odds_penalty = max(0.0, odds - 1.85) * 0.10
+            low_odds_bonus = 0.05 if odds <= 1.90 else 0.0
+            booster_penalty = 0.08 if band == "BOOSTER" else 0.0
+            parley_score = learned_score + low_odds_bonus - odds_penalty - booster_penalty
+
+            item = self._pick_to_dict(pick)
+            item["source_band"] = band
+            item["parley_score"] = parley_score
+            candidates.append(item)
+
+        candidates.sort(
+            key=lambda p: (
+                float(p.get("parley_score") or 0),
+                float(p.get("model_prob") or 0),
+                float(p.get("edge_pct") or 0),
+                -float(p.get("odds") or 0),
+            ),
+            reverse=True,
+        )
+        return candidates
+
+    def _build_parley_slip(self, label: str, candidates: List[Dict], max_legs: int, max_boosters: int = 0) -> Dict:
+        legs = []
+        used_matches = set()
+        booster_count = 0
+        for pick in candidates:
+            match_id = pick.get("match_id")
+            if match_id in used_matches:
+                continue
+            is_booster = pick.get("source_band") == "BOOSTER"
+            if is_booster and booster_count >= max_boosters:
+                continue
+            legs.append(pick)
+            used_matches.add(match_id)
+            if is_booster:
+                booster_count += 1
+            if len(legs) == max_legs:
+                break
+
+        odds = 1.0
+        model_prob = 1.0
+        for leg in legs:
+            odds *= float(leg.get("odds") or 1)
+            model_prob *= float(leg.get("model_prob") or 0)
+
+        return {
+            "label": label,
+            "legs": legs,
+            "odds": odds,
+            "model_prob": model_prob,
+            "boosters": booster_count,
+        }
+
+    def _render_parley_card(self, slip: Dict, index: int, stake: float) -> str:
+        legs = slip["legs"]
+        if not legs:
+            return ""
+
+        potential_profit = stake * (float(slip["odds"]) - 1)
+        details = []
+        for leg in legs:
+            match = html.escape(f"{leg.get('home_team') or ''} vs {leg.get('away_team') or ''}")
+            pick = html.escape(str(leg.get("selection") or ""))
+            market = html.escape(str(leg.get("market") or ""))
+            kickoff = html.escape(str(leg.get("kickoff") or "TBD"))
+            band = html.escape(str(leg.get("source_band") or "MODEL"))
+            details.append(
+                '<div class="parley-leg">'
+                f'<div><span class="market-pill">{market}</span><strong>{pick}</strong></div>'
+                f"<small>{match} &middot; {kickoff}</small>"
+                '<div class="metrics">'
+                f"<span>Odds <strong>@{float(leg.get('odds') or 0):.2f}</strong></span>"
+                f"<span>Model <strong>{float(leg.get('model_prob') or 0):.1%}</strong></span>"
+                f"<span>Edge <strong class=\"good\">+{float(leg.get('edge_pct') or 0):.1f}%</strong></span>"
+                f"<span>Band <strong>{band}</strong></span>"
+                "</div>"
+                "</div>"
+            )
+
+        slip_id = f"parley-{index}"
+        leg_count = len(legs)
+        title = html.escape(str(slip["label"]))
+        return f"""
+<div class="pick-card keep parley-pick" id="pick-{slip_id}">
+  <div class="pick-summary" onclick="toggleDetails('{slip_id}')">
+    <div class="rank">#{index}</div>
+    <div class="pick-main">
+      <div class="pick-title"><span class="market-pill">PARLEY</span>{title} <span class="badge keep">KEEP</span></div>
+      <div class="pick-meta">{leg_count} legs &middot; low odds model pool &middot; no same-match legs</div>
+    </div>
+    <div class="numbers">
+      <div><strong>@{float(slip["odds"]):.2f}</strong><span>Total Odds</span></div>
+      <div><strong class="good">{float(slip["model_prob"]):.1%}</strong><span>Model Hit</span></div>
+      <div><strong>${stake:,.0f}</strong><span>Stake</span></div>
+      <div><strong class="good">+${potential_profit:,.0f}</strong><span>Profit</span></div>
+    </div>
+    <div class="result">pending</div>
+  </div>
+  <div class="pick-details" id="details-{slip_id}">
+    <div class="reasoning">This parley is built from the model's separate parley pool, not copied from Low Risk. It prefers lower odds, higher model probability, and segments that have learned better from settled results. It allows only limited booster odds because every leg must win.</div>
+    <div class="metrics">
+      <span>Combined Odds <strong>@{float(slip["odds"]):.2f}</strong></span>
+      <span>Combined Model <strong>{float(slip["model_prob"]):.1%}</strong></span>
+      <span>Win <strong class="good">+${potential_profit:,.0f}</strong></span>
+      <span>Lose <strong class="bad">-${stake:,.0f}</strong></span>
+    </div>
+    <div class="parley-legs">{"".join(details)}</div>
+  </div>
+</div>
+"""
+
+    def _render_parley(self) -> str:
+        candidates = self._parley_candidates()
+        stake = max(float(self.settings.get("flat_stake", 10)) / 2, 1)
+        bank = float(self.settings.get("bankroll", 100))
+        slips = [
+            self._build_parley_slip("Conservative 2-leg", candidates, 2, max_boosters=0),
+            self._build_parley_slip("Balanced 3-leg", candidates, 3, max_boosters=1),
+        ]
+        cards = [
+            self._render_parley_card(slip, index, stake)
+            for index, slip in enumerate(slips, 1)
+            if len(slip["legs"]) >= 2
+        ]
+        if not cards:
+            cards.append('<div class="empty">No parley candidates generated from the model pool.</div>')
+
+        return f"""
+<section class="range" id="range-PARLEY">
+  <section class="range-performance">
+    <div class="performance-heading">
+      <div><span>Parley</span><h2>Low-odds slips from the model pool</h2></div>
+      <p>Recommended: 2 legs first. The 3-leg slip may include one controlled odds booster.</p>
+    </div>
+    <div class="performance-grid">
+      <div class="performance-card performance-leader"><span>Source</span><strong>{len(candidates)}</strong><small>Parley candidates</small><div>Selected from full model odds pool.</div></div>
+      <div class="performance-card"><span>Stake</span><strong>${stake:,.0f}</strong><small>Suggested per slip</small><div>Half of flat stake.</div></div>
+      <div class="performance-card"><span>Rule</span><strong>1</strong><small>Booster max</small><div>Low odds first, no same-match correlation.</div></div>
+    </div>
+  </section>
+  <div class="pnl-bar">
+    <div><span>Base Bank</span><strong>${bank:,.0f}</strong></div>
+    <div><span>Slip Stake</span><strong>${stake:,.0f}</strong></div>
+    <div><span>Source Picks</span><strong>{len(candidates)}</strong></div>
+    <div><span>Record</span><strong>-</strong></div>
+    <div><span>P&amp;L</span><strong>-</strong></div>
+  </div>
+  <div class="range-note">{len(cards)} parley slips &middot; every leg must win &middot; treat this as separate from official High Risk and Low Risk single-pick records.</div>
+  <div class="day-header"><span>Recommended Parley Slips</span><small>{len(cards)} slips</small></div>
+  {"".join(cards)}
+  <div class="history empty-history">No settled parley history yet.</div>
+</section>
+"""
+
     def generate(self):
         """Generate the dashboard and return the output path."""
         picks = self.get_picks()
@@ -644,12 +856,12 @@ class DashboardGenerator:
             f'<button class="tab {"on" if index == 0 else ""}" onclick="switchRange(\'{code}\')">'
             f"{html.escape(self.range_configs[code].name)}</button>"
             for index, code in enumerate(self.active_range_codes)
-        )
+        ) + '<button class="tab" onclick="switchRange(\'PARLEY\')">Parley</button>'
         active_codes_json = json.dumps(self.active_range_codes)
         range_sections = "".join(
             self._render_range(code, by_range[code], results_history, index == 0)
             for index, code in enumerate(self.active_range_codes)
-        )
+        ) + self._render_parley()
 
         html_doc = f"""<!DOCTYPE html>
 <html lang="en">
@@ -768,6 +980,11 @@ button.loss {{ color:var(--bad); border-color:#ef444433; }}
 .history th,.history td {{ padding:10px 12px; border-bottom:1px solid var(--line); text-align:left; font-size:.875rem; color:var(--muted); }}
 .history th {{ color:var(--muted); text-transform:uppercase; letter-spacing:.05em; font-size:.75rem; }}
 .empty-history {{ padding:18px; color:var(--muted); }}
+.parley-pick {{ border-color:#3b82f633; }}
+.parley-legs {{ display:grid; gap:12px; margin-top:14px; }}
+.parley-leg {{ background:var(--panel-strong); border:1px solid var(--line); border-radius:12px; padding:12px; }}
+.parley-leg strong {{ color:var(--ink); }}
+.parley-leg small {{ display:block; color:var(--muted); margin:4px 0 8px; }}
 .h2h {{ margin-top:12px; margin-bottom:12px; }}
 .h2h h3 {{ font-size:.75rem; color:var(--muted); text-transform:uppercase; letter-spacing:.05em; margin-bottom:8px; }}
 .h2h table {{ width:100%; border-collapse:collapse; font-size:.875rem; }}
