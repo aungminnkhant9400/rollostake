@@ -160,6 +160,7 @@ def init_db():
     _add_column_if_missing(c, 'picks', 'payout', 'REAL DEFAULT 0')
     _add_column_if_missing(c, 'picks', 'settled_at', 'TIMESTAMP')
     _add_column_if_missing(c, 'bankroll', 'range_code', "TEXT DEFAULT 'D'")
+    _add_column_if_missing(c, 'team_news', 'return_date', 'TEXT')
 
     # Repeated pipeline runs should refresh the prediction for a fixture, not
     # accumulate duplicate rows that later multiply market candidates.

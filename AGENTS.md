@@ -122,7 +122,10 @@ $env:PYTHONDONTWRITEBYTECODE='1'; python -m py_compile analysis\edge_calculator.
 - `scripts/import_match_results.py`: Imports final scores and settles picks.
 - `scripts/scrape_polymarket_full.py`: Discovers upcoming Polymarket football markets and imports supported odds.
 - `scripts/study_external_card.py`: Parses friend prediction cards and stores aggregate structure in `data/external_card_profile.json`.
+- `scrapers/browser_news_scraper.py`: Optional browser/Kimi WebBridge team-news scraper plus manual JSON fallback.
+- `scripts/news_impact_report.py`: Reports which pending picks have visible news/context adjustments.
 - `utils/match_resolver.py`: Normalizes and resolves Polymarket matches to existing fixtures.
+- `utils/team_normalizer.py`: Team name alias map used by odds, fixture, and news matching.
 - `config/settings.json`: Active ranges, bankroll, stake size, leagues, bookmaker, and fixture settings.
 - `match_results.csv`: Local result import source.
 
@@ -138,8 +141,8 @@ $env:PYTHONDONTWRITEBYTECODE='1'; python -m py_compile analysis\edge_calculator.
 
 ## Known Limitations
 
-- Live injury/news/table ingestion is not fully automated.
-- Some table, H2H, fatigue, and manual team-news adjustment logic exists, but external news still needs a proper scripted ingester.
+- Live injury/news ingestion is partly automated through `scrapers/browser_news_scraper.py`, but it depends on Kimi WebBridge or a manual JSON fallback and still needs careful verification.
+- Some table, H2H, fatigue, and manual team-news adjustment logic exists.
 - Parley history exists visually as a placeholder; Parley slips are not yet saved and settled as their own database records.
 - Friend cards are studied as aggregate market-shape lessons, not as exact picks.
 - Browser automation may be blocked from reloading `file://` pages. Rebuild the HTML and ask the user to refresh if needed.

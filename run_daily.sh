@@ -15,7 +15,7 @@ echo "=========================================="
 echo ""
 
 # Step 1: Load latest historical data (if football-data has new matches)
-echo "[1/4] Updating historical data..."
+echo "[1/5] Updating historical data..."
 python3 -c "
 from scrapers.football_data import FootballDataLoader
 from config.settings import load_settings
@@ -29,7 +29,7 @@ for season in settings.get('historical_seasons', ['2526']):
 
 # Step 2: Fetch upcoming fixtures
 echo ""
-echo "[2/4] Fetching upcoming fixtures..."
+echo "[2/5] Fetching upcoming fixtures..."
 python3 -c "
 from scrapers.fixtures import FixturesFetcher
 import json
@@ -48,14 +48,19 @@ fixtures = fetcher.get_all_upcoming()
 print(f'Loaded {len(fixtures)} upcoming matches')
 "
 
-# Step 3: Add realistic odds (replace with scraper when working)
+# Step 3: Scrape team news (EPL via browser + manual JSON fallback)
 echo ""
-echo "[3/4] Updating odds..."
+echo "[3/5] Fetching team news..."
+python3 scrapers/browser_news_scraper.py --sources premier_injuries,manual
+
+# Step 4: Add realistic odds (replace with scraper when working)
+echo ""
+echo "[4/5] Updating odds..."
 python3 tests/add_odds.py
 
-# Step 4: Run full pipeline
+# Step 5: Run full pipeline
 echo ""
-echo "[4/4] Generating predictions..."
+echo "[5/5] Generating predictions..."
 python3 main.py --skip-scrape --no-fatigue
 
 echo ""
