@@ -211,7 +211,7 @@ def import_results(path: str) -> dict:
     skipped = 0
     with open(path, newline="", encoding="utf-8-sig") as f:
         for row in csv.DictReader(f):
-            match_id = resolve_match_id(row, statuses=("scheduled",))
+            match_id = resolve_match_id(row, statuses=("scheduled", "stale"))
             if not match_id:
                 skipped += 1
                 continue

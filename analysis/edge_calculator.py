@@ -1592,8 +1592,17 @@ class EdgeCalculator:
         conn = sqlite3.connect(DB_PATH)
         c = conn.cursor()
         
-        # Clear old pending picks first
-        c.execute("DELETE FROM picks WHERE status = 'pending'")
+        # Clear only future/current scheduled picks. Stale pending picks are
+        # kept so late result imports can settle them into history.
+        c.execute(
+            """
+            DELETE FROM picks
+            WHERE status = 'pending'
+              AND match_id IN (
+                  SELECT match_id FROM matches WHERE status = 'scheduled'
+              )
+            """
+        )
         
         for pick in top_picks:
             c.execute('''
@@ -1618,7 +1627,15 @@ class EdgeCalculator:
         """Save risk-band picks without bankroll scaling."""
         conn = sqlite3.connect(DB_PATH)
         c = conn.cursor()
-        c.execute("DELETE FROM picks WHERE status = 'pending'")
+        c.execute(
+            """
+            DELETE FROM picks
+            WHERE status = 'pending'
+              AND match_id IN (
+                  SELECT match_id FROM matches WHERE status = 'scheduled'
+              )
+            """
+        )
 
         for pick in picks:
             c.execute('''

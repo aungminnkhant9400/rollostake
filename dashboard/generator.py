@@ -47,6 +47,7 @@ class DashboardGenerator:
             FROM picks p
             JOIN matches m ON p.match_id = m.match_id
             WHERE p.status = 'pending'
+              AND m.status = 'scheduled'
             ORDER BY COALESCE(p.range_code, 'D'), m.kickoff, p.edge_pct DESC
             """
         )
@@ -66,12 +67,12 @@ class DashboardGenerator:
                    COALESCE(r.range_code, p.range_code) AS range_code,
                    COALESCE(r.quality, p.quality) AS quality,
                    r.result, r.home_goals, r.away_goals, r.stake, r.odds,
-                   r.payout, r.pnl, r.settled_at,
+                   r.payout, r.pnl, r.settled_at, m.kickoff AS played_at,
                    m.home_team, m.away_team, p.selection
             FROM results r
             LEFT JOIN matches m ON r.match_id = m.match_id
             LEFT JOIN picks p ON r.pick_id = p.id
-            ORDER BY r.settled_at, r.id
+            ORDER BY COALESCE(m.kickoff, r.settled_at), r.id
             """
         )
         rows = [dict(row) for row in c.fetchall()]
@@ -261,9 +262,10 @@ class DashboardGenerator:
             match = html.escape(f"{result.get('home_team') or ''} vs {result.get('away_team') or ''}".strip())
             selection = html.escape(str(result.get("selection") or ""))
             risk_name = html.escape(self._risk_name(str(result.get("range_code") or "")))
+            played_at = html.escape(str(result.get("played_at") or result.get("settled_at") or ""))
             rows.append(
                 "<tr>"
-                f"<td>{html.escape(str(result.get('settled_at') or ''))}</td>"
+                f"<td>{played_at}</td>"
                 f"<td>{risk_name}</td>"
                 f"<td>{html.escape(str(result.get('quality') or ''))}</td>"
                 f"<td>{match}</td>"
@@ -276,7 +278,7 @@ class DashboardGenerator:
 
         return (
             f'<div class="history"><h2>{html.escape(self._risk_name(code)) if code else "Settled"} History</h2><table><thead><tr>'
-            '<th>Settled</th><th>Risk Band</th><th>Quality</th><th>Match</th>'
+            '<th>Played</th><th>Risk Band</th><th>Quality</th><th>Match</th>'
             '<th>Pick</th><th>Result</th><th>P&L</th><th>Cumulative</th>'
             '</tr></thead><tbody>'
             + ''.join(rows[-20:])
