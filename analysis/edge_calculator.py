@@ -425,7 +425,17 @@ class EdgeCalculator:
                     continue
 
         self._annotate_correlated_exposure(selected)
-        selected.sort(key=lambda p: (p.range_code, p.kickoff, -p.edge_pct))
+        def kickoff_sort_value(pick: Pick) -> str:
+            kickoff_utc = parse_kickoff_utc(pick.kickoff)
+            return kickoff_utc.isoformat() if kickoff_utc else pick.kickoff
+
+        selected.sort(
+            key=lambda p: (
+                p.range_code,
+                kickoff_sort_value(p),
+                -p.edge_pct,
+            )
+        )
         return selected
 
     def _historical_pick_score(self, pick: Pick, code: str, adjustments: Dict[str, Dict[Tuple[str, str], float]]) -> float:

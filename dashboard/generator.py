@@ -6,14 +6,16 @@ import os
 import sqlite3
 import sys
 from collections import defaultdict
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Dict, List
+from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from analysis.edge_calculator import EdgeCalculator
 from config.paths import DASHBOARD_DIR, DB_PATH, ensure_runtime_dirs
 from config.settings import load_settings
+from utils.match_resolver import parse_kickoff_utc
 
 
 class DashboardGenerator:
@@ -23,6 +25,10 @@ class DashboardGenerator:
         ensure_runtime_dirs()
         self.output_file = DASHBOARD_DIR / "index.html"
         self.settings = load_settings()
+        try:
+            self.display_tz = ZoneInfo(self.settings.get("fixture_timezone", "Asia/Macau"))
+        except (Exception, ZoneInfoNotFoundError):
+            self.display_tz = timezone(timedelta(hours=8), "Asia/Macau")
         self.range_configs = EdgeCalculator.range_configs_from_settings(self.settings)
         self.active_range_codes = list(self.range_configs.keys())
         if set(self.active_range_codes) == {"C", "D"}:
@@ -54,6 +60,7 @@ class DashboardGenerator:
 
         picks = [dict(row) for row in c.fetchall()]
         conn.close()
+        picks.sort(key=lambda row: (self._kickoff_sort_key(row.get("kickoff")), -float(row.get("edge_pct") or 0)))
         return picks
 
     def get_results_history(self) -> List[Dict]:
@@ -77,6 +84,7 @@ class DashboardGenerator:
         )
         rows = [dict(row) for row in c.fetchall()]
         conn.close()
+        rows.sort(key=lambda row: (self._kickoff_sort_key(row.get("played_at") or row.get("settled_at")), int(row.get("id") or 0)))
         return rows
 
     def _quality_summary(self, picks: List[Dict]) -> str:
@@ -262,7 +270,7 @@ class DashboardGenerator:
             match = html.escape(f"{result.get('home_team') or ''} vs {result.get('away_team') or ''}".strip())
             selection = html.escape(str(result.get("selection") or ""))
             risk_name = html.escape(self._risk_name(str(result.get("range_code") or "")))
-            played_at = html.escape(str(result.get("played_at") or result.get("settled_at") or ""))
+            played_at = html.escape(self._display_kickoff(result.get("played_at") or result.get("settled_at")))
             rows.append(
                 "<tr>"
                 f"<td>{played_at}</td>"
@@ -294,17 +302,41 @@ class DashboardGenerator:
         }
         return labels.get(quality or "KEEP", quality or "KEEP")
 
+    def _local_kickoff(self, kickoff: str):
+        kickoff_utc = parse_kickoff_utc(kickoff)
+        if kickoff_utc is None:
+            return None
+        return kickoff_utc.astimezone(self.display_tz)
+
+    def _kickoff_sort_key(self, kickoff: str) -> str:
+        kickoff_utc = parse_kickoff_utc(kickoff)
+        if kickoff_utc is None:
+            return f"9999-12-31T23:59:59+00:00|{kickoff or ''}"
+        return kickoff_utc.astimezone(timezone.utc).isoformat()
+
+    def _display_kickoff(self, kickoff: str) -> str:
+        local = self._local_kickoff(kickoff)
+        if local is None:
+            return str(kickoff or "TBD")
+        return local.strftime("%Y-%m-%d %H:%M")
+
     def _date_key(self, kickoff: str) -> str:
-        return (kickoff or "TBD")[:10]
+        local = self._local_kickoff(kickoff)
+        if local is None:
+            return (kickoff or "TBD")[:10]
+        return local.strftime("%Y-%m-%d")
 
     def _date_label(self, kickoff: str) -> str:
-        if not kickoff:
-            return "TBD"
-        raw = kickoff[:10]
-        try:
-            return datetime.strptime(raw, "%Y-%m-%d").strftime("%a %b %d")
-        except ValueError:
-            return raw
+        local = self._local_kickoff(kickoff)
+        if local is None:
+            if not kickoff:
+                return "TBD"
+            raw = kickoff[:10]
+            try:
+                return datetime.strptime(raw, "%Y-%m-%d").strftime("%a %b %d")
+            except ValueError:
+                return raw
+        return local.strftime("%a %b %d")
 
     def _get_h2h(self, home_team: str, away_team: str, limit: int = 5) -> str:
         """Get head-to-head history between two teams."""
@@ -417,7 +449,7 @@ class DashboardGenerator:
 
     def _group_by_date(self, picks: List[Dict]) -> Dict[str, List[Dict]]:
         grouped = defaultdict(list)
-        for pick in picks:
+        for pick in sorted(picks, key=lambda item: self._kickoff_sort_key(item.get("kickoff"))):
             grouped[self._date_key(pick.get("kickoff"))].append(pick)
         return dict(sorted(grouped.items(), key=lambda item: item[0]))
 
@@ -474,7 +506,7 @@ class DashboardGenerator:
         quality = pick.get("quality") or "KEEP"
         quality_class = quality.lower()
         date_key = self._date_key(pick.get("kickoff"))
-        kickoff = html.escape(str(pick.get("kickoff") or "TBD"))
+        kickoff = html.escape(self._display_kickoff(pick.get("kickoff")))
         selection = html.escape(str(pick.get("selection") or ""))
         market = html.escape(str(pick.get("market") or ""))
         matchup = html.escape(f"{pick.get('home_team')} vs {pick.get('away_team')}")
@@ -703,6 +735,7 @@ class DashboardGenerator:
         for leg in legs:
             odds *= float(leg.get("odds") or 1)
             model_prob *= float(leg.get("model_prob") or 0)
+        legs.sort(key=lambda leg: self._kickoff_sort_key(leg.get("kickoff")))
 
         return {
             "label": label,
@@ -723,7 +756,7 @@ class DashboardGenerator:
             match = html.escape(f"{leg.get('home_team') or ''} vs {leg.get('away_team') or ''}")
             pick = html.escape(str(leg.get("selection") or ""))
             market = html.escape(str(leg.get("market") or ""))
-            kickoff = html.escape(str(leg.get("kickoff") or "TBD"))
+            kickoff = html.escape(self._display_kickoff(leg.get("kickoff")))
             band = html.escape(str(leg.get("source_band") or "MODEL"))
             details.append(
                 '<div class="parley-leg">'
@@ -850,7 +883,7 @@ class DashboardGenerator:
                 "pnl": sum(float(r.get("pnl") or 0) for r in range_results),
             }
 
-        generated = datetime.now().strftime("%A, %B %d, %Y at %H:%M")
+        generated = datetime.now(timezone.utc).astimezone(self.display_tz).strftime("%A, %B %d, %Y at %H:%M")
         total_picks = len(picks)
         flat_stake = float(self.settings.get("flat_stake", 0))
         source_label = html.escape(str(self.settings.get("default_bookmaker", "polymarket")).title())
@@ -1046,7 +1079,7 @@ button.loss {{ color:var(--bad); border-color:#ef444433; }}
 <header class="site-header">
   <div class="brand">
     <h1>RolloStake</h1>
-    <p>Football edge intelligence &middot; {source_label} odds &middot; {total_picks} picks &middot; generated {html.escape(generated)}</p>
+    <p>Football edge intelligence &middot; {source_label} odds &middot; {total_picks} picks &middot; generated {html.escape(generated)} Macau time</p>
   </div>
 </header>
 <main class="shell">
@@ -1054,7 +1087,7 @@ button.loss {{ color:var(--bad); border-color:#ef444433; }}
     {tab_buttons}
   </div>
   <div class="intro">
-    <strong>Polymarket risk-band workflow.</strong> High Risk keeps the bigger price band for carefully vetted upside; Low Risk keeps the tighter price band. Both use flat ${flat_stake:,.0f} staking, quality flags, correlated-exposure notes, and browser-side result settlement.
+    <strong>Polymarket risk-band workflow.</strong> All kickoff and played dates are shown in Macau time. High Risk keeps the bigger price band for carefully vetted upside; Low Risk keeps the tighter price band. Both use flat ${flat_stake:,.0f} staking, quality flags, correlated-exposure notes, and browser-side result settlement.
   </div>
   {range_sections}
 </main>
