@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Team name normalizer for football-data.co.uk naming variations."""
 
+import json
 import unicodedata
 
 # Mapping of abbreviated/inconsistent names to canonical names
@@ -176,7 +177,13 @@ def normalize_team_name(name: str) -> str:
         return name
     
     # Strip whitespace
-    name = unicodedata.normalize("NFKD", name.strip())
+    name = name.strip()
+    if "\\u" in name:
+        try:
+            name = json.loads(f'"{name}"')
+        except json.JSONDecodeError:
+            pass
+    name = unicodedata.normalize("NFKD", name)
     name = "".join(char for char in name if not unicodedata.combining(char))
     
     # Direct mapping

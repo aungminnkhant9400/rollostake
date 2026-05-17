@@ -1,9 +1,60 @@
 """Resolve match ids across fixture sources."""
 
 import sqlite3
+from datetime import datetime, timedelta, timezone
+from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 from config.paths import DB_PATH
+from config.settings import load_settings
 from utils.team_normalizer import normalize_team_name
+
+
+def _fixture_timezone():
+    try:
+        settings = load_settings()
+        return ZoneInfo(settings.get("fixture_timezone", "Asia/Macau"))
+    except (Exception, ZoneInfoNotFoundError):
+        return timezone(timedelta(hours=8))
+
+
+def parse_kickoff_utc(value: str):
+    value = (value or "").strip()
+    if not value:
+        return None
+    try:
+        normalized = value.replace("Z", "+00:00")
+        parsed = datetime.fromisoformat(normalized)
+    except ValueError:
+        try:
+            parsed = datetime.strptime(value[:16], "%Y-%m-%d %H:%M")
+        except ValueError:
+            try:
+                parsed = datetime.strptime(value[:10], "%Y-%m-%d")
+            except ValueError:
+                return None
+
+    if parsed.tzinfo is None:
+        parsed = parsed.replace(tzinfo=_fixture_timezone())
+    return parsed.astimezone(timezone.utc)
+
+
+def _closest_kickoff_match(rows: list[tuple[str, str]], kickoff: str) -> str:
+    target = parse_kickoff_utc(kickoff)
+    if target is None:
+        return ""
+
+    best_match_id = ""
+    best_delta = None
+    max_delta_seconds = 18 * 60 * 60
+    for match_id, candidate_kickoff in rows:
+        candidate = parse_kickoff_utc(candidate_kickoff)
+        if candidate is None:
+            continue
+        delta = abs((candidate - target).total_seconds())
+        if delta <= max_delta_seconds and (best_delta is None or delta < best_delta):
+            best_match_id = match_id
+            best_delta = delta
+    return best_match_id
 
 
 def resolve_match_id(row: dict, statuses=None) -> str:
@@ -21,9 +72,9 @@ def resolve_match_id(row: dict, statuses=None) -> str:
     conn = sqlite3.connect(DB_PATH)
     c = conn.cursor()
     if match_id:
-        c.execute("SELECT match_id FROM matches WHERE match_id = ?", (match_id,))
+        c.execute("SELECT match_id, status FROM matches WHERE match_id = ?", (match_id,))
         found = c.fetchone()
-        if found:
+        if found and (not statuses or found[1] in statuses):
             conn.close()
             return found[0]
 
@@ -59,6 +110,20 @@ def resolve_match_id(row: dict, statuses=None) -> str:
             placeholders = ",".join("?" for _ in statuses)
             clauses.append(f"status IN ({placeholders})")
             params.extend(statuses)
+        c.execute(
+            f"""
+            SELECT match_id, kickoff
+            FROM matches
+            WHERE {' AND '.join(clauses)}
+            ORDER BY kickoff
+            """,
+            params,
+        )
+        closest = _closest_kickoff_match(c.fetchall(), kickoff)
+        if closest:
+            conn.close()
+            return closest
+
         c.execute(
             f"""
             SELECT match_id

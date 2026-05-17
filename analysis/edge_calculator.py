@@ -10,11 +10,12 @@ import sqlite3
 import sys
 from typing import List, Dict, Optional, Tuple
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from config.paths import DB_PATH, DATA_DIR
+from utils.match_resolver import parse_kickoff_utc
 
 @dataclass
 class Pick:
@@ -288,8 +289,13 @@ class EdgeCalculator:
         conn.close()
         
         picks = []
+        now_utc = datetime.now(timezone.utc)
         
         for row in rows:
+            kickoff_utc = parse_kickoff_utc(row['kickoff'])
+            if kickoff_utc is not None and kickoff_utc <= now_utc:
+                continue
+
             # Map selection to model probability
             model_prob = self._get_model_prob(row)
             

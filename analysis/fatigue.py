@@ -32,6 +32,10 @@ class FatigueAnalyzer:
     
     def __init__(self):
         pass
+
+    @staticmethod
+    def _parse_match_date(value: str) -> datetime:
+        return datetime.strptime((value or "")[:10], '%Y-%m-%d')
     
     def get_team_matches(self, team: str, before_date: str, days: int = 90) -> List[Dict]:
         """
@@ -49,7 +53,7 @@ class FatigueAnalyzer:
         conn.row_factory = sqlite3.Row
         c = conn.cursor()
         
-        cutoff = (datetime.strptime(before_date, '%Y-%m-%d') - timedelta(days=days)).strftime('%Y-%m-%d')
+        cutoff = (self._parse_match_date(before_date) - timedelta(days=days)).strftime('%Y-%m-%d')
         
         c.execute('''
             SELECT match_id, home_team, away_team, kickoff as date, 
@@ -94,19 +98,19 @@ class FatigueAnalyzer:
             }
         
         # Days since last match
-        last_match_date = datetime.strptime(matches[0]['date'], '%Y-%m-%d')
-        upcoming_date = datetime.strptime(match_date, '%Y-%m-%d')
+        last_match_date = self._parse_match_date(matches[0]['date'])
+        upcoming_date = self._parse_match_date(match_date)
         days_since = (upcoming_date - last_match_date).days
         
         # Matches in last 14 days
         cutoff_14d = upcoming_date - timedelta(days=14)
-        matches_14d = sum(1 for m in matches 
-                         if datetime.strptime(m['date'], '%Y-%m-%d') >= cutoff_14d)
+        matches_14d = sum(1 for m in matches
+                         if self._parse_match_date(m['date']) >= cutoff_14d)
         
         # Matches in last 30 days
         cutoff_30d = upcoming_date - timedelta(days=30)
-        matches_30d = sum(1 for m in matches 
-                         if datetime.strptime(m['date'], '%Y-%m-%d') >= cutoff_30d)
+        matches_30d = sum(1 for m in matches
+                         if self._parse_match_date(m['date']) >= cutoff_30d)
         
         # Recent form (last 5 matches)
         last_5 = matches[:5]

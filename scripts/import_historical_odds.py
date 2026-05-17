@@ -158,6 +158,46 @@ def parse_date(date_str: str) -> str:
     return date_str
 
 
+def save_match_rows(rows: list[dict], dry_run: bool = False) -> dict:
+    if dry_run:
+        return {"saved": 0}
+
+    conn = sqlite3.connect(DB_PATH)
+    c = conn.cursor()
+    saved = 0
+
+    for row in rows:
+        c.execute(
+            """
+            INSERT INTO matches
+            (match_id, home_team, away_team, league, kickoff, home_goals, away_goals, status)
+            VALUES (?, ?, ?, ?, ?, ?, ?, 'completed')
+            ON CONFLICT(match_id) DO UPDATE SET
+                home_team = excluded.home_team,
+                away_team = excluded.away_team,
+                league = excluded.league,
+                kickoff = excluded.kickoff,
+                home_goals = excluded.home_goals,
+                away_goals = excluded.away_goals,
+                status = 'completed'
+            """,
+            (
+                row["match_id"],
+                row["home_team"],
+                row["away_team"],
+                row["league"],
+                row["kickoff"],
+                row["home_goals"],
+                row["away_goals"],
+            ),
+        )
+        saved += 1
+
+    conn.commit()
+    conn.close()
+    return {"saved": saved}
+
+
 def save_odds_rows(rows: list[dict], overwrite: bool = True, dry_run: bool = False) -> dict:
     if dry_run:
         return {"saved": 0, "skipped": 0}
@@ -207,9 +247,10 @@ def process_season(league: str, season: str, overwrite: bool = True, dry_run: bo
     print(f"\nFetching {league} {season_label}...")
     rows = fetch_csv(league, season)
     if not rows:
-        return {"saved": 0, "skipped": 0, "matches": 0, "odds_rows": 0}
+        return {"saved": 0, "skipped": 0, "matches_saved": 0, "matches": 0, "odds_rows": 0}
 
     odds_rows = []
+    match_rows = []
     match_count = 0
     invalid_odds = 0
     invalid_ah_lines = 0
@@ -228,6 +269,15 @@ def process_season(league: str, season: str, overwrite: bool = True, dry_run: bo
 
         match_id = f"{home}_vs_{away}_{date}"
         match_count += 1
+        match_rows.append({
+            "match_id": match_id,
+            "home_team": home,
+            "away_team": away,
+            "league": league,
+            "kickoff": date,
+            "home_goals": int(row["FTHG"]),
+            "away_goals": int(row["FTAG"]),
+        })
 
         for csv_col, bookmaker, market, selection_template in ODDS_COLUMNS:
             odds = safe_float(row.get(csv_col, ""))
@@ -272,7 +322,9 @@ def process_season(league: str, season: str, overwrite: bool = True, dry_run: bo
                 "odds": round(odds, 3),
             })
 
+    match_summary = save_match_rows(match_rows, dry_run=dry_run)
     summary = save_odds_rows(odds_rows, overwrite=overwrite, dry_run=dry_run)
+    summary["matches_saved"] = match_summary["saved"]
     summary["matches"] = match_count
     summary["odds_rows"] = len(odds_rows)
     summary["invalid_odds"] = invalid_odds
@@ -304,7 +356,8 @@ def main():
             result = process_season(league, season, overwrite=not args.no_overwrite, dry_run=args.dry_run)
             print(
                 f"  Matches: {result['matches']} | Odds rows: {result['odds_rows']} | "
-                f"Saved: {result['saved']} | Skipped: {result['skipped']} | "
+                f"Match rows saved: {result['matches_saved']} | "
+                f"Odds saved: {result['saved']} | Skipped: {result['skipped']} | "
                 f"Bad odds: {result['invalid_odds']} | Bad AH lines: {result['invalid_ah_lines']}"
             )
             total_saved += result["saved"]

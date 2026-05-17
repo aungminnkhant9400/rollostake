@@ -518,7 +518,7 @@ class DashboardGenerator:
   <div class="pick-summary" onclick="toggleDetails({pick_id})">
     <div class="rank">#{index}</div>
     <div class="pick-main">
-      <div class="pick-title"><span class="market-pill">{market}</span>{selection} <span class="badge {quality_class}">{self._quality_label(quality)}</span>{news_badge}</div>
+      <div class="pick-title"><span class="market-pill">{market}</span>{selection} <span class="badge {quality_class}">{self._quality_label(quality)}</span></div>
       <div class="pick-meta">{matchup} · <span>{kickoff}</span> · {league}</div>
     </div>
     <div class="numbers">

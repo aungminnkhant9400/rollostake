@@ -11,7 +11,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from config.paths import DB_PATH
 from models.core import init_db
-from utils.match_resolver import resolve_match_id
+from utils.match_resolver import parse_kickoff_utc, resolve_match_id
 
 
 def _decision(win: bool, loss: bool):
@@ -87,6 +87,38 @@ def _settle_selection(selection, market, home_team, away_team, home_goals, away_
     return None
 
 
+def _same_fixture_window(primary_kickoff: str, candidate_kickoff: str) -> bool:
+    primary = parse_kickoff_utc(primary_kickoff)
+    candidate = parse_kickoff_utc(candidate_kickoff)
+    if primary is None or candidate is None:
+        return False
+    return abs((candidate - primary).total_seconds()) <= 3 * 24 * 60 * 60
+
+
+def _duplicate_match_ids(c, match_id: str, home_team: str, away_team: str) -> list[str]:
+    c.execute("SELECT kickoff FROM matches WHERE match_id = ?", (match_id,))
+    row = c.fetchone()
+    primary_kickoff = row[0] if row else ""
+
+    c.execute(
+        """
+        SELECT match_id, kickoff
+        FROM matches
+        WHERE home_team = ? AND away_team = ?
+          AND status IN ('scheduled', 'stale')
+        ORDER BY kickoff
+        """,
+        (home_team, away_team),
+    )
+    duplicates = [match_id]
+    for candidate_id, candidate_kickoff in c.fetchall():
+        if candidate_id == match_id:
+            continue
+        if _same_fixture_window(primary_kickoff, candidate_kickoff):
+            duplicates.append(candidate_id)
+    return duplicates
+
+
 def update_results(match_id, result=None, home_goals=None, away_goals=None):
     conn = sqlite3.connect(DB_PATH)
     c = conn.cursor()
@@ -98,25 +130,28 @@ def update_results(match_id, result=None, home_goals=None, away_goals=None):
         raise ValueError(f"No match found with id {match_id}")
     home_team, away_team = match_row
 
-    c.execute(
-        """
-        UPDATE matches SET status = ?, home_goals = ?, away_goals = ?
-        WHERE match_id = ?
-        """,
-        ("completed", home_goals, away_goals, match_id),
-    )
+    match_ids = _duplicate_match_ids(c, match_id, home_team, away_team)
+
+    for resolved_match_id in match_ids:
+        c.execute(
+            """
+            UPDATE matches SET status = ?, home_goals = ?, away_goals = ?
+            WHERE match_id = ?
+            """,
+            ("completed", home_goals, away_goals, resolved_match_id),
+        )
 
     c.execute(
-        """
-        SELECT id, selection, market, odds, stake, range_code, quality
+        f"""
+        SELECT id, match_id, selection, market, odds, stake, range_code, quality
         FROM picks
-        WHERE match_id = ?
+        WHERE match_id IN ({",".join("?" for _ in match_ids)})
         """,
-        (match_id,),
+        match_ids,
     )
 
     settled = []
-    for pick_id, selection, market, odds, stake, range_code, quality in c.fetchall():
+    for pick_id, pick_match_id, selection, market, odds, stake, range_code, quality in c.fetchall():
         pick_result = None
         if home_goals is not None and away_goals is not None:
             pick_result = _settle_selection(
@@ -155,7 +190,7 @@ def update_results(match_id, result=None, home_goals=None, away_goals=None):
              stake, odds, payout, pnl)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """,
-            (pick_id, match_id, range_code, quality, pick_result, home_goals, away_goals,
+            (pick_id, pick_match_id, range_code, quality, pick_result, home_goals, away_goals,
              stake, odds, payout, pnl),
         )
         settled.append((pick_id, selection, pick_result, pnl))
@@ -164,6 +199,8 @@ def update_results(match_id, result=None, home_goals=None, away_goals=None):
     conn.close()
 
     print(f"Updated result for {match_id}: {home_team} {home_goals}-{away_goals} {away_team}")
+    if len(match_ids) > 1:
+        print(f"  Also marked duplicate fixture ids completed: {', '.join(match_ids[1:])}")
     for pick_id, selection, pick_result, pnl in settled:
         print(f"  Pick {pick_id} {selection}: {pick_result} ({pnl:+.2f})")
 
