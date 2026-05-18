@@ -11,3 +11,5 @@ python scripts\study_external_card.py friend_cards
 ```
 
 When a new card arrives, copy it into this folder, rerun the command above, then rebuild the dashboard.
+
+For the weekly `update` workflow, this folder is studied after result settlement and before rebuilding predictions. The friend-card profile is a secondary prior only; settled RolloStake results and loss analysis override it.

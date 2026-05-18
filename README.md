@@ -123,12 +123,32 @@ python scripts\scrape_polymarket_full.py --days 7
 ### Match Results
 
 Completed scores are tracked in `match_results.csv` so the ignored SQLite
-database can be updated on any machine.
+database can be updated on any machine. Result import is guarded by Macau time:
+the importer skips matches whose final-result window has not passed yet, and
+the dashboard history displays the match played/kickoff date instead of the
+settled/import date.
 
 ```powershell
 python scripts\import_match_results.py match_results.csv
 python main.py --skip-scrape --no-fatigue
 ```
+
+### Update Workflow
+
+When the user says `update`, settle first and generate only if needed.
+
+```powershell
+git status -sb
+python scripts\import_match_results.py match_results.csv
+python scripts\study_external_card.py friend_cards
+python scripts\rebuild_card.py
+```
+
+After settlement, check pending official picks. If `2` or more pending picks
+remain, keep the current card and just rebuild the dashboard. If fewer than `2`
+remain, fetch the next-week Polymarket fixtures/odds, then rebuild predictions.
+Do not manually settle future or in-progress matches, and do not clear past
+pending picks before result import.
 
 ### External Weekly Card Study
 

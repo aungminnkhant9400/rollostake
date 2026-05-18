@@ -52,6 +52,10 @@ Tabs are ordered:
 
 History tables show match played/kickoff date, not settled/import date.
 
+All dashboard dates and times must be displayed in Macau time (`Asia/Macau`, UTC+8). The database may contain a mix of local kickoff strings and UTC ISO strings, so use `utils.match_resolver.parse_kickoff_utc()` / `format_kickoff_local()` instead of slicing or printing raw kickoff values.
+
+Result settlement must only touch picks whose final-result window has passed in Macau time. `scripts/import_match_results.py` enforces this guard and skips future or not-yet-final rows. Do not manually settle a future match or a match still in progress.
+
 Parley currently:
 
 - Uses the full upcoming model candidate pool.
@@ -113,6 +117,61 @@ python scripts\rebuild_card.py
 ```powershell
 $env:PYTHONDONTWRITEBYTECODE='1'; python -m py_compile analysis\edge_calculator.py dashboard\generator.py scripts\rebuild_card.py scripts\import_match_results.py scripts\study_external_card.py scripts\scrape_polymarket_full.py scripts\import_historical_odds.py utils\match_resolver.py
 ```
+
+## `update` Workflow
+
+When the user says `update`, do this sequence:
+
+1. Check git status.
+
+```powershell
+git status -sb
+```
+
+2. Import/settle completed results only.
+
+```powershell
+python scripts\import_match_results.py match_results.csv
+```
+
+The importer must skip any match whose final-result window has not passed in Macau time. Settled history must show match played/kickoff date, never settled/import date.
+
+3. Study friend cards from the repo folder.
+
+```powershell
+python scripts\study_external_card.py friend_cards
+```
+
+4. Count remaining pending picks.
+
+```powershell
+@'
+import sqlite3
+from config.paths import DB_PATH
+conn = sqlite3.connect(DB_PATH)
+count = conn.execute("SELECT COUNT(*) FROM picks WHERE status='pending'").fetchone()[0]
+conn.close()
+print(count)
+'@ | python -
+```
+
+5. If pending picks are `2` or more, rebuild the dashboard only.
+
+```powershell
+python scripts\rebuild_card.py
+```
+
+6. If pending picks are fewer than `2`, fetch/find next-week fixtures and odds, then rebuild predictions.
+
+```powershell
+python scripts\scrape_polymarket_full.py --days 7 --dry-run
+python scripts\scrape_polymarket_full.py --days 7
+python scripts\rebuild_card.py
+```
+
+Never use `--create-missing` unless the user explicitly asks. Do not clear past pending picks before settlement; `analysis/edge_calculator.py` should only replace pending picks for matches that have not kicked off yet.
+
+7. Report High Risk, Low Risk, and Parley separately with record, P&L, ROI, bank, and remaining pending count.
 
 ## Important Files
 
