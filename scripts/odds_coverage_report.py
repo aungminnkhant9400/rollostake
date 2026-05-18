@@ -10,6 +10,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from config.paths import DB_PATH
 from models.core import init_db
+from utils.match_resolver import format_kickoff_local, parse_kickoff_utc
 
 
 def _read_missing(path: str, limit: int) -> list:
@@ -48,8 +49,16 @@ def _format_candidate(row: dict) -> str:
     needed = row.get("min_odds_for_edge") or "?"
     selection = row.get("selection") or ""
     match = f"{row.get('home_team')} vs {row.get('away_team')}"
-    kickoff = row.get("kickoff") or ""
+    kickoff = format_kickoff_local(row.get("kickoff") or "")
     return f"- {kickoff} | {match} | {selection} | need >= {needed}"
+
+
+def _sort_by_kickoff(rows: list) -> list:
+    def key(row):
+        kickoff = parse_kickoff_utc(row[-1])
+        return kickoff.isoformat() if kickoff else str(row[-1] or "")
+
+    return sorted(rows, key=key)
 
 
 def build_report(limit: int = 20) -> str:
@@ -103,9 +112,9 @@ def build_report(limit: int = 20) -> str:
         lines.append("- none")
 
     lines.extend(["", "## Official Card"])
-    for range_code, market, selection, odds, edge, quality, home, away, kickoff in picks:
+    for range_code, market, selection, odds, edge, quality, home, away, kickoff in _sort_by_kickoff(picks):
         lines.append(
-            f"- {range_code} | {kickoff} | {home} vs {away} | "
+            f"- {range_code} | {format_kickoff_local(kickoff)} | {home} vs {away} | "
             f"{market} {selection} @{odds:.2f} | {quality} | edge {edge:.1f}%"
         )
 

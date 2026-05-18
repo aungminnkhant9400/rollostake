@@ -6,12 +6,13 @@ import csv
 import re
 import sqlite3
 import sys
+from datetime import datetime, timezone
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from config.paths import DB_PATH
 from models.core import init_db
-from utils.match_resolver import parse_kickoff_utc, resolve_match_id
+from utils.match_resolver import format_kickoff_local, kickoff_result_window_elapsed, parse_kickoff_utc, resolve_match_id
 
 
 def _decision(win: bool, loss: bool):
@@ -119,16 +120,26 @@ def _duplicate_match_ids(c, match_id: str, home_team: str, away_team: str) -> li
     return duplicates
 
 
-def update_results(match_id, result=None, home_goals=None, away_goals=None):
+def _match_kickoff(c, match_id: str) -> str:
+    c.execute("SELECT kickoff FROM matches WHERE match_id = ?", (match_id,))
+    row = c.fetchone()
+    return row[0] if row else ""
+
+
+def update_results(match_id, result=None, home_goals=None, away_goals=None, allow_future: bool = False):
     conn = sqlite3.connect(DB_PATH)
     c = conn.cursor()
 
-    c.execute("SELECT home_team, away_team FROM matches WHERE match_id = ?", (match_id,))
+    c.execute("SELECT home_team, away_team, kickoff FROM matches WHERE match_id = ?", (match_id,))
     match_row = c.fetchone()
     if not match_row:
         conn.close()
         raise ValueError(f"No match found with id {match_id}")
-    home_team, away_team = match_row
+    home_team, away_team, kickoff = match_row
+    if not allow_future and not kickoff_result_window_elapsed(kickoff):
+        conn.close()
+        local_kickoff = format_kickoff_local(kickoff)
+        raise ValueError(f"Refusing to settle {match_id}: final-result window has not passed in Macau time ({local_kickoff})")
 
     match_ids = _duplicate_match_ids(c, match_id, home_team, away_team)
 
@@ -209,11 +220,21 @@ def import_results(path: str) -> dict:
     init_db()
     imported = 0
     skipped = 0
+    future_skipped = 0
+    now_utc = datetime.now(timezone.utc)
     with open(path, newline="", encoding="utf-8-sig") as f:
         for row in csv.DictReader(f):
             match_id = resolve_match_id(row, statuses=("scheduled", "stale"))
             if not match_id:
                 skipped += 1
+                continue
+            conn = sqlite3.connect(DB_PATH)
+            c = conn.cursor()
+            kickoff = _match_kickoff(c, match_id)
+            conn.close()
+            if not kickoff_result_window_elapsed(kickoff, now_utc=now_utc):
+                future_skipped += 1
+                print(f"Skipped not-yet-final result for {match_id}: kickoff {format_kickoff_local(kickoff)} Macau time")
                 continue
             try:
                 home_goals = int(row["home_goals"])
@@ -223,7 +244,7 @@ def import_results(path: str) -> dict:
                 continue
             update_results(match_id, "auto", home_goals, away_goals)
             imported += 1
-    return {"imported": imported, "skipped": skipped}
+    return {"imported": imported, "skipped": skipped, "future_skipped": future_skipped}
 
 
 def main():
@@ -231,7 +252,10 @@ def main():
     parser.add_argument("csv_path", nargs="?", default="match_results.csv")
     args = parser.parse_args()
     summary = import_results(args.csv_path)
-    print(f"Match results imported: {summary['imported']} skipped: {summary['skipped']}")
+    print(
+        f"Match results imported: {summary['imported']} skipped: {summary['skipped']} "
+        f"future_skipped: {summary['future_skipped']}"
+    )
 
 
 if __name__ == "__main__":

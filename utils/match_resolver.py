@@ -14,7 +14,7 @@ def _fixture_timezone():
         settings = load_settings()
         return ZoneInfo(settings.get("fixture_timezone", "Asia/Macau"))
     except (Exception, ZoneInfoNotFoundError):
-        return timezone(timedelta(hours=8))
+        return timezone(timedelta(hours=8), "Asia/Macau")
 
 
 def parse_kickoff_utc(value: str):
@@ -36,6 +36,33 @@ def parse_kickoff_utc(value: str):
     if parsed.tzinfo is None:
         parsed = parsed.replace(tzinfo=_fixture_timezone())
     return parsed.astimezone(timezone.utc)
+
+
+def format_kickoff_local(value: str, fallback: str = "TBD") -> str:
+    kickoff_utc = parse_kickoff_utc(value)
+    if kickoff_utc is None:
+        return str(value or fallback)
+    return kickoff_utc.astimezone(_fixture_timezone()).strftime("%Y-%m-%d %H:%M")
+
+
+def kickoff_has_started(value: str, now_utc=None) -> bool:
+    kickoff_utc = parse_kickoff_utc(value)
+    if kickoff_utc is None:
+        return False
+    now_utc = now_utc or datetime.now(timezone.utc)
+    if now_utc.tzinfo is None:
+        now_utc = now_utc.replace(tzinfo=timezone.utc)
+    return kickoff_utc <= now_utc.astimezone(timezone.utc)
+
+
+def kickoff_result_window_elapsed(value: str, now_utc=None, minutes: int = 105) -> bool:
+    kickoff_utc = parse_kickoff_utc(value)
+    if kickoff_utc is None:
+        return False
+    now_utc = now_utc or datetime.now(timezone.utc)
+    if now_utc.tzinfo is None:
+        now_utc = now_utc.replace(tzinfo=timezone.utc)
+    return kickoff_utc + timedelta(minutes=minutes) <= now_utc.astimezone(timezone.utc)
 
 
 def _closest_kickoff_match(rows: list[tuple[str, str]], kickoff: str) -> str:

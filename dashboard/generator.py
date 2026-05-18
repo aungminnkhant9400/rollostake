@@ -84,7 +84,7 @@ class DashboardGenerator:
         )
         rows = [dict(row) for row in c.fetchall()]
         conn.close()
-        rows.sort(key=lambda row: (self._kickoff_sort_key(row.get("played_at") or row.get("settled_at")), int(row.get("id") or 0)))
+        rows.sort(key=lambda row: (self._kickoff_sort_key(row.get("played_at")), int(row.get("id") or 0)))
         return rows
 
     def _quality_summary(self, picks: List[Dict]) -> str:
@@ -270,7 +270,7 @@ class DashboardGenerator:
             match = html.escape(f"{result.get('home_team') or ''} vs {result.get('away_team') or ''}".strip())
             selection = html.escape(str(result.get("selection") or ""))
             risk_name = html.escape(self._risk_name(str(result.get("range_code") or "")))
-            played_at = html.escape(self._display_kickoff(result.get("played_at") or result.get("settled_at")))
+            played_at = html.escape(self._display_kickoff(result.get("played_at")))
             rows.append(
                 "<tr>"
                 f"<td>{played_at}</td>"

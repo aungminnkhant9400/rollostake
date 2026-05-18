@@ -1,22 +1,24 @@
 # Odds Coverage Report
 
-Scheduled fixtures: 38
+Scheduled fixtures: 23
 
 ## Odds by Market
-- 1X2: 114
-- AH: 304
-- BTTS: 76
-- OU: 456
+- 1X2: 69
+- AH: 184
+- BTTS: 46
+- OU: 276
 
 ## Official Picks by Market
+- 1X2: 1
+- AH: 1
 - BTTS: 1
-- OU: 3
+- OU: 1
 
 ## Official Card
 - C | 2026-05-19 03:00 | Arsenal vs Burnley | BTTS BTTS Yes @2.67 | CAUTION | edge 9.3%
-- D | 2026-05-19 03:00 | Arsenal vs Burnley | OU Under 3.5 @2.02 | CAUTION | edge 6.1%
+- D | 2026-05-19 03:00 | Arsenal vs Burnley | AH Burnley AH +2.5 @2.02 | KEEP | edge 12.0%
 - D | 2026-05-20 02:30 | Bournemouth vs Man City | OU Over 2.5 @1.85 | KEEP | edge 16.1%
-- D | 2026-05-20 03:15 | Chelsea vs Tottenham | OU Under 2.5 @2.56 | CAUTION | edge 7.1%
+- D | 2026-05-20 03:15 | Chelsea vs Tottenham | 1X2 Chelsea Win @2.06 | KEEP | edge 24.9%
 
 ## Missing Top Match Totals
 - 2026-05-16 03:00 | Aston Villa vs Liverpool | Over 0.5 | need >= 1.114
