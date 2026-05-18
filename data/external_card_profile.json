@@ -1,0 +1,375 @@
+{
+  "source_files": [
+    "friend_cards\\week4-predictions-v76.html",
+    "friend_cards\\week5-predictions-v77.html",
+    "friend_cards\\week6-predictions-v77.html",
+    "friend_cards\\week7-predictions-v77.html"
+  ],
+  "created_at": "2026-05-18T07:26:16.008058+00:00",
+  "ranges": {
+    "c": {
+      "picks": 48,
+      "market_counts": {
+        "OU": 19,
+        "1X2": 5,
+        "TT": 23,
+        "AH": 1
+      },
+      "selection_type_counts": {
+        "under": 34,
+        "away": 4,
+        "over": 8,
+        "home": 2
+      },
+      "line_counts": {
+        "goal-line-1.5": 13,
+        "1X2": 5,
+        "goal-line-2.25": 1,
+        "goal-line-2.0": 3,
+        "goal-line-2.5": 9,
+        "goal-line-0.5": 15,
+        "goal-line-3.5": 1,
+        "ah-0": 1
+      },
+      "odds_bucket_counts": {
+        "odds-2.50-2.99": 12,
+        "odds-3.00-3.99": 18,
+        "odds-4.00-plus": 18
+      },
+      "market_share": {
+        "OU": 0.3958333333333333,
+        "1X2": 0.10416666666666667,
+        "TT": 0.4791666666666667,
+        "AH": 0.020833333333333332
+      }
+    },
+    "d": {
+      "picks": 48,
+      "market_counts": {
+        "1X2": 6,
+        "OU": 19,
+        "AH": 8,
+        "BTTS": 2,
+        "TT": 13
+      },
+      "selection_type_counts": {
+        "home": 6,
+        "under": 31,
+        "away": 8,
+        "over": 3
+      },
+      "line_counts": {
+        "1X2": 6,
+        "goal-line-2.5": 9,
+        "ah-0": 3,
+        "BTTS No": 2,
+        "goal-line-3.5": 3,
+        "goal-line-2.25": 1,
+        "goal-line-3.0": 5,
+        "goal-line-1.5": 12,
+        "goal-line-0.5": 2,
+        "ah-+0.5": 4,
+        "ah--1": 1
+      },
+      "odds_bucket_counts": {
+        "odds-2.00-2.49": 27,
+        "odds-1.70-1.99": 11,
+        "odds-2.50-2.99": 10
+      },
+      "market_share": {
+        "1X2": 0.125,
+        "OU": 0.3958333333333333,
+        "AH": 0.16666666666666666,
+        "BTTS": 0.041666666666666664,
+        "TT": 0.2708333333333333
+      }
+    }
+  },
+  "per_file": [
+    {
+      "source_file": "friend_cards\\week4-predictions-v76.html",
+      "ranges": {
+        "c": {
+          "picks": 12,
+          "market_counts": {
+            "OU": 8,
+            "1X2": 2,
+            "TT": 2
+          },
+          "selection_type_counts": {
+            "under": 10,
+            "away": 2
+          },
+          "line_counts": {
+            "goal-line-1.5": 3,
+            "1X2": 2,
+            "goal-line-2.25": 1,
+            "goal-line-2.0": 3,
+            "goal-line-2.5": 1,
+            "goal-line-0.5": 2
+          },
+          "odds_bucket_counts": {
+            "odds-2.50-2.99": 7,
+            "odds-3.00-3.99": 4,
+            "odds-4.00-plus": 1
+          },
+          "market_share": {
+            "OU": 0.6666666666666666,
+            "1X2": 0.16666666666666666,
+            "TT": 0.16666666666666666
+          }
+        },
+        "d": {
+          "picks": 12,
+          "market_counts": {
+            "1X2": 2,
+            "OU": 6,
+            "AH": 3,
+            "BTTS": 1
+          },
+          "selection_type_counts": {
+            "home": 2,
+            "under": 7,
+            "away": 3
+          },
+          "line_counts": {
+            "1X2": 2,
+            "goal-line-2.5": 3,
+            "ah-0": 3,
+            "BTTS No": 1,
+            "goal-line-3.5": 1,
+            "goal-line-2.25": 1,
+            "goal-line-3.0": 1
+          },
+          "odds_bucket_counts": {
+            "odds-2.00-2.49": 6,
+            "odds-1.70-1.99": 5,
+            "odds-2.50-2.99": 1
+          },
+          "market_share": {
+            "1X2": 0.16666666666666666,
+            "OU": 0.5,
+            "AH": 0.25,
+            "BTTS": 0.08333333333333333
+          }
+        }
+      }
+    },
+    {
+      "source_file": "friend_cards\\week5-predictions-v77.html",
+      "ranges": {
+        "c": {
+          "picks": 12,
+          "market_counts": {
+            "OU": 4,
+            "1X2": 2,
+            "TT": 6
+          },
+          "selection_type_counts": {
+            "under": 7,
+            "over": 3,
+            "home": 1,
+            "away": 1
+          },
+          "line_counts": {
+            "goal-line-1.5": 3,
+            "goal-line-3.5": 1,
+            "1X2": 2,
+            "goal-line-2.5": 2,
+            "goal-line-0.5": 4
+          },
+          "odds_bucket_counts": {
+            "odds-3.00-3.99": 4,
+            "odds-4.00-plus": 6,
+            "odds-2.50-2.99": 2
+          },
+          "market_share": {
+            "OU": 0.3333333333333333,
+            "1X2": 0.16666666666666666,
+            "TT": 0.5
+          }
+        },
+        "d": {
+          "picks": 12,
+          "market_counts": {
+            "OU": 4,
+            "TT": 4,
+            "1X2": 2,
+            "AH": 1,
+            "BTTS": 1
+          },
+          "selection_type_counts": {
+            "under": 8,
+            "away": 2,
+            "over": 1,
+            "home": 1
+          },
+          "line_counts": {
+            "goal-line-2.5": 3,
+            "goal-line-1.5": 3,
+            "1X2": 2,
+            "goal-line-0.5": 1,
+            "ah-+0.5": 1,
+            "BTTS No": 1,
+            "goal-line-3.0": 1
+          },
+          "odds_bucket_counts": {
+            "odds-1.70-1.99": 2,
+            "odds-2.00-2.49": 8,
+            "odds-2.50-2.99": 2
+          },
+          "market_share": {
+            "OU": 0.3333333333333333,
+            "TT": 0.3333333333333333,
+            "1X2": 0.16666666666666666,
+            "AH": 0.08333333333333333,
+            "BTTS": 0.08333333333333333
+          }
+        }
+      }
+    },
+    {
+      "source_file": "friend_cards\\week6-predictions-v77.html",
+      "ranges": {
+        "c": {
+          "picks": 12,
+          "market_counts": {
+            "TT": 4,
+            "OU": 6,
+            "AH": 1,
+            "1X2": 1
+          },
+          "selection_type_counts": {
+            "over": 2,
+            "under": 8,
+            "home": 1,
+            "away": 1
+          },
+          "line_counts": {
+            "goal-line-2.5": 3,
+            "goal-line-0.5": 2,
+            "goal-line-1.5": 5,
+            "ah-0": 1,
+            "1X2": 1
+          },
+          "odds_bucket_counts": {
+            "odds-4.00-plus": 6,
+            "odds-3.00-3.99": 6
+          },
+          "market_share": {
+            "TT": 0.3333333333333333,
+            "OU": 0.5,
+            "AH": 0.08333333333333333,
+            "1X2": 0.08333333333333333
+          }
+        },
+        "d": {
+          "picks": 12,
+          "market_counts": {
+            "AH": 3,
+            "OU": 4,
+            "TT": 4,
+            "1X2": 1
+          },
+          "selection_type_counts": {
+            "away": 2,
+            "over": 1,
+            "under": 7,
+            "home": 2
+          },
+          "line_counts": {
+            "ah--1": 1,
+            "goal-line-3.0": 1,
+            "goal-line-1.5": 4,
+            "ah-+0.5": 2,
+            "goal-line-3.5": 1,
+            "goal-line-2.5": 1,
+            "goal-line-0.5": 1,
+            "1X2": 1
+          },
+          "odds_bucket_counts": {
+            "odds-2.50-2.99": 6,
+            "odds-2.00-2.49": 5,
+            "odds-1.70-1.99": 1
+          },
+          "market_share": {
+            "AH": 0.25,
+            "OU": 0.3333333333333333,
+            "TT": 0.3333333333333333,
+            "1X2": 0.08333333333333333
+          }
+        }
+      }
+    },
+    {
+      "source_file": "friend_cards\\week7-predictions-v77.html",
+      "ranges": {
+        "c": {
+          "picks": 12,
+          "market_counts": {
+            "TT": 11,
+            "OU": 1
+          },
+          "selection_type_counts": {
+            "under": 9,
+            "over": 3
+          },
+          "line_counts": {
+            "goal-line-1.5": 2,
+            "goal-line-0.5": 7,
+            "goal-line-2.5": 3
+          },
+          "odds_bucket_counts": {
+            "odds-2.50-2.99": 3,
+            "odds-4.00-plus": 5,
+            "odds-3.00-3.99": 4
+          },
+          "market_share": {
+            "TT": 0.9166666666666666,
+            "OU": 0.08333333333333333
+          }
+        },
+        "d": {
+          "picks": 12,
+          "market_counts": {
+            "TT": 5,
+            "AH": 1,
+            "1X2": 1,
+            "OU": 5
+          },
+          "selection_type_counts": {
+            "under": 9,
+            "away": 1,
+            "home": 1,
+            "over": 1
+          },
+          "line_counts": {
+            "goal-line-1.5": 5,
+            "ah-+0.5": 1,
+            "1X2": 1,
+            "goal-line-2.5": 2,
+            "goal-line-3.0": 2,
+            "goal-line-3.5": 1
+          },
+          "odds_bucket_counts": {
+            "odds-1.70-1.99": 3,
+            "odds-2.00-2.49": 8,
+            "odds-2.50-2.99": 1
+          },
+          "market_share": {
+            "TT": 0.4166666666666667,
+            "AH": 0.08333333333333333,
+            "1X2": 0.08333333333333333,
+            "OU": 0.4166666666666667
+          }
+        }
+      }
+    }
+  ],
+  "lessons": [
+    "Use side-protected AH shapes such as DNB and +0.5 before naked long 1X2 shots.",
+    "Study team totals separately from match totals.",
+    "Downgrade aggressive handicap lines and unders when recent/H2H/news context fights the model.",
+    "Keep external-card influence small; own settled losses must override it."
+  ]
+}

@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>STAKE MODEL v7.7 PRO — Week 6 (May 9-15)</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>:root{--bg:#0a0a0a;--c1:#141414;--c2:#1e1e1e;--bd:#2a2a2a;--ac:#E07A3A;--gn:#22c55e;--rd:#ef4444;--bl:#3b82f6;--dm:#555;--md:#888;--tx:#d4d4d4}*{box-sizing:border-box;margin:0;padding:0}body{background:var(--bg);color:var(--tx);font-family:Inter,system-ui,sans-serif;font-size:13px}header{position:sticky;top:0;z-index:100;background:rgba(10,10,10,.96);border-bottom:1px solid var(--bd);backdrop-filter:blur(20px);padding:0 24px;height:56px;display:flex;align-items:center;justify-content:space-between}.lo{font-weight:900;font-size:15px;color:#fff}.lo em{color:var(--ac);font-style:normal}.hm{font-size:10px;color:var(--dm)}.sh{max-width:1100px;margin:0 auto;padding:16px 20px 60px}.tabs{display:flex;gap:4px;margin:16px 0;flex-wrap:wrap}.tab{padding:10px 22px;border-radius:8px;font-size:11px;font-weight:700;letter-spacing:1px;cursor:pointer;border:1px solid var(--bd);background:var(--c1);color:var(--dm);transition:.2s}.tab:hover{border-color:#444}.tab.on{background:rgba(224,122,58,.08);border-color:rgba(224,122,58,.3);color:var(--ac)}.rng{display:none}.rng.on{display:block}.pnl-bar{display:flex;gap:0;margin:8px 0 16px;border-radius:10px;overflow:hidden;border:1px solid var(--bd);flex-wrap:wrap}.pnl-item{flex:1;padding:12px 14px;text-align:center;background:var(--c1);border-right:1px solid var(--bd);min-width:80px}.pnl-item:last-child{border-right:none}.pnl-label{display:block;font-size:7px;color:var(--dm);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px}.pnl-val{font-size:16px;font-weight:800;color:var(--dm)}.pnl-val.pos{color:var(--gn)}.pnl-val.neg{color:var(--rd)}.pk{background:var(--c1);border:1px solid var(--bd);border-radius:12px;margin-bottom:8px;overflow:hidden;transition:.2s}.pk.strong{border-color:rgba(34,197,94,.45);background:linear-gradient(180deg,rgba(34,197,94,.04) 0%,var(--c1) 100%);box-shadow:0 0 16px rgba(34,197,94,.06)}.pk.win{border-color:rgba(34,197,94,.4);background:rgba(34,197,94,.02)}.pk.loss{border-color:rgba(239,68,68,.4);background:rgba(239,68,68,.02)}.pk.push{border-color:rgba(100,100,100,.4)}.ph{padding:14px 18px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;cursor:pointer;transition:.15s}.ph:hover{background:var(--c2)}.rk{font-size:24px;font-weight:900;color:var(--ac);min-width:32px}.pi{flex:1;min-width:170px}.pn{font-size:15px;font-weight:700;color:#fff}.pm{font-size:10px;color:var(--md);margin-top:3px}.flag{font-size:8px;color:var(--rd);background:rgba(239,68,68,.1);padding:2px 5px;border-radius:3px;margin-left:5px;font-weight:700;letter-spacing:.5px}.ps{display:flex;gap:12px;flex-wrap:wrap}.n{text-align:center;min-width:50px}.nv{font-size:14px;font-weight:700}.nv.accent{color:var(--ac)}.nv.green{color:var(--gn)}.nl{font-size:7px;color:var(--dm);letter-spacing:.5px;text-transform:uppercase}.pr{min-width:70px;text-align:center}.pp{color:var(--dm);font-size:10px}.pb{display:flex;gap:4px}button{padding:6px 12px;border-radius:6px;border:1px solid;font-family:inherit;font-size:9px;font-weight:700;cursor:pointer;transition:.2s}button:hover{opacity:.7}.bw{background:rgba(34,197,94,.08);border-color:rgba(34,197,94,.25);color:var(--gn)}.bl{background:rgba(239,68,68,.08);border-color:rgba(239,68,68,.25);color:var(--rd)}.br{background:var(--c2);border-color:var(--bd);color:var(--dm)}.pd{max-height:0;overflow:hidden;transition:max-height .4s;border-top:1px solid transparent}.pd.open{max-height:1500px;border-top-color:var(--bd)}.rb{padding:18px 22px;font-size:13px;line-height:1.7;color:var(--tx)}.rb strong{color:#fff}.nb{display:flex;gap:16px;flex-wrap:wrap;padding:0 22px 18px;font-size:12px}.nl2{color:var(--md);margin-right:4px}.nv2{font-weight:700;font-size:13px;margin-right:12px}.nv2.green{color:var(--gn)}.nv2.red{color:var(--rd)}.nv2.dim{color:var(--dm)}.ib{background:var(--c1);border:1px solid var(--bd);border-radius:10px;padding:16px 20px;margin:16px 0;font-size:12px;line-height:1.8}.ib strong{color:#fff}.sb{background:linear-gradient(180deg,rgba(34,197,94,.06),var(--c1));border:1px solid rgba(34,197,94,.3);border-radius:10px;padding:16px 20px;margin:16px 0;font-size:12px;line-height:1.7;color:var(--tx)}.filter-bar{display:flex;gap:10px;margin:0 0 14px;align-items:center;flex-wrap:wrap;background:var(--c1);border:1px solid var(--bd);border-radius:10px;padding:10px 14px}.filter-bar label{font-size:10px;color:var(--dm);letter-spacing:1px;text-transform:uppercase;font-weight:700}.filter-select{background:var(--c2);border:1px solid var(--bd);color:var(--tx);border-radius:6px;padding:7px 14px;font-family:inherit;font-size:12px;font-weight:600;cursor:pointer;min-width:160px}.filter-select:hover{border-color:var(--ac)}.filter-select:focus{outline:none;border-color:var(--ac)}.filter-count{margin-left:auto;font-size:11px;color:var(--md);font-weight:600}.filter-count span{color:var(--ac);font-weight:800}.day-header{display:flex;align-items:center;justify-content:space-between;background:linear-gradient(180deg,rgba(224,122,58,.05),transparent);border-left:3px solid var(--ac);padding:10px 16px;margin:18px 0 6px;border-radius:4px}.day-name{color:#fff;font-weight:800;font-size:13px;letter-spacing:.5px}.day-count{color:var(--dm);font-size:10px;text-transform:uppercase;letter-spacing:1px;font-weight:700}.day-header.hidden,.pk.hidden{display:none}</style>
+</head>
+<body>
+<header>
+<div class="lo">STAKE MODEL <em>v7.7</em> — Week 6 (May 9-15)</div>
+<div class="hm">24 picks · 0 overrides · Arsenal excluded · Dubai time</div>
+</header>
+<div class="sh">
+<div class="tabs">
+<div class="tab on" onclick="sw('c')">RANGE C</div>
+<div class="tab" onclick="sw('d')">RANGE D</div>
+</div>
+
+<div class="ib"><strong>Week 6 — Range C + Range D (engine-driven, 0 overrides applied).</strong> Engine scanned 56 fixtures (May 9-15 window, Arsenal excluded), ~1,819 markets. <strong>17/17 preflight checks passed.</strong> 0 manual overrides — every pick is direct engine output. Range C · 12 picks at flat $200 = $2,400. Range D · 12 picks at flat $200 = $2,400. <strong>Total $4,800.</strong> Picks sorted by kickoff (Dubai, UTC+4).</div>
+
+<div class="sb"><strong>Engine notes:</strong>
+1. <strong>Bug 51 BIG_GAP cosmetic flag</strong> still present in /mnt/project/ engine — every pick shows ⚠️BIG_GAP(XXXXpp) in printout. EV math is intact; flag is a unit-display bug per W5 README (working-copy fix not yet propagated).
+2. <strong>Patches applied to working-copy engine for W6:</strong> 7-day fixture window (May 9-15), Arsenal exclusion, football-data delay reduced 6.5s→3.0s.
+3. <strong>1 STRONG pick</strong> (Villarreal O2.5, +135.3% EV).
+4. <strong>5 CAUTION picks</strong> (revised after full per-pick web verification): Barca-RM U2.5 (Clásico H2H high-scoring; Valverde out), Villarreal Win (STREAK + extreme mp=83%), Nott Forest U1.5 + U2.5 (recent goal volumes oppose engine, but Gibbs-White out helps), Rennes U1.5 (Lepaul leads L1 in scoring, recent 4-goal outputs).
+5. <strong>0 picks dropped</strong> — no postponements, no last-48h news flips, no structural impossibilities across all 14 unique matches.
+6. <strong>W5 results pending entry</strong> — bankroll figures reflect W5-start state ($24,194 combined).
+7. <strong>Web verification:</strong> All 24 picks individually verified via sportsgambler.com / FotMob / Sports Mole. Every match status confirmed, key team news pulled, structural impossibility check passed.</div>
+
+<div class="rng on" id="r-c">
+<div class="pnl-bar">
+<div class="pnl-item"><span class="pnl-label">Base Bank</span><span class="pnl-val">$10,000</span></div>
+<div class="pnl-item"><span class="pnl-label">Prior P&amp;L (W1-4)</span><span class="pnl-val pos">+$3,888</span></div>
+<div class="pnl-item"><span class="pnl-label">W6 Start Bank*</span><span class="pnl-val" style="color:#fff">$13,888</span></div>
+<div class="pnl-item"><span class="pnl-label">🔥 Strong</span><span class="pnl-val" style="color:var(--gn)">1</span></div>
+<div class="pnl-item"><span class="pnl-label">⚠️ Caution</span><span class="pnl-val" style="color:#fbbf24">2</span></div>
+<div class="pnl-item"><span class="pnl-label">W6 Record</span><span class="pnl-val" id="c-record">-</span></div>
+<div class="pnl-item"><span class="pnl-label">Staked</span><span class="pnl-val" id="c-staked">$0</span></div>
+<div class="pnl-item"><span class="pnl-label">W6 P&amp;L</span><span class="pnl-val" id="c-total">$0</span></div>
+<div class="pnl-item"><span class="pnl-label">ROI%</span><span class="pnl-val" id="c-roi">—</span></div>
+<div class="pnl-item"><span class="pnl-label">Cumul Bank</span><span class="pnl-val" id="c-bank">$13,888</span></div>
+</div>
+<div class="filter-bar">
+<label for="c-filter">Filter by kickoff (Dubai):</label>
+<select id="c-filter" class="filter-select" onchange="filt('c',this.value)"><option value="all">🗓 All dates</option><option value="2026-05-09">Sat May 09</option><option value="2026-05-10">Sun May 10</option><option value="2026-05-11">Mon May 11</option><option value="2026-05-13">Wed May 13</option></select>
+<div class="filter-count">Showing <span id="c-visible">12</span> of 12 picks</div>
+</div>
+<div class="day-header" data-date="2026-05-09"><span class="day-name">📅 Sat May 09</span> <span class="day-count">2 picks</span></div><div class="pk" id="c-4" data-date="2026-05-09">
+<div class="ph" onclick="toggle(this)">
+<div class="rk">#4</div>
+<div class="pi"><div class="pn"> Elche O2.5 <span class="flag" style="background:rgba(59,130,246,.15);color:#3b82f6;border:1px solid rgba(59,130,246,.35)">✅ KEEP</span></div>
+<div class="pm">Elche vs Alaves &middot; <span style="color:#E07A3A;font-weight:700">Sat May 09 · 16:00 Dubai</span> &middot; LLG</div></div>
+<div class="ps">
+<div class="n"><div class="nv accent">@4.90</div><div class="nl">ODDS</div></div>
+<div class="n"><div class="nv green">+99.0%</div><div class="nl">EDGE</div></div>
+<div class="n"><div class="nv">$200</div><div class="nl">STAKE</div></div>
+</div>
+<div class="pr" id="c-4-r"><span class="pp">pending</span></div>
+<div class="pb">
+<button class="bw" onclick="event.stopPropagation();mk('c',4,'win')">WIN</button>
+<button class="bl" onclick="event.stopPropagation();mk('c',4,'loss')">LOSS</button>
+<button class="br" onclick="event.stopPropagation();mk('c',4,'push')">PUSH</button>
+<button class="br" onclick="event.stopPropagation();mk('c',4,'pending')">RST</button>
+</div></div>
+<div class="pd" id="c-4-d"><div class="rb">✅ KEEP: λH=2.31 λA=1.52 = 3.83 total. Both teams in relegation fight, both with leaky defences (53 GA each). Recent matches both featured 4+ goals (Alaves 2-4 Athletic, Elche 1-3 Celta). Both teams open and goal-friendly. Companion to D #6 Over 3.0.<br><br><strong>Kickoff:</strong> Sat May 09 · 16:00 Dubai<br><strong>Model:</strong> 40.6% &nbsp; <strong>Book:</strong> 20.4% &nbsp; <strong>Edge:</strong> +99.0%<br><strong>λH</strong>=2.31 &nbsp; <strong>λA</strong>=1.52</div><div class="nb"><span class="nl2">Model:</span><span class="nv2 green">40.6%</span><span class="nl2">Book:</span><span class="nv2 dim">20.4%</span><span class="nl2">Win:</span><span class="nv2 green">+$780</span><span class="nl2">Lose:</span><span class="nv2 red">-$200</span></div></div>
+</div><div class="pk" id="c-8" data-date="2026-05-09">
+<div class="ph" onclick="toggle(this)">
+<div class="rk">#8</div>
+<div class="pi"><div class="pn"> Sunderland U0.5 <span class="flag" style="background:rgba(59,130,246,.15);color:#3b82f6;border:1px solid rgba(59,130,246,.35)">✅ KEEP</span></div>
+<div class="pm">Sunderland vs Man Utd &middot; <span style="color:#E07A3A;font-weight:700">Sat May 09 · 18:00 Dubai</span> &middot; EPL</div></div>
+<div class="ps">
+<div class="n"><div class="nv accent">@3.00</div><div class="nl">ODDS</div></div>
+<div class="n"><div class="nv green">+78.8%</div><div class="nl">EDGE</div></div>
+<div class="n"><div class="nv">$200</div><div class="nl">STAKE</div></div>
+</div>
+<div class="pr" id="c-8-r"><span class="pp">pending</span></div>
+<div class="pb">
+<button class="bw" onclick="event.stopPropagation();mk('c',8,'win')">WIN</button>
+<button class="bl" onclick="event.stopPropagation();mk('c',8,'loss')">LOSS</button>
+<button class="br" onclick="event.stopPropagation();mk('c',8,'push')">PUSH</button>
+<button class="br" onclick="event.stopPropagation();mk('c',8,'pending')">RST</button>
+</div></div>
+<div class="pd" id="c-8-d"><div class="rb">✅ KEEP: λH=0.52 λA=2.18. Sunderland missing CB Ballard (suspended), Mundle (hamstring), Cirkin doubt. Man Utd in top form — beat Liverpool 3-2, secured CL spot under Carrick. Engine sees Sunderland blanked at home. Companion to D #5 Man Utd -1.<br><br><strong>Kickoff:</strong> Sat May 09 · 18:00 Dubai<br><strong>Model:</strong> 59.6% &nbsp; <strong>Book:</strong> 33.3% &nbsp; <strong>Edge:</strong> +78.8%<br><strong>λH</strong>=0.52 &nbsp; <strong>λA</strong>=2.18</div><div class="nb"><span class="nl2">Model:</span><span class="nv2 green">59.6%</span><span class="nl2">Book:</span><span class="nv2 dim">33.3%</span><span class="nl2">Win:</span><span class="nv2 green">+$400</span><span class="nl2">Lose:</span><span class="nv2 red">-$200</span></div></div>
+</div><div class="day-header" data-date="2026-05-10"><span class="day-name">📅 Sun May 10</span> <span class="day-count">8 picks</span></div><div class="pk" id="c-3" data-date="2026-05-10">
+<div class="ph" onclick="toggle(this)">
+<div class="rk">#3</div>
+<div class="pi"><div class="pn"> Under 1.5 <span class="flag" style="background:rgba(59,130,246,.15);color:#3b82f6;border:1px solid rgba(59,130,246,.35)">✅ KEEP</span></div>
+<div class="pm">Verona vs Como &middot; <span style="color:#E07A3A;font-weight:700">Sun May 10 · 14:30 Dubai</span> &middot; SA</div></div>
+<div class="ps">
+<div class="n"><div class="nv accent">@3.50</div><div class="nl">ODDS</div></div>
+<div class="n"><div class="nv green">+101.1%</div><div class="nl">EDGE</div></div>
+<div class="n"><div class="nv">$200</div><div class="nl">STAKE</div></div>
+</div>
+<div class="pr" id="c-3-r"><span class="pp">pending</span></div>
+<div class="pb">
+<button class="bw" onclick="event.stopPropagation();mk('c',3,'win')">WIN</button>
+<button class="bl" onclick="event.stopPropagation();mk('c',3,'loss')">LOSS</button>
+<button class="br" onclick="event.stopPropagation();mk('c',3,'push')">PUSH</button>
+<button class="br" onclick="event.stopPropagation();mk('c',3,'pending')">RST</button>
+</div></div>
+<div class="pd" id="c-3-d"><div class="rb">✅ KEEP: λH=0.30 λA=1.12 = 1.42 total — engine's lowest λ-total. Verona ALREADY RELEGATED, Serie A's worst attack (24 goals in 35 matches), 0.69 GF/match. 6 of last 7 Verona home matches went U2.5. Como 6th, EL semi-finalists, best defence in Serie A (28 GA, 3rd-best in Europe's top 5 leagues). Both verified injuries (Verona: Serdar/Mosquera/Oyegoke; Como: Ramón suspended).<br><br><strong>Kickoff:</strong> Sun May 10 · 14:30 Dubai<br><strong>Model:</strong> 57.5% &nbsp; <strong>Book:</strong> 28.6% &nbsp; <strong>Edge:</strong> +101.1%<br><strong>λH</strong>=0.30 &nbsp; <strong>λA</strong>=1.12</div><div class="nb"><span class="nl2">Model:</span><span class="nv2 green">57.5%</span><span class="nl2">Book:</span><span class="nv2 dim">28.6%</span><span class="nl2">Win:</span><span class="nv2 green">+$500</span><span class="nl2">Lose:</span><span class="nv2 red">-$200</span></div></div>
+</div><div class="pk" id="c-5" data-date="2026-05-10">
+<div class="ph" onclick="toggle(this)">
+<div class="rk">#5</div>
+<div class="pi"><div class="pn"> Under 1.5 <span class="flag" style="background:rgba(59,130,246,.15);color:#3b82f6;border:1px solid rgba(59,130,246,.35)">✅ KEEP</span></div>
+<div class="pm">Fiorentina vs Genoa &middot; <span style="color:#E07A3A;font-weight:700">Sun May 10 · 17:00 Dubai</span> &middot; SA</div></div>
+<div class="ps">
+<div class="n"><div class="nv accent">@3.15</div><div class="nl">ODDS</div></div>
+<div class="n"><div class="nv green">+88.0%</div><div class="nl">EDGE</div></div>
+<div class="n"><div class="nv">$200</div><div class="nl">STAKE</div></div>
+</div>
+<div class="pr" id="c-5-r"><span class="pp">pending</span></div>
+<div class="pb">
+<button class="bw" onclick="event.stopPropagation();mk('c',5,'win')">WIN</button>
+<button class="bl" onclick="event.stopPropagation();mk('c',5,'loss')">LOSS</button>
+<button class="br" onclick="event.stopPropagation();mk('c',5,'push')">PUSH</button>
+<button class="br" onclick="event.stopPropagation();mk('c',5,'pending')">RST</button>
+</div></div>
+<div class="pd" id="c-5-d"><div class="rb">✅ KEEP: λH=0.79 λA=0.55 = 1.34 total. Both teams safe/no motivation, both struggling for goals. Fiorentina last 2 PL matches scoreless. 7 of last 10 Fiorentina home + 7 of last 10 Genoa road went U2.5. Strongly supported by recent form.<br><br><strong>Kickoff:</strong> Sun May 10 · 17:00 Dubai<br><strong>Model:</strong> 59.7% &nbsp; <strong>Book:</strong> 31.7% &nbsp; <strong>Edge:</strong> +88.0%<br><strong>λH</strong>=0.79 &nbsp; <strong>λA</strong>=0.55</div><div class="nb"><span class="nl2">Model:</span><span class="nv2 green">59.7%</span><span class="nl2">Book:</span><span class="nv2 dim">31.7%</span><span class="nl2">Win:</span><span class="nv2 green">+$430</span><span class="nl2">Lose:</span><span class="nv2 red">-$200</span></div></div>
+</div><div class="pk" id="c-6" data-date="2026-05-10">
+<div class="ph" onclick="toggle(this)">
+<div class="rk">#6</div>
+<div class="pi"><div class="pn"> Under 1.5 <span class="flag" style="background:rgba(251,191,36,.15);color:#fbbf24;border:1px solid rgba(251,191,36,.35)">⚠️ CAUTION</span></div>
+<div class="pm">Nott Forest vs Newcastle &middot; <span style="color:#E07A3A;font-weight:700">Sun May 10 · 17:00 Dubai</span> &middot; EPL</div></div>
+<div class="ps">
+<div class="n"><div class="nv accent">@4.20</div><div class="nl">ODDS</div></div>
+<div class="n"><div class="nv green">+86.0%</div><div class="nl">EDGE</div></div>
+<div class="n"><div class="nv">$200</div><div class="nl">STAKE</div></div>
+</div>
+<div class="pr" id="c-6-r"><span class="pp">pending</span></div>
+<div class="pb">
+<button class="bw" onclick="event.stopPropagation();mk('c',6,'win')">WIN</button>
+<button class="bl" onclick="event.stopPropagation();mk('c',6,'loss')">LOSS</button>
+<button class="br" onclick="event.stopPropagation();mk('c',6,'push')">PUSH</button>
+<button class="br" onclick="event.stopPropagation();mk('c',6,'pending')">RST</button>
+</div></div>
+<div class="pd" id="c-6-d"><div class="rb">⚠️ CAUTION: λH=0.97 λA=0.84 = 1.81 total. ENGINE-SUPPORTING: Forest playmaker Morgan Gibbs-White OUT for season (head injury vs Chelsea — post-engine-run news), Forest also missing Hudson-Odoi/Ndoye/Murillo/Aina/Boly/Savona (6+ key absences). Newcastle missing Schar/Krafth/Livramento/Miley. CONCERN: 6 of last 7 H2H went 3+ goals; 5 of last 6 Newcastle went O2.5; 4 of last 5 Forest produced 4+ goals (Burnley 4-1, Sunderland 5-0, Chelsea 3-1). Recent goal volumes vs engine's defensive thesis. User decides stake.<br><br><strong>Kickoff:</strong> Sun May 10 · 17:00 Dubai<br><strong>Model:</strong> 44.3% &nbsp; <strong>Book:</strong> 23.8% &nbsp; <strong>Edge:</strong> +86.0%<br><strong>λH</strong>=0.97 &nbsp; <strong>λA</strong>=0.84</div><div class="nb"><span class="nl2">Model:</span><span class="nv2 green">44.3%</span><span class="nl2">Book:</span><span class="nv2 dim">23.8%</span><span class="nl2">Win:</span><span class="nv2 green">+$640</span><span class="nl2">Lose:</span><span class="nv2 red">-$200</span></div></div>
+</div><div class="pk" id="c-7" data-date="2026-05-10">
+<div class="ph" onclick="toggle(this)">
+<div class="rk">#7</div>
+<div class="pi"><div class="pn"> Under 2.5 <span class="flag" style="background:rgba(251,191,36,.15);color:#fbbf24;border:1px solid rgba(251,191,36,.35)">⚠️ CAUTION</span></div>
+<div class="pm">Barcelona vs Real Madrid &middot; <span style="color:#E07A3A;font-weight:700">Sun May 10 · 23:00 Dubai</span> &middot; LLG</div></div>
+<div class="ps">
+<div class="n"><div class="nv accent">@3.70</div><div class="nl">ODDS</div></div>
+<div class="n"><div class="nv green">+85.1%</div><div class="nl">EDGE</div></div>
+<div class="n"><div class="nv">$200</div><div class="nl">STAKE</div></div>
+</div>
+<div class="pr" id="c-7-r"><span class="pp">pending</span></div>
+<div class="pb">
+<button class="bw" onclick="event.stopPropagation();mk('c',7,'win')">WIN</button>
+<button class="bl" onclick="event.stopPropagation();mk('c',7,'loss')">LOSS</button>
+<button class="br" onclick="event.stopPropagation();mk('c',7,'push')">PUSH</button>
+<button class="br" onclick="event.stopPropagation();mk('c',7,'pending')">RST</button>
+</div></div>
+<div class="pd" id="c-7-d"><div class="rb">⚠️ CAUTION: λH=1.69 λA=0.99 = 2.68 total. Engine's signal: Barca title virtually secured (+11 lead), Real Madrid CL-eliminated, both have 'little to play for'. NEWS: Federico Valverde OUT after training-ground bust-up (sent to hospital); Tchouameni status unclear. CONCERN: recent Clásico H2H runs hot — last 4 Barca-Madrid: 5-2, 4-0, 3-2, 2-1. Engine ignores H2H by design. User decides stake.<br><br><strong>Kickoff:</strong> Sun May 10 · 23:00 Dubai<br><strong>Model:</strong> 50.0% &nbsp; <strong>Book:</strong> 27.0% &nbsp; <strong>Edge:</strong> +85.1%<br><strong>λH</strong>=1.69 &nbsp; <strong>λA</strong>=0.99</div><div class="nb"><span class="nl2">Model:</span><span class="nv2 green">50.0%</span><span class="nl2">Book:</span><span class="nv2 dim">27.0%</span><span class="nl2">Win:</span><span class="nv2 green">+$540</span><span class="nl2">Lose:</span><span class="nv2 red">-$200</span></div></div>
+</div><div class="pk" id="c-9" data-date="2026-05-10">
+<div class="ph" onclick="toggle(this)">
+<div class="rk">#9</div>
+<div class="pi"><div class="pn"> Under 1.5 <span class="flag" style="background:rgba(59,130,246,.15);color:#3b82f6;border:1px solid rgba(59,130,246,.35)">✅ KEEP</span></div>
+<div class="pm">Burnley vs Aston Villa &middot; <span style="color:#E07A3A;font-weight:700">Sun May 10 · 17:00 Dubai</span> &middot; EPL</div></div>
+<div class="ps">
+<div class="n"><div class="nv accent">@4.10</div><div class="nl">ODDS</div></div>
+<div class="n"><div class="nv green">+75.4%</div><div class="nl">EDGE</div></div>
+<div class="n"><div class="nv">$200</div><div class="nl">STAKE</div></div>
+</div>
+<div class="pr" id="c-9-r"><span class="pp">pending</span></div>
+<div class="pb">
+<button class="bw" onclick="event.stopPropagation();mk('c',9,'win')">WIN</button>
+<button class="bl" onclick="event.stopPropagation();mk('c',9,'loss')">LOSS</button>
+<button class="br" onclick="event.stopPropagation();mk('c',9,'push')">PUSH</button>
+<button class="br" onclick="event.stopPropagation();mk('c',9,'pending')">RST</button>
+</div></div>
+<div class="pd" id="c-9-d"><div class="rb">✅ KEEP: λH=0.72 λA=1.15 = 1.87 total. Burnley relegated, 5-game losing streak, 1 win in last 26 PL. Villa already through to EL final May 20 — Emery 'may rest several players' given short turnaround. Onana OUT (calf), Kamara/Alysson out. Engine fatigue/rotation layer aligned with verification.<br><br><strong>Kickoff:</strong> Sun May 10 · 17:00 Dubai<br><strong>Model:</strong> 42.8% &nbsp; <strong>Book:</strong> 24.4% &nbsp; <strong>Edge:</strong> +75.4%<br><strong>λH</strong>=0.72 &nbsp; <strong>λA</strong>=1.15</div><div class="nb"><span class="nl2">Model:</span><span class="nv2 green">42.8%</span><span class="nl2">Book:</span><span class="nv2 dim">24.4%</span><span class="nl2">Win:</span><span class="nv2 green">+$620</span><span class="nl2">Lose:</span><span class="nv2 red">-$200</span></div></div>
+</div><div class="pk" id="c-10" data-date="2026-05-10">
+<div class="ph" onclick="toggle(this)">
+<div class="rk">#10</div>
+<div class="pi"><div class="pn"> Under 1.5 <span class="flag" style="background:rgba(59,130,246,.15);color:#3b82f6;border:1px solid rgba(59,130,246,.35)">✅ KEEP</span></div>
+<div class="pm">Hamburg vs Freiburg &middot; <span style="color:#E07A3A;font-weight:700">Sun May 10 · 17:30 Dubai</span> &middot; BUN</div></div>
+<div class="ps">
+<div class="n"><div class="nv accent">@4.20</div><div class="nl">ODDS</div></div>
+<div class="n"><div class="nv green">+75.3%</div><div class="nl">EDGE</div></div>
+<div class="n"><div class="nv">$200</div><div class="nl">STAKE</div></div>
+</div>
+<div class="pr" id="c-10-r"><span class="pp">pending</span></div>
+<div class="pb">
+<button class="bw" onclick="event.stopPropagation();mk('c',10,'win')">WIN</button>
+<button class="bl" onclick="event.stopPropagation();mk('c',10,'loss')">LOSS</button>
+<button class="br" onclick="event.stopPropagation();mk('c',10,'push')">PUSH</button>
+<button class="br" onclick="event.stopPropagation();mk('c',10,'pending')">RST</button>
+</div></div>
+<div class="pd" id="c-10-d"><div class="rb">✅ KEEP: λH=1.08 λA=0.83 = 1.91 total. Freiburg in EL final May 20 vs Aston Villa — Schuster 'may rotate'. Freiburg attack ICY: 1 or fewer goals in 4 of last 5 matches across competitions. Hamburg secured BL safety, post-survival mode. Verified injuries: Freiburg missing Rosenfelder/Osterhage/Suzuki; Hamburg missing Dickes/Muheim/Røssing-Lelesiit.<br><br><strong>Kickoff:</strong> Sun May 10 · 17:30 Dubai<br><strong>Model:</strong> 41.7% &nbsp; <strong>Book:</strong> 23.8% &nbsp; <strong>Edge:</strong> +75.3%<br><strong>λH</strong>=1.08 &nbsp; <strong>λA</strong>=0.83</div><div class="nb"><span class="nl2">Model:</span><span class="nv2 green">41.7%</span><span class="nl2">Book:</span><span class="nv2 dim">23.8%</span><span class="nl2">Win:</span><span class="nv2 green">+$640</span><span class="nl2">Lose:</span><span class="nv2 red">-$200</span></div></div>
+</div><div class="pk" id="c-11" data-date="2026-05-10">
+<div class="ph" onclick="toggle(this)">
+<div class="rk">#11</div>
+<div class="pi"><div class="pn"> Parma Calcio 1913 DNB <span class="flag" style="background:rgba(59,130,246,.15);color:#3b82f6;border:1px solid rgba(59,130,246,.35)">✅ KEEP</span></div>
+<div class="pm">Parma Calcio 1913 vs Roma &middot; <span style="color:#E07A3A;font-weight:700">Sun May 10 · 20:00 Dubai</span> &middot; SA</div></div>
+<div class="ps">
+<div class="n"><div class="nv accent">@4.50</div><div class="nl">ODDS</div></div>
+<div class="n"><div class="nv green">+75.3%</div><div class="nl">EDGE</div></div>
+<div class="n"><div class="nv">$200</div><div class="nl">STAKE</div></div>
+</div>
+<div class="pr" id="c-11-r"><span class="pp">pending</span></div>
+<div class="pb">
+<button class="bw" onclick="event.stopPropagation();mk('c',11,'win')">WIN</button>
+<button class="bl" onclick="event.stopPropagation();mk('c',11,'loss')">LOSS</button>
+<button class="br" onclick="event.stopPropagation();mk('c',11,'push')">PUSH</button>
+<button class="br" onclick="event.stopPropagation();mk('c',11,'pending')">RST</button>
+</div></div>
+<div class="pd" id="c-11-d"><div class="rb">✅ KEEP: λH=1.16 λA=1.27 — coin flip. Roma in 5-player injury crisis (Pellegrini, Zaragoza, Dovbyk, Ferguson, Koné, Çelik all out — verified). Parma 'on the beach' but back-to-back clean sheets vs Udinese/Pisa, lost 1-5 of last 5 home. DNB protects vs draw outcome.<br><br><strong>Kickoff:</strong> Sun May 10 · 20:00 Dubai<br><strong>Model:</strong> 32.1% &nbsp; <strong>Book:</strong> 22.2% &nbsp; <strong>Edge:</strong> +75.3%<br><strong>λH</strong>=1.16 &nbsp; <strong>λA</strong>=1.27</div><div class="nb"><span class="nl2">Model:</span><span class="nv2 green">32.1%</span><span class="nl2">Book:</span><span class="nv2 dim">22.2%</span><span class="nl2">Win:</span><span class="nv2 green">+$700</span><span class="nl2">Lose:</span><span class="nv2 red">-$200</span></div></div>
+</div><div class="pk" id="c-12" data-date="2026-05-10">
+<div class="ph" onclick="toggle(this)">
+<div class="rk">#12</div>
+<div class="pi"><div class="pn"> Nice U0.5 <span class="flag" style="background:rgba(59,130,246,.15);color:#3b82f6;border:1px solid rgba(59,130,246,.35)">✅ KEEP</span></div>
+<div class="pm">Auxerre vs Nice &middot; <span style="color:#E07A3A;font-weight:700">Sun May 10 · 23:00 Dubai</span> &middot; L1</div></div>
+<div class="ps">
+<div class="n"><div class="nv accent">@3.20</div><div class="nl">ODDS</div></div>
+<div class="n"><div class="nv green">+72.5%</div><div class="nl">EDGE</div></div>
+<div class="n"><div class="nv">$200</div><div class="nl">STAKE</div></div>
+</div>
+<div class="pr" id="c-12-r"><span class="pp">pending</span></div>
+<div class="pb">
+<button class="bw" onclick="event.stopPropagation();mk('c',12,'win')">WIN</button>
+<button class="bl" onclick="event.stopPropagation();mk('c',12,'loss')">LOSS</button>
+<button class="br" onclick="event.stopPropagation();mk('c',12,'push')">PUSH</button>
+<button class="br" onclick="event.stopPropagation();mk('c',12,'pending')">RST</button>
+</div></div>
+<div class="pd" id="c-12-d"><div class="rb">✅ KEEP: λH=1.23 λA=0.62. Nice missing Wahi (doubt), Bombito, Abdelmonem, Pereira — attacking thin. Auxerre 4-match home unbeaten, cautious/pragmatic style. Multiple sources predict cautious low-scoring relegation 6-pointer. Both teams playing for survival.<br><br><strong>Kickoff:</strong> Sun May 10 · 23:00 Dubai<br><strong>Model:</strong> 53.9% &nbsp; <strong>Book:</strong> 31.2% &nbsp; <strong>Edge:</strong> +72.5%<br><strong>λH</strong>=1.23 &nbsp; <strong>λA</strong>=0.62</div><div class="nb"><span class="nl2">Model:</span><span class="nv2 green">53.9%</span><span class="nl2">Book:</span><span class="nv2 dim">31.2%</span><span class="nl2">Win:</span><span class="nv2 green">+$440</span><span class="nl2">Lose:</span><span class="nv2 red">-$200</span></div></div>
+</div><div class="day-header" data-date="2026-05-11"><span class="day-name">📅 Mon May 11</span> <span class="day-count">1 picks</span></div><div class="pk" id="c-2" data-date="2026-05-11">
+<div class="ph" onclick="toggle(this)">
+<div class="rk">#2</div>
+<div class="pi"><div class="pn"> Leeds Win <span class="flag" style="background:rgba(59,130,246,.15);color:#3b82f6;border:1px solid rgba(59,130,246,.35)">✅ KEEP</span></div>
+<div class="pm">Tottenham vs Leeds &middot; <span style="color:#E07A3A;font-weight:700">Mon May 11 · 23:00 Dubai</span> &middot; EPL</div></div>
+<div class="ps">
+<div class="n"><div class="nv accent">@3.90</div><div class="nl">ODDS</div></div>
+<div class="n"><div class="nv green">+124.8%</div><div class="nl">EDGE</div></div>
+<div class="n"><div class="nv">$200</div><div class="nl">STAKE</div></div>
+</div>
+<div class="pr" id="c-2-r"><span class="pp">pending</span></div>
+<div class="pb">
+<button class="bw" onclick="event.stopPropagation();mk('c',2,'win')">WIN</button>
+<button class="bl" onclick="event.stopPropagation();mk('c',2,'loss')">LOSS</button>
+<button class="br" onclick="event.stopPropagation();mk('c',2,'push')">PUSH</button>
+<button class="br" onclick="event.stopPropagation();mk('c',2,'pending')">RST</button>
+</div></div>
+<div class="pd" id="c-2-d"><div class="rb">✅ KEEP: λH=0.92 λA=1.85 — engine sees Leeds dominant. Spurs catastrophically depleted (Romero, Simons, Kudus, Kulusevski, Solanke, Vicario, Davies all out for season; Richarlison doubt). Spurs' worst home season since 1991-92 (11 home points all year). Leeds 6-match unbeaten, basically safe. ⚠️AWAY_ML flag is a structural model warning. H2H last 5 all Spurs, but per protocol H2H is not a core variable.<br><br><strong>Kickoff:</strong> Mon May 11 · 23:00 Dubai<br><strong>Model:</strong> 57.6% &nbsp; <strong>Book:</strong> 25.6% &nbsp; <strong>Edge:</strong> +124.8%<br><strong>λH</strong>=0.92 &nbsp; <strong>λA</strong>=1.85</div><div class="nb"><span class="nl2">Model:</span><span class="nv2 green">57.6%</span><span class="nl2">Book:</span><span class="nv2 dim">25.6%</span><span class="nl2">Win:</span><span class="nv2 green">+$580</span><span class="nl2">Lose:</span><span class="nv2 red">-$200</span></div></div>
+</div><div class="day-header" data-date="2026-05-13"><span class="day-name">📅 Wed May 13</span> <span class="day-count">1 picks</span></div><div class="pk strong" id="c-1" data-date="2026-05-13">
+<div class="ph" onclick="toggle(this)">
+<div class="rk">#1</div>
+<div class="pi"><div class="pn"> Villarreal O2.5 <span class="flag" style="background:rgba(34,197,94,.18);color:#22c55e;border:1px solid rgba(34,197,94,.4)">🔥 STRONG</span></div>
+<div class="pm">Villarreal vs Sevilla &middot; <span style="color:#E07A3A;font-weight:700">Wed May 13 · 23:00 Dubai</span> &middot; LLG</div></div>
+<div class="ps">
+<div class="n"><div class="nv accent">@4.00</div><div class="nl">ODDS</div></div>
+<div class="n"><div class="nv green">+135.3%</div><div class="nl">EDGE</div></div>
+<div class="n"><div class="nv">$200</div><div class="nl">STAKE</div></div>
+</div>
+<div class="pr" id="c-1-r"><span class="pp">pending</span></div>
+<div class="pb">
+<button class="bw" onclick="event.stopPropagation();mk('c',1,'win')">WIN</button>
+<button class="bl" onclick="event.stopPropagation();mk('c',1,'loss')">LOSS</button>
+<button class="br" onclick="event.stopPropagation();mk('c',1,'push')">PUSH</button>
+<button class="br" onclick="event.stopPropagation();mk('c',1,'pending')">RST</button>
+</div></div>
+<div class="pd" id="c-1-d"><div class="rb">🔥 STRONG: top-EV pick of the week. Engine λH=3.08 λA=0.70 = 3.78 total — Villarreal 67 goals this season (3rd-best attack in La Liga, behind Barca and Madrid). Won last 4 H2H vs Sevilla, scored in last 8 H2H. Sevilla mid-table, defensive vulnerabilities. Engine's only flag is the cosmetic BIG_GAP unit-bug (Bug 51, fixed in working-copy engine, not in /mnt/project/).<br><br><strong>Kickoff:</strong> Wed May 13 · 23:00 Dubai<br><strong>Model:</strong> 58.8% &nbsp; <strong>Book:</strong> 25.0% &nbsp; <strong>Edge:</strong> +135.3%<br><strong>λH</strong>=3.08 &nbsp; <strong>λA</strong>=0.70</div><div class="nb"><span class="nl2">Model:</span><span class="nv2 green">58.8%</span><span class="nl2">Book:</span><span class="nv2 dim">25.0%</span><span class="nl2">Win:</span><span class="nv2 green">+$600</span><span class="nl2">Lose:</span><span class="nv2 red">-$200</span></div></div>
+</div>
+</div>
+
+<div class="rng" id="r-d">
+<div class="pnl-bar">
+<div class="pnl-item"><span class="pnl-label">Base Bank</span><span class="pnl-val">$10,000</span></div>
+<div class="pnl-item"><span class="pnl-label">Prior P&amp;L (W3-4)</span><span class="pnl-val pos">+$306</span></div>
+<div class="pnl-item"><span class="pnl-label">W6 Start Bank*</span><span class="pnl-val" style="color:#fff">$10,306</span></div>
+<div class="pnl-item"><span class="pnl-label">⚠️ Caution</span><span class="pnl-val" style="color:#fbbf24">3</span></div>
+<div class="pnl-item"><span class="pnl-label">W6 Record</span><span class="pnl-val" id="d-record">-</span></div>
+<div class="pnl-item"><span class="pnl-label">Staked</span><span class="pnl-val" id="d-staked">$0</span></div>
+<div class="pnl-item"><span class="pnl-label">W6 P&amp;L</span><span class="pnl-val" id="d-total">$0</span></div>
+<div class="pnl-item"><span class="pnl-label">ROI%</span><span class="pnl-val" id="d-roi">—</span></div>
+<div class="pnl-item"><span class="pnl-label">Cumul Bank</span><span class="pnl-val" id="d-bank">$10,306</span></div>
+</div>
+<div class="filter-bar">
+<label for="d-filter">Filter by kickoff (Dubai):</label>
+<select id="d-filter" class="filter-select" onchange="filt('d',this.value)"><option value="all">🗓 All dates</option><option value="2026-05-09">Sat May 09</option><option value="2026-05-10">Sun May 10</option><option value="2026-05-11">Mon May 11</option><option value="2026-05-13">Wed May 13</option></select>
+<div class="filter-count">Showing <span id="d-visible">12</span> of 12 picks</div>
+</div>
+<div class="day-header" data-date="2026-05-09"><span class="day-name">📅 Sat May 09</span> <span class="day-count">2 picks</span></div><div class="pk" id="d-5" data-date="2026-05-09">
+<div class="ph" onclick="toggle(this)">
+<div class="rk">#5</div>
+<div class="pi"><div class="pn"> Man Utd -1 <span class="flag" style="background:rgba(59,130,246,.15);color:#3b82f6;border:1px solid rgba(59,130,246,.35)">✅ KEEP</span></div>
+<div class="pm">Sunderland vs Man Utd &middot; <span style="color:#E07A3A;font-weight:700">Sat May 09 · 18:00 Dubai</span> &middot; EPL</div></div>
+<div class="ps">
+<div class="n"><div class="nv accent">@2.65</div><div class="nl">ODDS</div></div>
+<div class="n"><div class="nv green">+59.0%</div><div class="nl">EDGE</div></div>
+<div class="n"><div class="nv">$200</div><div class="nl">STAKE</div></div>
+</div>
+<div class="pr" id="d-5-r"><span class="pp">pending</span></div>
+<div class="pb">
+<button class="bw" onclick="event.stopPropagation();mk('d',5,'win')">WIN</button>
+<button class="bl" onclick="event.stopPropagation();mk('d',5,'loss')">LOSS</button>
+<button class="br" onclick="event.stopPropagation();mk('d',5,'push')">PUSH</button>
+<button class="br" onclick="event.stopPropagation();mk('d',5,'pending')">RST</button>
+</div></div>
+<div class="pd" id="d-5-d"><div class="rb">✅ KEEP: λA=2.18 vs λH=0.52 — engine sees Man Utd dominant. Sunderland's depleted defence (Ballard suspended, Cirkin doubt) supports AH -1 line at 2.65. Companion to Range C #8.<br><br><strong>Kickoff:</strong> Sat May 09 · 18:00 Dubai<br><strong>Model:</strong> 51.0% &nbsp; <strong>Book:</strong> 37.7% &nbsp; <strong>Edge:</strong> +59.0%<br><strong>λH</strong>=0.52 &nbsp; <strong>λA</strong>=2.18</div><div class="nb"><span class="nl2">Model:</span><span class="nv2 green">51.0%</span><span class="nl2">Book:</span><span class="nv2 dim">37.7%</span><span class="nl2">Win:</span><span class="nv2 green">+$330</span><span class="nl2">Lose:</span><span class="nv2 red">-$200</span></div></div>
+</div><div class="pk" id="d-6" data-date="2026-05-09">
+<div class="ph" onclick="toggle(this)">
+<div class="rk">#6</div>
+<div class="pi"><div class="pn"> Over 3.0 <span class="flag" style="background:rgba(59,130,246,.15);color:#3b82f6;border:1px solid rgba(59,130,246,.35)">✅ KEEP</span></div>
+<div class="pm">Elche vs Alaves &middot; <span style="color:#E07A3A;font-weight:700">Sat May 09 · 16:00 Dubai</span> &middot; LLG</div></div>
+<div class="ps">
+<div class="n"><div class="nv accent">@2.60</div><div class="nl">ODDS</div></div>
+<div class="n"><div class="nv green">+58.9%</div><div class="nl">EDGE</div></div>
+<div class="n"><div class="nv">$200</div><div class="nl">STAKE</div></div>
+</div>
+<div class="pr" id="d-6-r"><span class="pp">pending</span></div>
+<div class="pb">
+<button class="bw" onclick="event.stopPropagation();mk('d',6,'win')">WIN</button>
+<button class="bl" onclick="event.stopPropagation();mk('d',6,'loss')">LOSS</button>
+<button class="br" onclick="event.stopPropagation();mk('d',6,'push')">PUSH</button>
+<button class="br" onclick="event.stopPropagation();mk('d',6,'pending')">RST</button>
+</div></div>
+<div class="pd" id="d-6-d"><div class="rb">✅ KEEP: λ-total 3.83. Engine sees relegation 6-pointer with both leaky defences as goal-fest. Both teams' last matches each had 4+ goals. Companion to Range C #4.<br><br><strong>Kickoff:</strong> Sat May 09 · 16:00 Dubai<br><strong>Model:</strong> 53.3% &nbsp; <strong>Book:</strong> 38.5% &nbsp; <strong>Edge:</strong> +58.9%<br><strong>λH</strong>=2.31 &nbsp; <strong>λA</strong>=1.52</div><div class="nb"><span class="nl2">Model:</span><span class="nv2 green">53.3%</span><span class="nl2">Book:</span><span class="nv2 dim">38.5%</span><span class="nl2">Win:</span><span class="nv2 green">+$320</span><span class="nl2">Lose:</span><span class="nv2 red">-$200</span></div></div>
+</div><div class="day-header" data-date="2026-05-10"><span class="day-name">📅 Sun May 10</span> <span class="day-count">7 picks</span></div><div class="pk" id="d-1" data-date="2026-05-10">
+<div class="ph" onclick="toggle(this)">
+<div class="rk">#1</div>
+<div class="pi"><div class="pn"> Rennes U1.5 <span class="flag" style="background:rgba(251,191,36,.15);color:#fbbf24;border:1px solid rgba(251,191,36,.35)">⚠️ CAUTION</span></div>
+<div class="pm">Rennes vs Paris FC &middot; <span style="color:#E07A3A;font-weight:700">Sun May 10 · 23:00 Dubai</span> &middot; L1</div></div>
+<div class="ps">
+<div class="n"><div class="nv accent">@2.65</div><div class="nl">ODDS</div></div>
+<div class="n"><div class="nv green">+70.5%</div><div class="nl">EDGE</div></div>
+<div class="n"><div class="nv">$200</div><div class="nl">STAKE</div></div>
+</div>
+<div class="pr" id="d-1-r"><span class="pp">pending</span></div>
+<div class="pb">
+<button class="bw" onclick="event.stopPropagation();mk('d',1,'win')">WIN</button>
+<button class="bl" onclick="event.stopPropagation();mk('d',1,'loss')">LOSS</button>
+<button class="br" onclick="event.stopPropagation();mk('d',1,'push')">PUSH</button>
+<button class="br" onclick="event.stopPropagation();mk('d',1,'pending')">RST</button>
+</div></div>
+<div class="pd" id="d-1-d"><div class="rb">⚠️ CAUTION: λH=1.25 λA=1.01 = 2.26 total. CONCERN: Esteban Lepaul leads Ligue 1 in scoring with 19 goals — Rennes' attacking talisman. Recent Rennes outputs include 4-2, 4-0, 4-2 — high-volume games. Rennes need this win to keep CL hopes alive (5th, 1pt off 4th). Captain Rongier returns from injury. Multiple sources predict OVER 2.5. Engine's sub-1.25 home-scoring forecast is in tension with Lepaul's form. User decides stake.<br><br><strong>Kickoff:</strong> Sun May 10 · 23:00 Dubai<br><strong>Model:</strong> 64.3% &nbsp; <strong>Book:</strong> 37.7% &nbsp; <strong>Edge:</strong> +70.5%<br><strong>λH</strong>=1.25 &nbsp; <strong>λA</strong>=1.01</div><div class="nb"><span class="nl2">Model:</span><span class="nv2 green">64.3%</span><span class="nl2">Book:</span><span class="nv2 dim">37.7%</span><span class="nl2">Win:</span><span class="nv2 green">+$330</span><span class="nl2">Lose:</span><span class="nv2 red">-$200</span></div></div>
+</div><div class="pk" id="d-3" data-date="2026-05-10">
+<div class="ph" onclick="toggle(this)">
+<div class="rk">#3</div>
+<div class="pi"><div class="pn"> Parma Calcio 1913 +0.5 <span class="flag" style="background:rgba(59,130,246,.15);color:#3b82f6;border:1px solid rgba(59,130,246,.35)">✅ KEEP</span></div>
+<div class="pm">Parma Calcio 1913 vs Roma &middot; <span style="color:#E07A3A;font-weight:700">Sun May 10 · 20:00 Dubai</span> &middot; SA</div></div>
+<div class="ps">
+<div class="n"><div class="nv accent">@2.55</div><div class="nl">ODDS</div></div>
+<div class="n"><div class="nv green">+60.4%</div><div class="nl">EDGE</div></div>
+<div class="n"><div class="nv">$200</div><div class="nl">STAKE</div></div>
+</div>
+<div class="pr" id="d-3-r"><span class="pp">pending</span></div>
+<div class="pb">
+<button class="bw" onclick="event.stopPropagation();mk('d',3,'win')">WIN</button>
+<button class="bl" onclick="event.stopPropagation();mk('d',3,'loss')">LOSS</button>
+<button class="br" onclick="event.stopPropagation();mk('d',3,'push')">PUSH</button>
+<button class="br" onclick="event.stopPropagation();mk('d',3,'pending')">RST</button>
+</div></div>
+<div class="pd" id="d-3-d"><div class="rb">✅ KEEP: λH=1.16 λA=1.27 — narrow band variant of Parma DNB pick. Asian +0.5 on home dog at 2.55. Roma's 5-player injury crisis verified.<br><br><strong>Kickoff:</strong> Sun May 10 · 20:00 Dubai<br><strong>Model:</strong> 62.9% &nbsp; <strong>Book:</strong> 39.2% &nbsp; <strong>Edge:</strong> +60.4%<br><strong>λH</strong>=1.16 &nbsp; <strong>λA</strong>=1.27</div><div class="nb"><span class="nl2">Model:</span><span class="nv2 green">62.9%</span><span class="nl2">Book:</span><span class="nv2 dim">39.2%</span><span class="nl2">Win:</span><span class="nv2 green">+$310</span><span class="nl2">Lose:</span><span class="nv2 red">-$200</span></div></div>
+</div><div class="pk" id="d-4" data-date="2026-05-10">
+<div class="ph" onclick="toggle(this)">
+<div class="rk">#4</div>
+<div class="pi"><div class="pn"> Como U1.5 <span class="flag" style="background:rgba(59,130,246,.15);color:#3b82f6;border:1px solid rgba(59,130,246,.35)">✅ KEEP</span></div>
+<div class="pm">Verona vs Como &middot; <span style="color:#E07A3A;font-weight:700">Sun May 10 · 14:30 Dubai</span> &middot; SA</div></div>
+<div class="ps">
+<div class="n"><div class="nv accent">@2.31</div><div class="nl">ODDS</div></div>
+<div class="n"><div class="nv green">+59.8%</div><div class="nl">EDGE</div></div>
+<div class="n"><div class="nv">$200</div><div class="nl">STAKE</div></div>
+</div>
+<div class="pr" id="d-4-r"><span class="pp">pending</span></div>
+<div class="pb">
+<button class="bw" onclick="event.stopPropagation();mk('d',4,'win')">WIN</button>
+<button class="bl" onclick="event.stopPropagation();mk('d',4,'loss')">LOSS</button>
+<button class="br" onclick="event.stopPropagation();mk('d',4,'push')">PUSH</button>
+<button class="br" onclick="event.stopPropagation();mk('d',4,'pending')">RST</button>
+</div></div>
+<div class="pd" id="d-4-d"><div class="rb">✅ KEEP: λA=1.12 → P(Como 0-1 goals) = 69.2%. Como away has been goal-shy lately (1 win in last 6 competitive). Verona pressing low. Companion to Range C #3 U1.5 — same narrative.<br><br><strong>Kickoff:</strong> Sun May 10 · 14:30 Dubai<br><strong>Model:</strong> 69.2% &nbsp; <strong>Book:</strong> 43.3% &nbsp; <strong>Edge:</strong> +59.8%<br><strong>λH</strong>=0.30 &nbsp; <strong>λA</strong>=1.12</div><div class="nb"><span class="nl2">Model:</span><span class="nv2 green">69.2%</span><span class="nl2">Book:</span><span class="nv2 dim">43.3%</span><span class="nl2">Win:</span><span class="nv2 green">+$262</span><span class="nl2">Lose:</span><span class="nv2 red">-$200</span></div></div>
+</div><div class="pk" id="d-8" data-date="2026-05-10">
+<div class="ph" onclick="toggle(this)">
+<div class="rk">#8</div>
+<div class="pi"><div class="pn"> Under 3.5 <span class="flag" style="background:rgba(59,130,246,.15);color:#3b82f6;border:1px solid rgba(59,130,246,.35)">✅ KEEP</span></div>
+<div class="pm">Barcelona vs Real Madrid &middot; <span style="color:#E07A3A;font-weight:700">Sun May 10 · 23:00 Dubai</span> &middot; LLG</div></div>
+<div class="ps">
+<div class="n"><div class="nv accent">@2.17</div><div class="nl">ODDS</div></div>
+<div class="n"><div class="nv green">+56.3%</div><div class="nl">EDGE</div></div>
+<div class="n"><div class="nv">$200</div><div class="nl">STAKE</div></div>
+</div>
+<div class="pr" id="d-8-r"><span class="pp">pending</span></div>
+<div class="pb">
+<button class="bw" onclick="event.stopPropagation();mk('d',8,'win')">WIN</button>
+<button class="bl" onclick="event.stopPropagation();mk('d',8,'loss')">LOSS</button>
+<button class="br" onclick="event.stopPropagation();mk('d',8,'push')">PUSH</button>
+<button class="br" onclick="event.stopPropagation();mk('d',8,'pending')">RST</button>
+</div></div>
+<div class="pd" id="d-8-d"><div class="rb">✅ KEEP: λ-total 2.68 → P(U3.5) = 72.0%. Same news context as Range C #7 but wider line absorbs more variance. Lower-risk Clásico defensive bet.<br><br><strong>Kickoff:</strong> Sun May 10 · 23:00 Dubai<br><strong>Model:</strong> 72.0% &nbsp; <strong>Book:</strong> 46.1% &nbsp; <strong>Edge:</strong> +56.3%<br><strong>λH</strong>=1.69 &nbsp; <strong>λA</strong>=0.99</div><div class="nb"><span class="nl2">Model:</span><span class="nv2 green">72.0%</span><span class="nl2">Book:</span><span class="nv2 dim">46.1%</span><span class="nl2">Win:</span><span class="nv2 green">+$234</span><span class="nl2">Lose:</span><span class="nv2 red">-$200</span></div></div>
+</div><div class="pk" id="d-9" data-date="2026-05-10">
+<div class="ph" onclick="toggle(this)">
+<div class="rk">#9</div>
+<div class="pi"><div class="pn"> Under 2.5 <span class="flag" style="background:rgba(251,191,36,.15);color:#fbbf24;border:1px solid rgba(251,191,36,.35)">⚠️ CAUTION</span></div>
+<div class="pm">Nott Forest vs Newcastle &middot; <span style="color:#E07A3A;font-weight:700">Sun May 10 · 17:00 Dubai</span> &middot; EPL</div></div>
+<div class="ps">
+<div class="n"><div class="nv accent">@2.11</div><div class="nl">ODDS</div></div>
+<div class="n"><div class="nv green">+53.6%</div><div class="nl">EDGE</div></div>
+<div class="n"><div class="nv">$200</div><div class="nl">STAKE</div></div>
+</div>
+<div class="pr" id="d-9-r"><span class="pp">pending</span></div>
+<div class="pb">
+<button class="bw" onclick="event.stopPropagation();mk('d',9,'win')">WIN</button>
+<button class="bl" onclick="event.stopPropagation();mk('d',9,'loss')">LOSS</button>
+<button class="br" onclick="event.stopPropagation();mk('d',9,'push')">PUSH</button>
+<button class="br" onclick="event.stopPropagation();mk('d',9,'pending')">RST</button>
+</div></div>
+<div class="pd" id="d-9-d"><div class="rb">⚠️ CAUTION: λ-total 1.81 → P(U2.5) = 72.8%. Same concerns as Range C #6 — 6 of last 7 H2H 3+ goals, recent goal volumes oppose engine. ENGINE-SUPPORTING: Gibbs-White out for season + 6 other Forest absences. Wider U2.5 line absorbs more variance than U1.5. User decides stake.<br><br><strong>Kickoff:</strong> Sun May 10 · 17:00 Dubai<br><strong>Model:</strong> 72.8% &nbsp; <strong>Book:</strong> 47.4% &nbsp; <strong>Edge:</strong> +53.6%<br><strong>λH</strong>=0.97 &nbsp; <strong>λA</strong>=0.84</div><div class="nb"><span class="nl2">Model:</span><span class="nv2 green">72.8%</span><span class="nl2">Book:</span><span class="nv2 dim">47.4%</span><span class="nl2">Win:</span><span class="nv2 green">+$222</span><span class="nl2">Lose:</span><span class="nv2 red">-$200</span></div></div>
+</div><div class="pk" id="d-11" data-date="2026-05-10">
+<div class="ph" onclick="toggle(this)">
+<div class="rk">#11</div>
+<div class="pi"><div class="pn"> Genoa U0.5 <span class="flag" style="background:rgba(59,130,246,.15);color:#3b82f6;border:1px solid rgba(59,130,246,.35)">✅ KEEP</span></div>
+<div class="pm">Fiorentina vs Genoa &middot; <span style="color:#E07A3A;font-weight:700">Sun May 10 · 17:00 Dubai</span> &middot; SA</div></div>
+<div class="ps">
+<div class="n"><div class="nv accent">@2.60</div><div class="nl">ODDS</div></div>
+<div class="n"><div class="nv green">+50.2%</div><div class="nl">EDGE</div></div>
+<div class="n"><div class="nv">$200</div><div class="nl">STAKE</div></div>
+</div>
+<div class="pr" id="d-11-r"><span class="pp">pending</span></div>
+<div class="pb">
+<button class="bw" onclick="event.stopPropagation();mk('d',11,'win')">WIN</button>
+<button class="bl" onclick="event.stopPropagation();mk('d',11,'loss')">LOSS</button>
+<button class="br" onclick="event.stopPropagation();mk('d',11,'push')">PUSH</button>
+<button class="br" onclick="event.stopPropagation();mk('d',11,'pending')">RST</button>
+</div></div>
+<div class="pd" id="d-11-d"><div class="rb">✅ KEEP: λA=0.55 → P(Genoa blanked) = 57.8%. Genoa's away attack icy, 5 of last 7 went U2.5. Genoa missing Messias, Baldanzi/Norton-Cuffy doubt. Companion to Range C #5.<br><br><strong>Kickoff:</strong> Sun May 10 · 17:00 Dubai<br><strong>Model:</strong> 57.8% &nbsp; <strong>Book:</strong> 38.5% &nbsp; <strong>Edge:</strong> +50.2%<br><strong>λH</strong>=0.79 &nbsp; <strong>λA</strong>=0.55</div><div class="nb"><span class="nl2">Model:</span><span class="nv2 green">57.8%</span><span class="nl2">Book:</span><span class="nv2 dim">38.5%</span><span class="nl2">Win:</span><span class="nv2 green">+$320</span><span class="nl2">Lose:</span><span class="nv2 red">-$200</span></div></div>
+</div><div class="pk" id="d-12" data-date="2026-05-10">
+<div class="ph" onclick="toggle(this)">
+<div class="rk">#12</div>
+<div class="pi"><div class="pn"> Aston Villa U1.5 <span class="flag" style="background:rgba(59,130,246,.15);color:#3b82f6;border:1px solid rgba(59,130,246,.35)">✅ KEEP</span></div>
+<div class="pm">Burnley vs Aston Villa &middot; <span style="color:#E07A3A;font-weight:700">Sun May 10 · 17:00 Dubai</span> &middot; EPL</div></div>
+<div class="ps">
+<div class="n"><div class="nv accent">@2.20</div><div class="nl">ODDS</div></div>
+<div class="n"><div class="nv green">+50.2%</div><div class="nl">EDGE</div></div>
+<div class="n"><div class="nv">$200</div><div class="nl">STAKE</div></div>
+</div>
+<div class="pr" id="d-12-r"><span class="pp">pending</span></div>
+<div class="pb">
+<button class="bw" onclick="event.stopPropagation();mk('d',12,'win')">WIN</button>
+<button class="bl" onclick="event.stopPropagation();mk('d',12,'loss')">LOSS</button>
+<button class="br" onclick="event.stopPropagation();mk('d',12,'push')">PUSH</button>
+<button class="br" onclick="event.stopPropagation();mk('d',12,'pending')">RST</button>
+</div></div>
+<div class="pd" id="d-12-d"><div class="rb">✅ KEEP: λA=1.15 → P(Villa 0-1 goals) = 68.3%. Villa rotating before EL final May 20, missing Onana (calf, key midfielder), Kamara, Alysson. Verified rotation expectation. Companion to Range C #9.<br><br><strong>Kickoff:</strong> Sun May 10 · 17:00 Dubai<br><strong>Model:</strong> 68.3% &nbsp; <strong>Book:</strong> 45.5% &nbsp; <strong>Edge:</strong> +50.2%<br><strong>λH</strong>=0.72 &nbsp; <strong>λA</strong>=1.15</div><div class="nb"><span class="nl2">Model:</span><span class="nv2 green">68.3%</span><span class="nl2">Book:</span><span class="nv2 dim">45.5%</span><span class="nl2">Win:</span><span class="nv2 green">+$240</span><span class="nl2">Lose:</span><span class="nv2 red">-$200</span></div></div>
+</div><div class="day-header" data-date="2026-05-11"><span class="day-name">📅 Mon May 11</span> <span class="day-count">1 picks</span></div><div class="pk" id="d-7" data-date="2026-05-11">
+<div class="ph" onclick="toggle(this)">
+<div class="rk">#7</div>
+<div class="pi"><div class="pn"> Leeds +0.5 <span class="flag" style="background:rgba(59,130,246,.15);color:#3b82f6;border:1px solid rgba(59,130,246,.35)">✅ KEEP</span></div>
+<div class="pm">Tottenham vs Leeds &middot; <span style="color:#E07A3A;font-weight:700">Mon May 11 · 23:00 Dubai</span> &middot; EPL</div></div>
+<div class="ps">
+<div class="n"><div class="nv accent">@1.91</div><div class="nl">ODDS</div></div>
+<div class="n"><div class="nv green">+58.4%</div><div class="nl">EDGE</div></div>
+<div class="n"><div class="nv">$200</div><div class="nl">STAKE</div></div>
+</div>
+<div class="pr" id="d-7-r"><span class="pp">pending</span></div>
+<div class="pb">
+<button class="bw" onclick="event.stopPropagation();mk('d',7,'win')">WIN</button>
+<button class="bl" onclick="event.stopPropagation();mk('d',7,'loss')">LOSS</button>
+<button class="br" onclick="event.stopPropagation();mk('d',7,'push')">PUSH</button>
+<button class="br" onclick="event.stopPropagation();mk('d',7,'pending')">RST</button>
+</div></div>
+<div class="pd" id="d-7-d"><div class="rb">✅ KEEP: defensive variant of Range C #2 Leeds Win. Spurs depleted (7+ key absences), Leeds 6 unbeaten. AH +0.5 covers draws → mp=82.9%.<br><br><strong>Kickoff:</strong> Mon May 11 · 23:00 Dubai<br><strong>Model:</strong> 82.9% &nbsp; <strong>Book:</strong> 52.4% &nbsp; <strong>Edge:</strong> +58.4%<br><strong>λH</strong>=0.92 &nbsp; <strong>λA</strong>=1.85</div><div class="nb"><span class="nl2">Model:</span><span class="nv2 green">82.9%</span><span class="nl2">Book:</span><span class="nv2 dim">52.4%</span><span class="nl2">Win:</span><span class="nv2 green">+$182</span><span class="nl2">Lose:</span><span class="nv2 red">-$200</span></div></div>
+</div><div class="day-header" data-date="2026-05-13"><span class="day-name">📅 Wed May 13</span> <span class="day-count">2 picks</span></div><div class="pk" id="d-2" data-date="2026-05-13">
+<div class="ph" onclick="toggle(this)">
+<div class="rk">#2</div>
+<div class="pi"><div class="pn"> Villarreal Win <span class="flag" style="background:rgba(251,191,36,.15);color:#fbbf24;border:1px solid rgba(251,191,36,.35)">⚠️ CAUTION</span></div>
+<div class="pm">Villarreal vs Sevilla &middot; <span style="color:#E07A3A;font-weight:700">Wed May 13 · 23:00 Dubai</span> &middot; LLG</div></div>
+<div class="ps">
+<div class="n"><div class="nv accent">@2.05</div><div class="nl">ODDS</div></div>
+<div class="n"><div class="nv green">+70.1%</div><div class="nl">EDGE</div></div>
+<div class="n"><div class="nv">$200</div><div class="nl">STAKE</div></div>
+</div>
+<div class="pr" id="d-2-r"><span class="pp">pending</span></div>
+<div class="pb">
+<button class="bw" onclick="event.stopPropagation();mk('d',2,'win')">WIN</button>
+<button class="bl" onclick="event.stopPropagation();mk('d',2,'loss')">LOSS</button>
+<button class="br" onclick="event.stopPropagation();mk('d',2,'push')">PUSH</button>
+<button class="br" onclick="event.stopPropagation();mk('d',2,'pending')">RST</button>
+</div></div>
+<div class="pd" id="d-2-d"><div class="rb">⚠️ CAUTION: λH=3.08 λA=0.70 — engine projects Villarreal home dominance. mp=83.0% on the win is exceptional. ⚠️STREAK flag — Villarreal won all last 5 (regression risk). Companion to Range C #1 Villarreal O2.5. CAUTION because mp=83% is extreme; Stats Insider's external model has Villarreal at only 48.4%. Wide model gap.<br><br><strong>Kickoff:</strong> Wed May 13 · 23:00 Dubai<br><strong>Model:</strong> 83.0% &nbsp; <strong>Book:</strong> 48.8% &nbsp; <strong>Edge:</strong> +70.1%<br><strong>λH</strong>=3.08 &nbsp; <strong>λA</strong>=0.70</div><div class="nb"><span class="nl2">Model:</span><span class="nv2 green">83.0%</span><span class="nl2">Book:</span><span class="nv2 dim">48.8%</span><span class="nl2">Win:</span><span class="nv2 green">+$210</span><span class="nl2">Lose:</span><span class="nv2 red">-$200</span></div></div>
+</div><div class="pk" id="d-10" data-date="2026-05-13">
+<div class="ph" onclick="toggle(this)">
+<div class="rk">#10</div>
+<div class="pi"><div class="pn"> Under 1.5 <span class="flag" style="background:rgba(59,130,246,.15);color:#3b82f6;border:1px solid rgba(59,130,246,.35)">✅ KEEP</span></div>
+<div class="pm">Getafe vs Mallorca &middot; <span style="color:#E07A3A;font-weight:700">Wed May 13 · 23:30 Dubai</span> &middot; LLG</div></div>
+<div class="ps">
+<div class="n"><div class="nv accent">@2.55</div><div class="nl">ODDS</div></div>
+<div class="n"><div class="nv green">+51.3%</div><div class="nl">EDGE</div></div>
+<div class="n"><div class="nv">$200</div><div class="nl">STAKE</div></div>
+</div>
+<div class="pr" id="d-10-r"><span class="pp">pending</span></div>
+<div class="pb">
+<button class="bw" onclick="event.stopPropagation();mk('d',10,'win')">WIN</button>
+<button class="bl" onclick="event.stopPropagation();mk('d',10,'loss')">LOSS</button>
+<button class="br" onclick="event.stopPropagation();mk('d',10,'push')">PUSH</button>
+<button class="br" onclick="event.stopPropagation();mk('d',10,'pending')">RST</button>
+</div></div>
+<div class="pd" id="d-10-d"><div class="rb">✅ KEEP: λH=0.68 λA=0.67 = 1.35 — engine's lowest λ-total of the week. Getafe missing top scorer Borja Mayoral + Juanmi (verified). Mallorca missing 5 starters (Kumbulla/Luvumbo/Joseph/Raillo/Bergstrom). Both attacks decimated. Last H2H 1-0. Strongly supported by news.<br><br><strong>Kickoff:</strong> Wed May 13 · 23:30 Dubai<br><strong>Model:</strong> 59.3% &nbsp; <strong>Book:</strong> 39.2% &nbsp; <strong>Edge:</strong> +51.3%<br><strong>λH</strong>=0.68 &nbsp; <strong>λA</strong>=0.67</div><div class="nb"><span class="nl2">Model:</span><span class="nv2 green">59.3%</span><span class="nl2">Book:</span><span class="nv2 dim">39.2%</span><span class="nl2">Win:</span><span class="nv2 green">+$310</span><span class="nl2">Lose:</span><span class="nv2 red">-$200</span></div></div>
+</div>
+</div>
+
+<div style="font-size:10px;color:var(--dm);margin-top:20px;line-height:1.6">*Bankrolls reflect start-of-W5 figures; W5 results pending entry. Update after W5 reconciliation.</div>
+
+</div>
+
+<script>
+const D={c:[{"rank": 1, "name": "Villarreal O2.5", "match": "Villarreal vs Sevilla", "odds": 4.0, "stake": 200}, {"rank": 2, "name": "Leeds Win", "match": "Tottenham vs Leeds", "odds": 3.9, "stake": 200}, {"rank": 3, "name": "Under 1.5", "match": "Verona vs Como", "odds": 3.5, "stake": 200}, {"rank": 4, "name": "Elche O2.5", "match": "Elche vs Alaves", "odds": 4.9, "stake": 200}, {"rank": 5, "name": "Under 1.5", "match": "Fiorentina vs Genoa", "odds": 3.15, "stake": 200}, {"rank": 6, "name": "Under 1.5", "match": "Nott Forest vs Newcastle", "odds": 4.2, "stake": 200}, {"rank": 7, "name": "Under 2.5", "match": "Barcelona vs Real Madrid", "odds": 3.7, "stake": 200}, {"rank": 8, "name": "Sunderland U0.5", "match": "Sunderland vs Man Utd", "odds": 3.0, "stake": 200}, {"rank": 9, "name": "Under 1.5", "match": "Burnley vs Aston Villa", "odds": 4.1, "stake": 200}, {"rank": 10, "name": "Under 1.5", "match": "Hamburg vs Freiburg", "odds": 4.2, "stake": 200}, {"rank": 11, "name": "Parma Calcio 1913 DNB", "match": "Parma Calcio 1913 vs Roma", "odds": 4.5, "stake": 200}, {"rank": 12, "name": "Nice U0.5", "match": "Auxerre vs Nice", "odds": 3.2, "stake": 200}],
+        d:[{"rank": 1, "name": "Rennes U1.5", "match": "Rennes vs Paris FC", "odds": 2.65, "stake": 200}, {"rank": 2, "name": "Villarreal Win", "match": "Villarreal vs Sevilla", "odds": 2.05, "stake": 200}, {"rank": 3, "name": "Parma Calcio 1913 +0.5", "match": "Parma Calcio 1913 vs Roma", "odds": 2.55, "stake": 200}, {"rank": 4, "name": "Como U1.5", "match": "Verona vs Como", "odds": 2.31, "stake": 200}, {"rank": 5, "name": "Man Utd -1", "match": "Sunderland vs Man Utd", "odds": 2.65, "stake": 200}, {"rank": 6, "name": "Over 3.0", "match": "Elche vs Alaves", "odds": 2.6, "stake": 200}, {"rank": 7, "name": "Leeds +0.5", "match": "Tottenham vs Leeds", "odds": 1.91, "stake": 200}, {"rank": 8, "name": "Under 3.5", "match": "Barcelona vs Real Madrid", "odds": 2.17, "stake": 200}, {"rank": 9, "name": "Under 2.5", "match": "Nott Forest vs Newcastle", "odds": 2.11, "stake": 200}, {"rank": 10, "name": "Under 1.5", "match": "Getafe vs Mallorca", "odds": 2.55, "stake": 200}, {"rank": 11, "name": "Genoa U0.5", "match": "Fiorentina vs Genoa", "odds": 2.6, "stake": 200}, {"rank": 12, "name": "Aston Villa U1.5", "match": "Burnley vs Aston Villa", "odds": 2.2, "stake": 200}]};
+const R={c:{},d:{}};
+const BANK={c:13888,d:10306};
+
+function sw(r){document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));document.querySelectorAll('.rng').forEach(x=>x.classList.remove('on'));event.target.classList.add('on');document.getElementById('r-'+r).classList.add('on');}
+function toggle(el){const pd=el.parentNode.querySelector('.pd');pd.classList.toggle('open');}
+function mk(r,rk,result){R[r][rk]=result;const el=document.getElementById(r+'-'+rk);const re=document.getElementById(r+'-'+rk+'-r');el.classList.remove('win','loss','push');if(result==='pending'){re.innerHTML='<span class=pp>pending</span>';delete R[r][rk];} else {el.classList.add(result);re.innerHTML='<span style="color:'+(result==='win'?'var(--gn)':result==='loss'?'var(--rd)':'var(--md)')+';font-weight:800;font-size:11px">'+result.toUpperCase()+'</span>';} upd(r);}
+function upd(r){let w=0,l=0,p=0,staked=0,pnl=0;for(const k in R[r]){const pk=D[r].find(x=>x.rank==k);if(!pk)continue;staked+=pk.stake;if(R[r][k]==='win'){w++;pnl+=pk.stake*(pk.odds-1);}else if(R[r][k]==='loss'){l++;pnl-=pk.stake;}else if(R[r][k]==='push'){p++;} }
+const rec=w+'W-'+l+'L'+(p?'-'+p+'P':'');
+document.getElementById(r+'-record').textContent=rec;
+document.getElementById(r+'-staked').textContent='$'+staked;
+const pnlEl=document.getElementById(r+'-total');pnlEl.textContent=(pnl>=0?'+$':'-$')+Math.abs(Math.round(pnl));pnlEl.classList.toggle('pos',pnl>=0);pnlEl.classList.toggle('neg',pnl<0);
+const denom=staked-(p*200);
+const roi=denom>0?(pnl/denom*100).toFixed(1)+'%':'—';
+document.getElementById(r+'-roi').textContent=roi;
+document.getElementById(r+'-bank').textContent='$'+(BANK[r]+Math.round(pnl)).toLocaleString();}
+function filt(r,date){const picks=document.querySelectorAll('#r-'+r+' .pk');const headers=document.querySelectorAll('#r-'+r+' .day-header');let visible=0;picks.forEach(pk=>{if(date==='all'||pk.dataset.date===date){pk.classList.remove('hidden');visible++;} else {pk.classList.add('hidden');} });headers.forEach(h=>{if(date==='all'||h.dataset.date===date){h.classList.remove('hidden');} else {h.classList.add('hidden');} });document.getElementById(r+'-visible').textContent=visible;}
+</script>
+</body>
+</html>

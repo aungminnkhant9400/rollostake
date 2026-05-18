@@ -236,6 +236,13 @@ def _merge_range_profiles(profiles: list[dict]) -> dict:
     return merged
 
 
+def _source_label(source: Path) -> str:
+    try:
+        return str(source.relative_to(Path.cwd()))
+    except ValueError:
+        return str(source)
+
+
 def build_profile(sources: list[Path]) -> dict:
     per_file = []
     combined = {"c": [], "d": []}
@@ -243,7 +250,7 @@ def build_profile(sources: list[Path]) -> dict:
         page_html = source.read_text(encoding="utf-8", errors="replace")
         ranges = _extract_ranges(page_html)
         file_profile = {
-            "source_file": str(source),
+            "source_file": _source_label(source),
             "ranges": {
                 code: _range_profile(picks)
                 for code, picks in ranges.items()
@@ -254,7 +261,7 @@ def build_profile(sources: list[Path]) -> dict:
             combined[code].extend(ranges.get(code, []))
 
     profile = {
-        "source_files": [str(source) for source in sources],
+        "source_files": [_source_label(source) for source in sources],
         "created_at": datetime.now(timezone.utc).isoformat(),
         "ranges": {
             code: _range_profile(picks)
@@ -271,13 +278,27 @@ def build_profile(sources: list[Path]) -> dict:
     return profile
 
 
+def _expand_sources(paths: list[str]) -> list[Path]:
+    sources = []
+    for raw_path in paths:
+        path = Path(raw_path).expanduser().resolve()
+        if path.is_dir():
+            sources.extend(sorted(path.glob("*.html")))
+        else:
+            sources.append(path)
+    missing = [str(path) for path in sources if not path.exists()]
+    if missing:
+        raise FileNotFoundError("Missing external card file(s): " + ", ".join(missing))
+    return sources
+
+
 def main():
     parser = argparse.ArgumentParser(description="Study an external weekly prediction card.")
-    parser.add_argument("html_file", nargs="+", help="Path(s) to external card HTML files")
+    parser.add_argument("html_file", nargs="+", help="Path(s) to external card HTML files or folders")
     parser.add_argument("--output", default=str(DATA_DIR / "external_card_profile.json"))
     args = parser.parse_args()
 
-    sources = [Path(path).expanduser().resolve() for path in args.html_file]
+    sources = _expand_sources(args.html_file)
     output = Path(args.output).expanduser().resolve()
     profile = build_profile(sources)
     output.parent.mkdir(parents=True, exist_ok=True)

@@ -12,6 +12,7 @@ ENV/
 # Database
 data/*.db
 data/*.json
+!data/external_card_profile.json
 *.db
 
 # IDE

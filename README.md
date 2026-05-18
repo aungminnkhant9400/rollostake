@@ -139,9 +139,11 @@ uses that profile as a small prior, while settled Rollo losses still override
 it.
 
 ```powershell
-python scripts\study_external_card.py C:\Users\aungm\Downloads\week4-predictions-v76.html C:\Users\aungm\Downloads\week5-predictions-v77.html C:\Users\aungm\Downloads\week6-predictions-v77.html
+python scripts\study_external_card.py friend_cards
 python scripts\rebuild_card.py
 ```
+
+Put new friend card HTML files in `friend_cards/` before running the study step.
 
 ## Architecture
 

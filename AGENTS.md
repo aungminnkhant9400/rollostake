@@ -83,7 +83,7 @@ python scripts\import_match_results.py match_results.csv
 3. Study friend cards if available.
 
 ```powershell
-python scripts\study_external_card.py C:\Users\aungm\Downloads\week4-predictions-v76.html C:\Users\aungm\Downloads\week5-predictions-v77.html C:\Users\aungm\Downloads\week6-predictions-v77.html
+python scripts\study_external_card.py friend_cards
 ```
 
 4. Dry-run Polymarket odds before writing.
@@ -122,6 +122,7 @@ $env:PYTHONDONTWRITEBYTECODE='1'; python -m py_compile analysis\edge_calculator.
 - `scripts/import_match_results.py`: Imports final scores and settles picks.
 - `scripts/scrape_polymarket_full.py`: Discovers upcoming Polymarket football markets and imports supported odds.
 - `scripts/study_external_card.py`: Parses friend prediction cards and stores aggregate structure in `data/external_card_profile.json`.
+- `friend_cards/`: Raw weekly prediction HTML cards from the user's friend. Add new friend cards here before studying them.
 - `scrapers/browser_news_scraper.py`: Optional browser/Kimi WebBridge team-news scraper plus manual JSON fallback.
 - `scripts/news_impact_report.py`: Reports which pending picks have visible news/context adjustments.
 - `utils/match_resolver.py`: Normalizes and resolves Polymarket matches to existing fixtures.

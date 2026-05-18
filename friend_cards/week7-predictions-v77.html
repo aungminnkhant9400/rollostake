@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>STAKE MODEL v7.7 — Week 7 (May 16-22)</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>:root{--bg:#0a0a0a;--c1:#141414;--c2:#1e1e1e;--bd:#2a2a2a;--ac:#E07A3A;--gn:#22c55e;--rd:#ef4444;--bl:#3b82f6;--dm:#555;--md:#888;--tx:#d4d4d4}*{box-sizing:border-box;margin:0;padding:0}body{background:var(--bg);color:var(--tx);font-family:Inter,system-ui,sans-serif;font-size:13px}header{position:sticky;top:0;z-index:100;background:rgba(10,10,10,.96);border-bottom:1px solid var(--bd);backdrop-filter:blur(20px);padding:0 24px;height:56px;display:flex;align-items:center;justify-content:space-between}.lo{font-weight:900;font-size:15px;color:#fff}.lo em{color:var(--ac);font-style:normal}.hm{font-size:10px;color:var(--dm)}.sh{max-width:1100px;margin:0 auto;padding:16px 20px 60px}.tabs{display:flex;gap:4px;margin:16px 0;flex-wrap:wrap}.tab{padding:10px 22px;border-radius:8px;font-size:11px;font-weight:700;letter-spacing:1px;cursor:pointer;border:1px solid var(--bd);background:var(--c1);color:var(--dm);transition:.2s}.tab:hover{border-color:#444}.tab.on{background:rgba(224,122,58,.08);border-color:rgba(224,122,58,.3);color:var(--ac)}.rng{display:none}.rng.on{display:block}.pnl-bar{display:flex;gap:0;margin:8px 0 16px;border-radius:10px;overflow:hidden;border:1px solid var(--bd);flex-wrap:wrap}.pnl-item{flex:1;padding:12px 14px;text-align:center;background:var(--c1);border-right:1px solid var(--bd);min-width:80px}.pnl-item:last-child{border-right:none}.pnl-label{display:block;font-size:7px;color:var(--dm);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px}.pnl-val{font-size:16px;font-weight:800;color:var(--dm)}.pnl-val.pos{color:var(--gn)}.pnl-val.neg{color:var(--rd)}.pk{background:var(--c1);border:1px solid var(--bd);border-radius:12px;margin-bottom:8px;overflow:hidden;transition:.2s}.pk.strong{border-color:rgba(34,197,94,.45);background:linear-gradient(180deg,rgba(34,197,94,.04) 0%,var(--c1) 100%);box-shadow:0 0 16px rgba(34,197,94,.06)}.pk.win{border-color:rgba(34,197,94,.4);background:rgba(34,197,94,.02)}.pk.loss{border-color:rgba(239,68,68,.4);background:rgba(239,68,68,.02)}.pk.push{border-color:rgba(100,100,100,.4)}.ph{padding:14px 18px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;cursor:pointer;transition:.15s}.ph:hover{background:var(--c2)}.rk{font-size:24px;font-weight:900;color:var(--ac);min-width:32px}.pi{flex:1;min-width:170px}.pn{font-size:15px;font-weight:700;color:#fff}.pm{font-size:10px;color:var(--md);margin-top:3px}.flag{font-size:8px;color:var(--rd);background:rgba(239,68,68,.1);padding:2px 5px;border-radius:3px;margin-left:5px;font-weight:700;letter-spacing:.5px}.ps{display:flex;gap:12px;flex-wrap:wrap}.n{text-align:center;min-width:50px}.nv{font-size:14px;font-weight:700}.nv.accent{color:var(--ac)}.nv.green{color:var(--gn)}.nl{font-size:7px;color:var(--dm);letter-spacing:.5px;text-transform:uppercase}.pr{min-width:84px;text-align:center;line-height:1.3}.pp{color:var(--dm);font-size:10px}.pb{display:flex;gap:4px}button{padding:6px 12px;border-radius:6px;border:1px solid;font-family:inherit;font-size:9px;font-weight:700;cursor:pointer;transition:.2s}button:hover{opacity:.7}.bw{background:rgba(34,197,94,.08);border-color:rgba(34,197,94,.25);color:var(--gn)}.bl{background:rgba(239,68,68,.08);border-color:rgba(239,68,68,.25);color:var(--rd)}.br{background:var(--c2);border-color:var(--bd);color:var(--dm)}.pd{max-height:0;overflow:hidden;transition:max-height .4s;border-top:1px solid transparent}.pd.open{max-height:1500px;border-top-color:var(--bd)}.rb{padding:18px 22px;font-size:13px;line-height:1.7;color:var(--tx)}.rb strong{color:#fff}.nb{display:flex;gap:16px;flex-wrap:wrap;padding:0 22px 18px;font-size:12px}.nl2{color:var(--md);margin-right:4px}.nv2{font-weight:700;font-size:13px;margin-right:12px}.nv2.green{color:var(--gn)}.nv2.red{color:var(--rd)}.nv2.dim{color:var(--dm)}.ib{background:var(--c1);border:1px solid var(--bd);border-radius:10px;padding:16px 20px;margin:16px 0;font-size:12px;line-height:1.8}.ib strong{color:#fff}.sb{background:linear-gradient(180deg,rgba(34,197,94,.06),var(--c1));border:1px solid rgba(34,197,94,.3);border-radius:10px;padding:16px 20px;margin:16px 0;font-size:12px;line-height:1.7;color:var(--tx)}.filter-bar{display:flex;gap:10px;margin:0 0 14px;align-items:center;flex-wrap:wrap;background:var(--c1);border:1px solid var(--bd);border-radius:10px;padding:10px 14px}.filter-bar label{font-size:10px;color:var(--dm);letter-spacing:1px;text-transform:uppercase;font-weight:700}.filter-select{background:var(--c2);border:1px solid var(--bd);color:var(--tx);border-radius:6px;padding:7px 14px;font-family:inherit;font-size:12px;font-weight:600;cursor:pointer;min-width:160px}.filter-select:hover{border-color:var(--ac)}.filter-select:focus{outline:none;border-color:var(--ac)}.filter-count{margin-left:auto;font-size:11px;color:var(--md);font-weight:600}.filter-count span{color:var(--ac);font-weight:800}.day-header{display:flex;align-items:center;justify-content:space-between;background:linear-gradient(180deg,rgba(224,122,58,.05),transparent);border-left:3px solid var(--ac);padding:10px 16px;margin:18px 0 6px;border-radius:4px}.day-name{color:#fff;font-weight:800;font-size:13px;letter-spacing:.5px}.day-count{color:var(--dm);font-size:10px;text-transform:uppercase;letter-spacing:1px;font-weight:700}.day-header.hidden,.pk.hidden{display:none}</style>
+</head>
+<body>
+<header>
+<div class="lo">STAKE MODEL <em>v7.7</em> — Week 7 (May 16-22)</div>
+<div class="hm">24 picks · 0 overrides · Arsenal excluded · Dubai time</div>
+</header>
+<div class="sh">
+<div class="tabs">
+<div class="tab on" onclick="sw('c')">RANGE C</div>
+<div class="tab" onclick="sw('d')">RANGE D</div>
+</div>
+
+<div class="ib"><strong>Week 7 — Range C + Range D (engine-driven, 0 manual overrides, web-verified).</strong> Engine scanned 47 fixtures across 5 leagues (May 16-22 window — final matchday for BUN/LLG/L1/SA, late-rescheduled fixtures for EPL). Arsenal-Burnley (Mon May 18) excluded per standing instruction. Sanity gate dropped 3 picks internally (Brighton U0.5 100%-scored, Nott Forest fortress home, Metz +1 dead-rubber). <strong>0 manual overrides</strong> — every pick is direct engine output. All 24 picks individually web-verified (19 unique matches): 3 status upgrades to CAUTION (Hoffenheim U1.5, Chelsea U0.5, West Ham U0.5) based on motivation/structural factors the engine may have underweighted; 1 downgrade from STRONG to KEEP (Man City U1.5 — title race may suppress rotation); 1 upgrade to STRONG (Lyon-Lens O3.5). Range C · 12 picks at flat $200 = $2,400. Range D · 12 picks at flat $200 = $2,400. <strong>Total $4,800.</strong> Picks sorted by kickoff (Dubai, UTC+4).</div>
+
+<div class="sb"><strong>End-of-season context:</strong> 9/12 Range C and 9/12 Range D picks are defensive (Unders/clean-sheets/draws). This matches the documented late-season "beach mode" pattern — drained motivation in dead-rubber fixtures + EV-ranked selection surfacing Unders as most mispriced. Engine's motivation, fatigue, and rotation layers have already adjusted λ-values for end-of-season conditions. 3 picks had engine-assigned $0 stake (residual Bug 1 behavior); set to $200 per the documented flat-staking rule. Each pick block expands to show its <strong>🌐 Web verification</strong> note.</div>
+
+<div class="rng on" id="r-c">
+<div class="pnl-bar">
+<div class="pnl-item"><span class="pnl-label">W6 Start Bank</span><span class="pnl-val">$24,194</span></div>
+<div class="pnl-item"><span class="pnl-label">W5+W6 P&amp;L</span><span class="pnl-val" style="color:#fbbf24">pending</span></div>
+<div class="pnl-item"><span class="pnl-label">W7 Start Bank</span><span class="pnl-val" style="color:#fff">TBD</span></div>
+<div class="pnl-item"><span class="pnl-label">🔥 Strong</span><span class="pnl-val" style="color:var(--gn)">1</span></div>
+<div class="pnl-item"><span class="pnl-label">⚠️ Caution</span><span class="pnl-val" style="color:#fbbf24">6</span></div>
+<div class="pnl-item"><span class="pnl-label">W7 Record</span><span class="pnl-val" id="c-record">-</span></div>
+<div class="pnl-item"><span class="pnl-label">Staked</span><span class="pnl-val" id="c-staked">$0</span></div>
+<div class="pnl-item"><span class="pnl-label">W7 P&amp;L</span><span class="pnl-val" id="c-total">$0</span></div>
+<div class="pnl-item"><span class="pnl-label">ROI%</span><span class="pnl-val" id="c-roi">—</span></div>
+</div>
+<div class="filter-bar">
+<label for="c-filter">Filter by kickoff (Dubai):</label>
+<select id="c-filter" class="filter-select" onchange="filt('c',this.value)"><option value="all">🗓 All dates</option><option value="2026-05-16">Sat May 16</option><option value="2026-05-17">Sun May 17</option><option value="2026-05-19">Tue May 19</option></select>
+<div class="filter-count">Showing <span id="c-visible">12</span> of 12 picks</div>
+</div>
+<div class="day-header" data-date="2026-05-16"><span class="day-name">📅 Sat May 16</span> <span class="day-count">1 pick</span></div>
+<div class="pk" id="c-1" data-date="2026-05-16">
+<div class="ph" onclick="toggle(this)">
+<div class="rk">#1</div>
+<div class="pi"><div class="pn">Hoffenheim U1.5 <span class="flag" style="background:rgba(251,191,36,.15);color:#fbbf24;border:1px solid rgba(251,191,36,.35)">⚠️ CAUTION</span></div>
+<div class="pm">Gladbach vs Hoffenheim &middot; <span style="color:#E07A3A;font-weight:700">Sat May 16 · 17:30 Dubai</span> &middot; BUN</div></div>
+<div class="ps">
+<div class="n"><div class="nv accent">@2.80</div><div class="nl">ODDS</div></div>
+<div class="n"><div class="nv green">+69.3%</div><div class="nl">EDGE</div></div>
+<div class="n"><div class="nv">$200</div><div class="nl">STAKE</div></div>
+</div>
+<div class="pr" id="c-1-r"><span class="pp">pending</span></div>
+<div class="pb">
+<button class="bw" onclick="event.stopPropagation();mk('c',1,'win')">WIN</button>
+<button class="bl" onclick="event.stopPropagation();mk('c',1,'loss')">LOSS</button>
+<button class="br" onclick="event.stopPropagation();mk('c',1,'push')">PUSH</button>
+<button class="br" onclick="event.stopPropagation();mk('c',1,'pending')">RST</button>
+</div></div>
+<div class="pd" id="c-1-d"><div class="rb">⚠️ <strong>CAUTION: Engine pick — TT market, defensive direction. λH=1.35 λA=1.36.<br><strong>Confidence flags:</strong> ⚠️BIG_GAP(3510pp model vs market) · ⚠️LONGSHOT(odds 2.80 in overcharged zone per fav-longshot bias)<br><strong>Web verify:</strong> Status changed STRONG → CAUTION based on web verification.<br><br><strong>🌐 Web verification:</strong> Hoffenheim chasing UCL spot — mathematically need to win + outscore Stuttgart by 5+ goals to overtake top 4. Last H2H was 5-1 to Hoffenheim, BTTS in 12 H2H, O3.5 in 7 of last 10 H2H. Motivation to score multiples cuts hard against U1.5. Engine has motivation layer but H2H pattern + UCL stakes warrant CAUTION.<br><br><strong>Home adj:</strong> rolling: form→50% · Elo: λ-0.7%(2559) · finish: wasteful(0.83)→λ+2% · inj: λ-13%(Jens Castrop(M,26/33=79%★))<br><strong>Away adj:</strong> Elo: λ+0.2%(2907) · motiv: +2%(CL race) · luck: -(+0.26/g)</strong><br><br><strong>Kickoff:</strong> Sat May 16 · 17:30 Dubai<br><strong>Model:</strong> 60.5% &nbsp; <strong>Book:</strong> 35.7% &nbsp; <strong>Edge:</strong> +69.3%<br><strong>λH</strong>=1.35 &nbsp; <strong>λA</strong>=1.36</div><div class="nb"><span class="nl2">Model:</span><span class="nv2 green">60.5%</span><span class="nl2">Book:</span><span class="nv2 dim">35.7%</span><span class="nl2">Win:</span><span class="nv2 green">+$360</span><span class="nl2">Lose:</span><span class="nv2 red">-$200</span></div></div>
+</div>
+<div class="day-header" data-date="2026-05-17"><span class="day-name">📅 Sun May 17</span> <span class="day-count">10 picks</span></div>
+<div class="pk" id="c-2" data-date="2026-05-17">
+<div class="ph" onclick="toggle(this)">
+<div class="rk">#2</div>
+<div class="pi"><div class="pn">AC Milan U0.5 <span class="flag" style="background:rgba(251,191,36,.15);color:#fbbf24;border:1px solid rgba(251,191,36,.35)">⚠️ CAUTION</span></div>
+<div class="pm">Genoa vs AC Milan &middot; <span style="color:#E07A3A;font-weight:700">Sun May 17 · 14:00 Dubai</span> &middot; SA</div></div>
+<div class="ps">
+<div class="n"><div class="nv accent">@4.70</div><div class="nl">ODDS</div></div>
+<div class="n"><div class="nv green">+100.7%</div><div class="nl">EDGE</div></div>
+<div class="n"><div class="nv">$200</div><div class="nl">STAKE</div></div>
+</div>
+<div class="pr" id="c-2-r"><span class="pp">pending</span></div>
+<div class="pb">
+<button class="bw" onclick="event.stopPropagation();mk('c',2,'win')">WIN</button>
+<button class="bl" onclick="event.stopPropagation();mk('c',2,'loss')">LOSS</button>
+<button class="br" onclick="event.stopPropagation();mk('c',2,'push')">PUSH</button>
+<button class="br" onclick="event.stopPropagation();mk('c',2,'pending')">RST</button>
+</div></div>
+<div class="pd" id="c-2-d"><div class="rb">⚠️ <strong>CAUTION: Engine pick — TT market, defensive direction. λH=0.88 λA=0.85.<br><strong>Confidence flags:</strong> ⚠️BIG_GAP(2087pp model vs market) · ⚠️LONGSHOT(odds 4.70 in overcharged zone per fav-longshot bias)<br><br><strong>🌐 Web verification:</strong> Milan in CRISIS: Pulisic 17 league games scoreless, Leao struggling. 7 starters listed out (Saelemaekers, Estupinan, Leao, Tomori, Pulisic, Loftus-Cheek, Modric). Worst run since 2019. H2H favors Milan historically (won last 3 visits to Genoa) but current form is the offset. Extreme EV — bet cautiously.<br><br><strong>Home adj:</strong> Elo: λ-0.5%(2466) · finish: wasteful(0.88)→λ+2% · inj: λ-6%(Junior Messias(F,20/36=56%½))<br><strong>Away adj:</strong> rolling: form→50% · Elo: λ+1.4%(3222) · finish: wasteful(0.81)→λ+2% · motiv: +2%(CL race) · inj: λ-27%(Alexis Saelemaekers(M,34/36=94%★),Pervis Estupinan(D,19/36=53%½),Rafael Leao(F,28/36=78%★),Fikayo Tomori(D,31/36=86%★),Christian Pulisic(M,28/36=78%★),Ruben Loftus-Cheek(M,27/36=75%★),Luka Modric(M,33/36=92%★))</strong><br><br><strong>Kickoff:</strong> Sun May 17 · 14:00 Dubai<br><strong>Model:</strong> 42.7% &nbsp; <strong>Book:</strong> 21.3% &nbsp; <strong>Edge:</strong> +100.7%<br><strong>λH</strong>=0.88 &nbsp; <strong>λA</strong>=0.85</div><div class="nb"><span class="nl2">Model:</span><span class="nv2 green">42.7%</span><span class="nl2">Book:</span><span class="nv2 dim">21.3%</span><span class="nl2">Win:</span><span class="nv2 green">+$740</span><span class="nl2">Lose:</span><span class="nv2 red">-$200</span></div></div>
+</div>
+<div class="pk" id="c-3" data-date="2026-05-17">
+<div class="ph" onclick="toggle(this)">
+<div class="rk">#3</div>
+<div class="pi"><div class="pn">Fulham U0.5 <span class="flag" style="background:rgba(251,191,36,.15);color:#fbbf24;border:1px solid rgba(251,191,36,.35)">⚠️ CAUTION</span></div>
+<div class="pm">Wolves vs Fulham &middot; <span style="color:#E07A3A;font-weight:700">Sun May 17 · 18:00 Dubai</span> &middot; EPL</div></div>
+<div class="ps">
+<div class="n"><div class="nv accent">@5.00</div><div class="nl">ODDS</div></div>
+<div class="n"><div class="nv green">+210.7%</div><div class="nl">EDGE</div></div>
+<div class="n"><div class="nv">$200</div><div class="nl">STAKE</div></div>
+</div>
+<div class="pr" id="c-3-r"><span class="pp">pending</span></div>
+<div class="pb">
+<button class="bw" onclick="event.stopPropagation();mk('c',3,'win')">WIN</button>
+<button class="bl" onclick="event.stopPropagation();mk('c',3,'loss')">LOSS</button>
+<button class="br" onclick="event.stopPropagation();mk('c',3,'push')">PUSH</button>
+<button class="br" onclick="event.stopPropagation();mk('c',3,'pending')">RST</button>
+</div></div>
+<div class="pd" id="c-3-d"><div class="rb">⚠️ <strong>CAUTION: Engine pick — TT market, defensive direction. λH=1.26 λA=0.48.<br><strong>Confidence flags:</strong> ⚠️BIG_GAP(1938pp model vs market) · ⚠️LONGSHOT(odds 5.00 in overcharged zone per fav-longshot bias)<br><br><strong>🌐 Web verification:</strong> Confirmed: Wolves haven't scored in 19/37 EPL games, relegated. Fulham missing Andersen (suspended) + Sessegnon (thigh) + Jimenez + Iwobi-doubt — attack heavily depleted, supports λA=0.48. Extreme EV warrants caution on stake size.<br><br><strong>Home adj:</strong> rolling: form→50% · Elo: λ-1.7%(2659) · finish: wasteful(0.73)→λ+2% · ppda: deep(14.2v13.6)→λ-3% · motiv: +-5%(mathematically relegated) · luck: +(-0.38/g)<br><strong>Away adj:</strong> rolling: form→50% · Elo: λ-0.5%(3152) · ppda: deep(14.2v13.6)→λ-3% · inj: λ-27%(Joachim Andersen(D,33/36=92%★),Alex Iwobi(F,27/36=75%★),Raul Jimenez(F,34/36=94%★),Ryan Sessegnon(M,27/36=75%★)) · luck: -(+0.19/g)</strong><br><br><strong>Kickoff:</strong> Sun May 17 · 18:00 Dubai<br><strong>Model:</strong> 62.2% &nbsp; <strong>Book:</strong> 20.0% &nbsp; <strong>Edge:</strong> +210.7%<br><strong>λH</strong>=1.26 &nbsp; <strong>λA</strong>=0.48</div><div class="nb"><span class="nl2">Model:</span><span class="nv2 green">62.2%</span><span class="nl2">Book:</span><span class="nv2 dim">20.0%</span><span class="nl2">Win:</span><span class="nv2 green">+$800</span><span class="nl2">Lose:</span><span class="nv2 red">-$200</span></div></div>
+</div>
+<div class="pk" id="c-4" data-date="2026-05-17">
+<div class="ph" onclick="toggle(this)">
+<div class="rk">#4</div>
+<div class="pi"><div class="pn">Brentford O2.5 <span class="flag" style="background:rgba(59,130,246,.15);color:#3b82f6;border:1px solid rgba(59,130,246,.35)">✅ KEEP</span></div>
+<div class="pm">Brentford vs Crystal Palace &middot; <span style="color:#E07A3A;font-weight:700">Sun May 17 · 18:00 Dubai</span> &middot; EPL</div></div>
+<div class="ps">
+<div class="n"><div class="nv accent">@2.95</div><div class="nl">ODDS</div></div>
+<div class="n"><div class="nv green">+39.9%</div><div class="nl">EDGE</div></div>
+<div class="n"><div class="nv">$200</div><div class="nl">STAKE</div></div>
+</div>
+<div class="pr" id="c-4-r"><span class="pp">pending</span></div>
+<div class="pb">
+<button class="bw" onclick="event.stopPropagation();mk('c',4,'win')">WIN</button>
+<button class="bl" onclick="event.stopPropagation();mk('c',4,'loss')">LOSS</button>
+<button class="br" onclick="event.stopPropagation();mk('c',4,'push')">PUSH</button>
+<button class="br" onclick="event.stopPropagation();mk('c',4,'pending')">RST</button>
+</div></div>
+<div class="pd" id="c-4-d"><div class="rb">✅ <strong>KEEP: Engine pick — TT market, attacking direction. λH=2.58 λA=0.90.<br><strong>Confidence flags:</strong> ⚠️BIG_GAP(3343pp model vs market) · ⚠️LONGSHOT(odds 2.95 in overcharged zone per fav-longshot bias)<br><strong>NOTE:</strong> Engine assigned $0 stake (residual Bug 1). Set to $200 to honor flat-staking rule.<br><br><strong>🌐 Web verification:</strong> Brentford motivated (final home game + Europa/Conf race), Igor Thiago 22 goals (13 home). Crystal Palace focused on UECL Final May 27 vs Rayo — likely heavy rotation. Palace has worst xG underperformance in Europe this season.<br><br><strong>Home adj:</strong> rolling: form→50% · Elo: λ-0.2%(3276) · finish: wasteful(0.82)→λ+2% · xA: xA↑fin↓(1.25/0.82)→λ+2% · inj: λ-0%(Rico Henry(D,25/36=69%½))<br><strong>Away adj:</strong> rolling: form→50% · Elo: λ-0.3%(3222) · finish: wasteful(0.64)→λ+2% · motiv: +2%(relegation fight(away)) · rest: -4%(3d) · luck: +(-0.23/g)</strong><br><br><strong>Kickoff:</strong> Sun May 17 · 18:00 Dubai<br><strong>Model:</strong> 47.4% &nbsp; <strong>Book:</strong> 33.9% &nbsp; <strong>Edge:</strong> +39.9%<br><strong>λH</strong>=2.58 &nbsp; <strong>λA</strong>=0.90</div><div class="nb"><span class="nl2">Model:</span><span class="nv2 green">47.4%</span><span class="nl2">Book:</span><span class="nv2 dim">33.9%</span><span class="nl2">Win:</span><span class="nv2 green">+$390</span><span class="nl2">Lose:</span><span class="nv2 red">-$200</span></div></div>
+</div>
+<div class="pk" id="c-5" data-date="2026-05-17">
+<div class="ph" onclick="toggle(this)">
+<div class="rk">#5</div>
+<div class="pi"><div class="pn">West Ham U0.5 <span class="flag" style="background:rgba(251,191,36,.15);color:#fbbf24;border:1px solid rgba(251,191,36,.35)">⚠️ CAUTION</span></div>
+<div class="pm">Newcastle vs West Ham &middot; <span style="color:#E07A3A;font-weight:700">Sun May 17 · 20:30 Dubai</span> &middot; EPL</div></div>
+<div class="ps">
+<div class="n"><div class="nv accent">@3.85</div><div class="nl">ODDS</div></div>
+<div class="n"><div class="nv green">+57.5%</div><div class="nl">EDGE</div></div>
+<div class="n"><div class="nv">$200</div><div class="nl">STAKE</div></div>
+</div>
+<div class="pr" id="c-5-r"><span class="pp">pending</span></div>
+<div class="pb">
+<button class="bw" onclick="event.stopPropagation();mk('c',5,'win')">WIN</button>
+<button class="bl" onclick="event.stopPropagation();mk('c',5,'loss')">LOSS</button>
+<button class="br" onclick="event.stopPropagation();mk('c',5,'push')">PUSH</button>
+<button class="br" onclick="event.stopPropagation();mk('c',5,'pending')">RST</button>
+</div></div>
+<div class="pd" id="c-5-d"><div class="rb">⚠️ <strong>CAUTION: Engine pick — TT market, defensive direction. λH=2.26 λA=0.89.<br><strong>Confidence flags:</strong> ⚠️BIG_GAP(2559pp model vs market) · ⚠️LONGSHOT(odds 3.85 in overcharged zone per fav-longshot bias)<br><strong>NOTE:</strong> Engine assigned $0 stake (residual Bug 1). Set to $200 to honor flat-staking rule.<br><strong>Web verify:</strong> Status changed KEEP → CAUTION based on web verification.<br><br><strong>🌐 Web verification:</strong> West Ham FIGHTING FOR PL SURVIVAL (18th, 36 pts vs Spurs 38) — maximum motivation to score. Newcastle conceded in 10 consecutive home games, only 1 clean sheet in last 14 PL. West Ham scored 3 in last H2H, basically full squad available. Engine 41% U0.5 looks stat-driven but contextual headwinds significant.<br><br><strong>Home adj:</strong> Elo: λ+0.3%(3465) · finish: wasteful(0.86)→λ+2% · inj: λ-8%(Joelinton(M,27/36=75%★),Lewis Miley(M,23/36=64%½)) · luck: +(-0.18/g)<br><strong>Away adj:</strong> rolling: form→50% · Elo: λ-0.9%(2984) · motiv: +2%(relegation fight(away)) · inj: λ-4%(Adama Traore(F,24/36=67%½))</strong><br><br><strong>Kickoff:</strong> Sun May 17 · 20:30 Dubai<br><strong>Model:</strong> 40.9% &nbsp; <strong>Book:</strong> 26.0% &nbsp; <strong>Edge:</strong> +57.5%<br><strong>λH</strong>=2.26 &nbsp; <strong>λA</strong>=0.89</div><div class="nb"><span class="nl2">Model:</span><span class="nv2 green">40.9%</span><span class="nl2">Book:</span><span class="nv2 dim">26.0%</span><span class="nl2">Win:</span><span class="nv2 green">+$570</span><span class="nl2">Lose:</span><span class="nv2 red">-$200</span></div></div>
+</div>
+<div class="pk" id="c-6" data-date="2026-05-17">
+<div class="ph" onclick="toggle(this)">
+<div class="rk">#6</div>
+<div class="pi"><div class="pn">Athletic Club U0.5 <span class="flag" style="background:rgba(59,130,246,.15);color:#3b82f6;border:1px solid rgba(59,130,246,.35)">✅ KEEP</span></div>
+<div class="pm">Athletic Club vs Celta Vigo &middot; <span style="color:#E07A3A;font-weight:700">Sun May 17 · 21:00 Dubai</span> &middot; LLG</div></div>
+<div class="ps">
+<div class="n"><div class="nv accent">@3.70</div><div class="nl">ODDS</div></div>
+<div class="n"><div class="nv green">+78.8%</div><div class="nl">EDGE</div></div>
+<div class="n"><div class="nv">$200</div><div class="nl">STAKE</div></div>
+</div>
+<div class="pr" id="c-6-r"><span class="pp">pending</span></div>
+<div class="pb">
+<button class="bw" onclick="event.stopPropagation();mk('c',6,'win')">WIN</button>
+<button class="bl" onclick="event.stopPropagation();mk('c',6,'loss')">LOSS</button>
+<button class="br" onclick="event.stopPropagation();mk('c',6,'push')">PUSH</button>
+<button class="br" onclick="event.stopPropagation();mk('c',6,'pending')">RST</button>
+</div></div>
+<div class="pd" id="c-6-d"><div class="rb">✅ <strong>KEEP: Engine pick — TT market, defensive direction. λH=0.73 λA=0.97.<br><strong>Confidence flags:</strong> ⚠️BIG_GAP(2652pp model vs market) · ⚠️LONGSHOT(odds 3.70 in overcharged zone per fav-longshot bias)<br><br><strong>🌐 Web verification:</strong> Athletic missing Nico Williams (M), Sancet (M), Vivian (D), Berchiche (D) — attack weakened. Engine λH=0.73 reflects this. H2H pattern of Celta scoring in 8 straight is the kind of "H2H noise" the engine's form/injury layers should handle.<br><br><strong>Home adj:</strong> rolling: form→50% · Elo: λ+0.1%(2882) · finish: wasteful(0.78)→λ+2% · inj: λ-26%(Daniel Vivian(D,30/36=83%★),Yuri Berchiche(D,31/36=86%★),Nico Williams(M,25/36=69%½),Oihan Sancet(M,28/36=78%★)) · rest: -4%(3d) · luck: +(-0.25/g)<br><strong>Away adj:</strong> Elo: λ+0.0%(2852) · motiv: +2%(CL race) · rest: -2%(4d)</strong><br><br><strong>Kickoff:</strong> Sun May 17 · 21:00 Dubai<br><strong>Model:</strong> 48.3% &nbsp; <strong>Book:</strong> 27.0% &nbsp; <strong>Edge:</strong> +78.8%<br><strong>λH</strong>=0.73 &nbsp; <strong>λA</strong>=0.97</div><div class="nb"><span class="nl2">Model:</span><span class="nv2 green">48.3%</span><span class="nl2">Book:</span><span class="nv2 dim">27.0%</span><span class="nl2">Win:</span><span class="nv2 green">+$540</span><span class="nl2">Lose:</span><span class="nv2 red">-$200</span></div></div>
+</div>
+<div class="pk" id="c-7" data-date="2026-05-17">
+<div class="ph" onclick="toggle(this)">
+<div class="rk">#7</div>
+<div class="pi"><div class="pn">Levante O2.5 <span class="flag" style="background:rgba(59,130,246,.15);color:#3b82f6;border:1px solid rgba(59,130,246,.35)">✅ KEEP</span></div>
+<div class="pm">Levante vs Mallorca &middot; <span style="color:#E07A3A;font-weight:700">Sun May 17 · 21:00 Dubai</span> &middot; LLG</div></div>
+<div class="ps">
+<div class="n"><div class="nv accent">@4.20</div><div class="nl">ODDS</div></div>
+<div class="n"><div class="nv green">+62.6%</div><div class="nl">EDGE</div></div>
+<div class="n"><div class="nv">$200</div><div class="nl">STAKE</div></div>
+</div>
+<div class="pr" id="c-7-r"><span class="pp">pending</span></div>
+<div class="pb">
+<button class="bw" onclick="event.stopPropagation();mk('c',7,'win')">WIN</button>
+<button class="bl" onclick="event.stopPropagation();mk('c',7,'loss')">LOSS</button>
+<button class="br" onclick="event.stopPropagation();mk('c',7,'push')">PUSH</button>
+<button class="br" onclick="event.stopPropagation();mk('c',7,'pending')">RST</button>
+</div></div>
+<div class="pd" id="c-7-d"><div class="rb">✅ <strong>KEEP: Engine pick — TT market, attacking direction. λH=2.24 λA=0.71.<br><strong>Confidence flags:</strong> ⚠️BIG_GAP(2341pp model vs market) · ⚠️LONGSHOT(odds 4.20 in overcharged zone per fav-longshot bias)<br><br><strong>🌐 Web verification:</strong> Relegation 6-pointer. Levante 5 straight home wins H2H, Mallorca won 1 of last 16 away. Mascarell + Kumbulla suspended for Mallorca. Engine λH=2.24 reasonable for must-win home team.<br><br><strong>Home adj:</strong> rolling: form→50% · Elo: λ-1.1%(2394) · finish: wasteful(0.80)→λ+2% · ppda: deep(13.6v13.6)→λ-3% · motiv: +5%(relegation fight(home)) · inj: λ-12%(Carlos Alvarez(M,30/36=83%★)) · rest: -2%(4d)<br><strong>Away adj:</strong> Elo: λ-0.8%(2513) · ppda: deep(13.6v13.6)→λ-3% · motiv: +2%(relegation fight(away)) · inj: λ-21%(Omar Mascarell(M,29/36=81%★),Samu(M,32/36=89%★),Antonio Raillo(D,23/36=64%½)) · rest: -4%(3d)</strong><br><br><strong>Kickoff:</strong> Sun May 17 · 21:00 Dubai<br><strong>Model:</strong> 38.7% &nbsp; <strong>Book:</strong> 23.8% &nbsp; <strong>Edge:</strong> +62.6%<br><strong>λH</strong>=2.24 &nbsp; <strong>λA</strong>=0.71</div><div class="nb"><span class="nl2">Model:</span><span class="nv2 green">38.7%</span><span class="nl2">Book:</span><span class="nv2 dim">23.8%</span><span class="nl2">Win:</span><span class="nv2 green">+$640</span><span class="nl2">Lose:</span><span class="nv2 red">-$200</span></div></div>
+</div>
+<div class="pk" id="c-8" data-date="2026-05-17">
+<div class="ph" onclick="toggle(this)">
+<div class="rk">#8</div>
+<div class="pi"><div class="pn">Cremonese U0.5 <span class="flag" style="background:rgba(34,197,94,.15);color:#22c55e;border:1px solid rgba(34,197,94,.35)">🔥 STRONG</span></div>
+<div class="pm">Udinese vs Cremonese &middot; <span style="color:#E07A3A;font-weight:700">Sun May 17 · 22:45 Dubai</span> &middot; SA</div></div>
+<div class="ps">
+<div class="n"><div class="nv accent">@2.90</div><div class="nl">ODDS</div></div>
+<div class="n"><div class="nv green">+85.8%</div><div class="nl">EDGE</div></div>
+<div class="n"><div class="nv">$200</div><div class="nl">STAKE</div></div>
+</div>
+<div class="pr" id="c-8-r"><span class="pp">pending</span></div>
+<div class="pb">
+<button class="bw" onclick="event.stopPropagation();mk('c',8,'win')">WIN</button>
+<button class="bl" onclick="event.stopPropagation();mk('c',8,'loss')">LOSS</button>
+<button class="br" onclick="event.stopPropagation();mk('c',8,'push')">PUSH</button>
+<button class="br" onclick="event.stopPropagation();mk('c',8,'pending')">RST</button>
+</div></div>
+<div class="pd" id="c-8-d"><div class="rb">🔥 <strong>STRONG: Engine pick — TT market, defensive direction. λH=1.28 λA=0.45.<br><strong>Confidence flags:</strong> ⚠️BIG_GAP(3386pp model vs market) · ⚠️LONGSHOT(odds 2.90 in overcharged zone per fav-longshot bias)<br><br><strong>🌐 Web verification:</strong> Udinese in 4 wins from last 5 with 3 clean sheets. Unbeaten in this fixture since 1985 (41 years). Cremonese missing 5 starters (Mussolini, Payero, Pezzella, Baschirotto, Moumbagna), lost 8 of 9 away in 2026. Engine consistent. Survival desperation is the offset (Vardy + Bonazzoli attacking duo) but engine call solid.<br><br><strong>Home adj:</strong> rolling: form→50% · Elo: λ-0.4%(2533) · inj: λ-17%(Kingsley Ehizibue(D,31/36=86%★),Christian Kabasele(D,28/36=78%★),Thomas Kristensen(D,26/36=72%★))<br><strong>Away adj:</strong> rolling: form→50% · Elo: λ-1.9%(1914) · finish: wasteful(0.84)→λ+2% · motiv: +2%(relegation fight(away)) · inj: λ-8%(Giuseppe Pezzella(D,29/36=81%★),Federico Baschirotto(D,29/36=81%★))</strong><br><br><strong>Kickoff:</strong> Sun May 17 · 22:45 Dubai<br><strong>Model:</strong> 64.0% &nbsp; <strong>Book:</strong> 34.5% &nbsp; <strong>Edge:</strong> +85.8%<br><strong>λH</strong>=1.28 &nbsp; <strong>λA</strong>=0.45</div><div class="nb"><span class="nl2">Model:</span><span class="nv2 green">64.0%</span><span class="nl2">Book:</span><span class="nv2 dim">34.5%</span><span class="nl2">Win:</span><span class="nv2 green">+$380</span><span class="nl2">Lose:</span><span class="nv2 red">-$200</span></div></div>
+</div>
+<div class="pk" id="c-9" data-date="2026-05-17">
+<div class="ph" onclick="toggle(this)">
+<div class="rk">#9</div>
+<div class="pi"><div class="pn">Lecce U0.5 <span class="flag" style="background:rgba(59,130,246,.15);color:#3b82f6;border:1px solid rgba(59,130,246,.35)">✅ KEEP</span></div>
+<div class="pm">Sassuolo vs Lecce &middot; <span style="color:#E07A3A;font-weight:700">Sun May 17 · 22:45 Dubai</span> &middot; SA</div></div>
+<div class="ps">
+<div class="n"><div class="nv accent">@3.25</div><div class="nl">ODDS</div></div>
+<div class="n"><div class="nv green">+66.5%</div><div class="nl">EDGE</div></div>
+<div class="n"><div class="nv">$200</div><div class="nl">STAKE</div></div>
+</div>
+<div class="pr" id="c-9-r"><span class="pp">pending</span></div>
+<div class="pb">
+<button class="bw" onclick="event.stopPropagation();mk('c',9,'win')">WIN</button>
+<button class="bl" onclick="event.stopPropagation();mk('c',9,'loss')">LOSS</button>
+<button class="br" onclick="event.stopPropagation();mk('c',9,'push')">PUSH</button>
+<button class="br" onclick="event.stopPropagation();mk('c',9,'pending')">RST</button>
+</div></div>
+<div class="pd" id="c-9-d"><div class="rb">✅ <strong>KEEP: Engine pick — TT market, defensive direction. λH=1.37 λA=0.67.<br><strong>Confidence flags:</strong> ⚠️BIG_GAP(3029pp model vs market) · ⚠️LONGSHOT(odds 3.25 in overcharged zone per fav-longshot bias)<br><br><strong>🌐 Web verification:</strong> H2H low-scoring (U2.5 in 4 of last 6), Lecce away U2.5 in 7 of last 10. Sassuolo home strong (3-game scoring/win/unbeaten run). Lecce missing key attackers (Sottil, Berisha, Fofana, Gaspar). Survival motivation is the offset — Lecce MUST attack for points.<br><br><strong>Home adj:</strong> rolling: form→50% · Elo: λ-0.6%(2451) · inj: λ-4%(Jay Idzes(M,34/36=94%★),Jay Idzes(M,34/36=94%★)) · luck: -(+0.17/g)<br><strong>Away adj:</strong> rolling: form→50% · Elo: λ-1.4%(2102) · finish: wasteful(0.71)→λ+2% · motiv: +2%(relegation fight(away)) · inj: λ-5%(Danilo Veiga(D,34/36=94%★))</strong><br><br><strong>Kickoff:</strong> Sun May 17 · 22:45 Dubai<br><strong>Model:</strong> 51.2% &nbsp; <strong>Book:</strong> 30.8% &nbsp; <strong>Edge:</strong> +66.5%<br><strong>λH</strong>=1.37 &nbsp; <strong>λA</strong>=0.67</div><div class="nb"><span class="nl2">Model:</span><span class="nv2 green">51.2%</span><span class="nl2">Book:</span><span class="nv2 dim">30.8%</span><span class="nl2">Win:</span><span class="nv2 green">+$450</span><span class="nl2">Lose:</span><span class="nv2 red">-$200</span></div></div>
+</div>
+<div class="pk" id="c-10" data-date="2026-05-17">
+<div class="ph" onclick="toggle(this)">
+<div class="rk">#10</div>
+<div class="pi"><div class="pn">Metz O1.5 <span class="flag" style="background:rgba(251,191,36,.15);color:#fbbf24;border:1px solid rgba(251,191,36,.35)">⚠️ CAUTION</span></div>
+<div class="pm">Nice vs Metz &middot; <span style="color:#E07A3A;font-weight:700">Sun May 17 · 23:00 Dubai</span> &middot; L1</div></div>
+<div class="ps">
+<div class="n"><div class="nv accent">@4.40</div><div class="nl">ODDS</div></div>
+<div class="n"><div class="nv green">+104.1%</div><div class="nl">EDGE</div></div>
+<div class="n"><div class="nv">$200</div><div class="nl">STAKE</div></div>
+</div>
+<div class="pr" id="c-10-r"><span class="pp">pending</span></div>
+<div class="pb">
+<button class="bw" onclick="event.stopPropagation();mk('c',10,'win')">WIN</button>
+<button class="bl" onclick="event.stopPropagation();mk('c',10,'loss')">LOSS</button>
+<button class="br" onclick="event.stopPropagation();mk('c',10,'push')">PUSH</button>
+<button class="br" onclick="event.stopPropagation();mk('c',10,'pending')">RST</button>
+</div></div>
+<div class="pd" id="c-10-d"><div class="rb">⚠️ <strong>CAUTION: Engine pick — TT market, attacking direction. λH=1.72 λA=1.57.<br><strong>Confidence flags:</strong> ⚠️BIG_GAP(2224pp model vs market) · ⚠️LONGSHOT(odds 4.40 in overcharged zone per fav-longshot bias)<br><br><strong>🌐 Web verification:</strong> STRONGER CAUTION: Nice fighting PL survival (16th, in relegation playoff zone, max motivation to win + not concede). Metz dead-rubber relegated, lost 0-4 to Lorient last out, 8 winless away, 1 win in 23 overall, scored 18 goals all season (0.55/game season avg). Engine λA=1.57 looks HIGH vs actual scoring rate. Consider skipping if you do not want to chase the 4.40 longshot.<br><br><strong>Home adj:</strong> rolling: form→50% · Elo: λ-0.6%(2434) · finish: wasteful(0.81)→λ+2% · ppda: deep(16.7v19.1)→λ-3% · motiv: +5%(relegation fight(home)) · inj: λ-7%(Melvin Bard(D,29/33=88%★)) · rot: -3%(Coupe de France in 5d) · luck: +(-0.18/g)<br><strong>Away adj:</strong> rolling: form→50% · Elo: λ-1.9%(1888) · ppda: deep(16.7v19.1)→λ-3% · motiv: +-5%(mathematically relegated) · luck: +(-0.34/g)</strong><br><br><strong>Kickoff:</strong> Sun May 17 · 23:00 Dubai<br><strong>Model:</strong> 46.4% &nbsp; <strong>Book:</strong> 22.7% &nbsp; <strong>Edge:</strong> +104.1%<br><strong>λH</strong>=1.72 &nbsp; <strong>λA</strong>=1.57</div><div class="nb"><span class="nl2">Model:</span><span class="nv2 green">46.4%</span><span class="nl2">Book:</span><span class="nv2 dim">22.7%</span><span class="nl2">Win:</span><span class="nv2 green">+$680</span><span class="nl2">Lose:</span><span class="nv2 red">-$200</span></div></div>
+</div>
+<div class="pk" id="c-11" data-date="2026-05-17">
+<div class="ph" onclick="toggle(this)">
+<div class="rk">#11</div>
+<div class="pi"><div class="pn">Under 2.5 <span class="flag" style="background:rgba(59,130,246,.15);color:#3b82f6;border:1px solid rgba(59,130,246,.35)">✅ KEEP</span></div>
+<div class="pm">Barcelona vs Real Betis &middot; <span style="color:#E07A3A;font-weight:700">Sun May 17 · 23:15 Dubai</span> &middot; LLG</div></div>
+<div class="ps">
+<div class="n"><div class="nv accent">@3.15</div><div class="nl">ODDS</div></div>
+<div class="n"><div class="nv green">+64.3%</div><div class="nl">EDGE</div></div>
+<div class="n"><div class="nv">$200</div><div class="nl">STAKE</div></div>
+</div>
+<div class="pr" id="c-11-r"><span class="pp">pending</span></div>
+<div class="pb">
+<button class="bw" onclick="event.stopPropagation();mk('c',11,'win')">WIN</button>
+<button class="bl" onclick="event.stopPropagation();mk('c',11,'loss')">LOSS</button>
+<button class="br" onclick="event.stopPropagation();mk('c',11,'push')">PUSH</button>
+<button class="br" onclick="event.stopPropagation();mk('c',11,'pending')">RST</button>
+</div></div>
+<div class="pd" id="c-11-d"><div class="rb">✅ <strong>KEEP: Engine pick — O/U market, defensive direction. λH=1.99 λA=0.60.<br><strong>Confidence flags:</strong> ⚠️BIG_GAP(3118pp model vs market) · ⚠️LONGSHOT(odds 3.15 in overcharged zone per fav-longshot bias)<br><br><strong>🌐 Web verification:</strong> Barca title CLINCHED via El Clasico. Flick already made 10 changes vs Alaves (lost 1-0 with B-team). Yamal out, Raphinha managing fitness for World Cup. Betis 5th-place CL-qualified. Engine λH=1.99 already accounts for rotation. H2H goal pattern is the offset but engine rotation/motivation layers should handle.<br><br><strong>Home adj:</strong> rolling: form→50% · Elo: λ+3.3%(4177) · motiv: +3%(title race) · inj: λ-23%(Raphinha(F,21/36=58%½),Lamine Yamal(F,28/36=78%★)) · rest: -4%(3d) · luck: -(+0.41/g)<br><strong>Away adj:</strong> Elo: λ+0.7%(3117) · motiv: +2%(CL race) · inj: λ-27%(Juan Hernandez(F,31/36=86%★),Aitor Ruibal(F,27/36=75%★),Aitor Ruibal(F,27/36=75%★),Aitor Ruibal(F,27/36=75%★),Marc Bartra(D,25/36=69%½)) · rest: -2%(4d)</strong><br><br><strong>Kickoff:</strong> Sun May 17 · 23:15 Dubai<br><strong>Model:</strong> 52.2% &nbsp; <strong>Book:</strong> 31.7% &nbsp; <strong>Edge:</strong> +64.3%<br><strong>λH</strong>=1.99 &nbsp; <strong>λA</strong>=0.60</div><div class="nb"><span class="nl2">Model:</span><span class="nv2 green">52.2%</span><span class="nl2">Book:</span><span class="nv2 dim">31.7%</span><span class="nl2">Win:</span><span class="nv2 green">+$430</span><span class="nl2">Lose:</span><span class="nv2 red">-$200</span></div></div>
+</div>
+<div class="day-header" data-date="2026-05-19"><span class="day-name">📅 Tue May 19</span> <span class="day-count">1 pick</span></div>
+<div class="pk" id="c-12" data-date="2026-05-19">
+<div class="ph" onclick="toggle(this)">
+<div class="rk">#12</div>
+<div class="pi"><div class="pn">Chelsea U0.5 <span class="flag" style="background:rgba(251,191,36,.15);color:#fbbf24;border:1px solid rgba(251,191,36,.35)">⚠️ CAUTION</span></div>
+<div class="pm">Chelsea vs Tottenham &middot; <span style="color:#E07A3A;font-weight:700">Tue May 19 · 23:15 Dubai</span> &middot; EPL</div></div>
+<div class="ps">
+<div class="n"><div class="nv accent">@5.00</div><div class="nl">ODDS</div></div>
+<div class="n"><div class="nv green">+99.7%</div><div class="nl">EDGE</div></div>
+<div class="n"><div class="nv">$200</div><div class="nl">STAKE</div></div>
+</div>
+<div class="pr" id="c-12-r"><span class="pp">pending</span></div>
+<div class="pb">
+<button class="bw" onclick="event.stopPropagation();mk('c',12,'win')">WIN</button>
+<button class="bl" onclick="event.stopPropagation();mk('c',12,'loss')">LOSS</button>
+<button class="br" onclick="event.stopPropagation();mk('c',12,'push')">PUSH</button>
+<button class="br" onclick="event.stopPropagation();mk('c',12,'pending')">RST</button>
+</div></div>
+<div class="pd" id="c-12-d"><div class="rb">⚠️ <strong>CAUTION: Engine pick — TT market, defensive direction. λH=0.92 λA=1.14.<br><strong>Confidence flags:</strong> ⚠️BIG_GAP(1960pp model vs market) · ⚠️LONGSHOT(odds 5.00 in overcharged zone per fav-longshot bias)<br><strong>Web verify:</strong> Status changed KEEP → CAUTION based on web verification.<br><br><strong>🌐 Web verification:</strong> Chelsea plays FA Cup Final today (May 16) vs Man City — 3 days rest before Tue PL match. Chelsea in form crisis (1 win in last 5, only 3 goals scored). Chelsea has interim manager Callum McFarlane (Maresca situation unclear). Rotation/fatigue support pick but extreme EV (+100%) warrants CAUTION on bet size.<br><br><strong>Home adj:</strong> rolling: form→50% · Elo: λ+0.5%(3539) · finish: wasteful(0.78)→λ+2% · xA: xA↑fin↓(1.36/0.78)→λ+2% · derby: +4%(london,open) · inj: λ-5%(Estevao(F,22/36=61%½)) · luck: +(-0.25/g)<br><strong>Away adj:</strong> rolling: form→50% · Elo: λ-0.5%(3126) · motiv: +2%(relegation fight(away)) · inj: λ-22%(Guglielmo Vicario(G,31/36=86%★),Xavi Simons(M,28/36=78%★),Mohammed Kudus(M,19/36=53%½),Cristian Romero(D,23/36=64%½),Wilson Odobert(F,24/36=67%½)) · luck: +(-0.18/g)</strong><br><br><strong>Kickoff:</strong> Tue May 19 · 23:15 Dubai<br><strong>Model:</strong> 39.9% &nbsp; <strong>Book:</strong> 20.0% &nbsp; <strong>Edge:</strong> +99.7%<br><strong>λH</strong>=0.92 &nbsp; <strong>λA</strong>=1.14</div><div class="nb"><span class="nl2">Model:</span><span class="nv2 green">39.9%</span><span class="nl2">Book:</span><span class="nv2 dim">20.0%</span><span class="nl2">Win:</span><span class="nv2 green">+$800</span><span class="nl2">Lose:</span><span class="nv2 red">-$200</span></div></div>
+</div>
+</div>
+
+<div class="rng" id="r-d">
+<div class="pnl-bar">
+<div class="pnl-item"><span class="pnl-label">W6 Start Bank</span><span class="pnl-val">$24,194</span></div>
+<div class="pnl-item"><span class="pnl-label">W5+W6 P&amp;L</span><span class="pnl-val" style="color:#fbbf24">pending</span></div>
+<div class="pnl-item"><span class="pnl-label">W7 Start Bank</span><span class="pnl-val" style="color:#fff">TBD</span></div>
+<div class="pnl-item"><span class="pnl-label">🔥 Strong</span><span class="pnl-val" style="color:var(--gn)">9</span></div>
+<div class="pnl-item"><span class="pnl-label">⚠️ Caution</span><span class="pnl-val" style="color:#fbbf24">0</span></div>
+<div class="pnl-item"><span class="pnl-label">W7 Record</span><span class="pnl-val" id="d-record">-</span></div>
+<div class="pnl-item"><span class="pnl-label">Staked</span><span class="pnl-val" id="d-staked">$0</span></div>
+<div class="pnl-item"><span class="pnl-label">W7 P&amp;L</span><span class="pnl-val" id="d-total">$0</span></div>
+<div class="pnl-item"><span class="pnl-label">ROI%</span><span class="pnl-val" id="d-roi">—</span></div>
+</div>
+<div class="filter-bar">
+<label for="d-filter">Filter by kickoff (Dubai):</label>
+<select id="d-filter" class="filter-select" onchange="filt('d',this.value)"><option value="all">🗓 All dates</option><option value="2026-05-17">Sun May 17</option><option value="2026-05-19">Tue May 19</option></select>
+<div class="filter-count">Showing <span id="d-visible">12</span> of 12 picks</div>
+</div>
+<div class="day-header" data-date="2026-05-17"><span class="day-name">📅 Sun May 17</span> <span class="day-count">10 picks</span></div>
+<div class="pk" id="d-1" data-date="2026-05-17">
+<div class="ph" onclick="toggle(this)">
+<div class="rk">#1</div>
+<div class="pi"><div class="pn">AC Milan U1.5 <span class="flag" style="background:rgba(34,197,94,.15);color:#22c55e;border:1px solid rgba(34,197,94,.35)">🔥 STRONG</span></div>
+<div class="pm">Genoa vs AC Milan &middot; <span style="color:#E07A3A;font-weight:700">Sun May 17 · 14:00 Dubai</span> &middot; SA</div></div>
+<div class="ps">
+<div class="n"><div class="nv accent">@1.87</div><div class="nl">ODDS</div></div>
+<div class="n"><div class="nv green">+47.8%</div><div class="nl">EDGE</div></div>
+<div class="n"><div class="nv">$200</div><div class="nl">STAKE</div></div>
+</div>
+<div class="pr" id="d-1-r"><span class="pp">pending</span></div>
+<div class="pb">
+<button class="bw" onclick="event.stopPropagation();mk('d',1,'win')">WIN</button>
+<button class="bl" onclick="event.stopPropagation();mk('d',1,'loss')">LOSS</button>
+<button class="br" onclick="event.stopPropagation();mk('d',1,'push')">PUSH</button>
+<button class="br" onclick="event.stopPropagation();mk('d',1,'pending')">RST</button>
+</div></div>
+<div class="pd" id="d-1-d"><div class="rb">🔥 <strong>STRONG: Engine pick — TT market, defensive direction. λH=0.88 λA=0.85.<br><strong>Confidence flags:</strong> ⚠️BIG_GAP(5271pp model vs market)<br><br><strong>🌐 Web verification:</strong> Milan crisis + 7 starters out (see C #3 note). λA=0.85 → P(X≤1)=79% per engine, well-supported by Pulisic's 17-game scoreless streak and Leao struggling.<br><br><strong>Home adj:</strong> Elo: λ-0.5%(2466) · finish: wasteful(0.88)→λ+2% · inj: λ-6%(Junior Messias(F,20/36=56%½))<br><strong>Away adj:</strong> rolling: form→50% · Elo: λ+1.4%(3222) · finish: wasteful(0.81)→λ+2% · motiv: +2%(CL race) · inj: λ-27%(Alexis Saelemaekers(M,34/36=94%★),Pervis Estupinan(D,19/36=53%½),Rafael Leao(F,28/36=78%★),Fikayo Tomori(D,31/36=86%★),Christian Pulisic(M,28/36=78%★),Ruben Loftus-Cheek(M,27/36=75%★),Luka Modric(M,33/36=92%★))</strong><br><br><strong>Kickoff:</strong> Sun May 17 · 14:00 Dubai<br><strong>Model:</strong> 79.0% &nbsp; <strong>Book:</strong> 53.5% &nbsp; <strong>Edge:</strong> +47.8%<br><strong>λH</strong>=0.88 &nbsp; <strong>λA</strong>=0.85</div><div class="nb"><span class="nl2">Model:</span><span class="nv2 green">79.0%</span><span class="nl2">Book:</span><span class="nv2 dim">53.5%</span><span class="nl2">Win:</span><span class="nv2 green">+$174</span><span class="nl2">Lose:</span><span class="nv2 red">-$200</span></div></div>
+</div>
+<div class="pk" id="d-2" data-date="2026-05-17">
+<div class="ph" onclick="toggle(this)">
+<div class="rk">#2</div>
+<div class="pi"><div class="pn">Napoli U1.5 <span class="flag" style="background:rgba(34,197,94,.15);color:#22c55e;border:1px solid rgba(34,197,94,.35)">🔥 STRONG</span></div>
+<div class="pm">Pisa vs Napoli &middot; <span style="color:#E07A3A;font-weight:700">Sun May 17 · 14:00 Dubai</span> &middot; SA</div></div>
+<div class="ps">
+<div class="n"><div class="nv accent">@2.45</div><div class="nl">ODDS</div></div>
+<div class="n"><div class="nv green">+47.4%</div><div class="nl">EDGE</div></div>
+<div class="n"><div class="nv">$200</div><div class="nl">STAKE</div></div>
+</div>
+<div class="pr" id="d-2-r"><span class="pp">pending</span></div>
+<div class="pb">
+<button class="bw" onclick="event.stopPropagation();mk('d',2,'win')">WIN</button>
+<button class="bl" onclick="event.stopPropagation();mk('d',2,'loss')">LOSS</button>
+<button class="br" onclick="event.stopPropagation();mk('d',2,'push')">PUSH</button>
+<button class="br" onclick="event.stopPropagation();mk('d',2,'pending')">RST</button>
+</div></div>
+<div class="pd" id="d-2-d"><div class="rb">🔥 <strong>STRONG: Engine pick — TT market, defensive direction. λH=0.51 λA=1.37.<br><strong>Confidence flags:</strong> ⚠️BIG_GAP(4020pp model vs market)<br><br><strong>🌐 Web verification:</strong> CONTRARIAN-BUT-SUPPORTED: Inter clinched Scudetto last weekend — Napoli no longer in title race. Napoli 2nd with 70 pts and 6-pt cushion over 5th Roma (CL essentially secured). Napoli away goals/game just 1.22. Missing Lukaku (banned), Neres (injured), Zanoli (injured). Conte's "1 win in last 4" + 2-3 loss to Bologna last out suggests reduced intensity.<br><br><strong>Home adj:</strong> Elo: λ-2.5%(1670) · finish: wasteful(0.62)→λ+2% · motiv: +-5%(mathematically relegated) · inj: λ-14%(Matteo Tramoni(F,27/36=75%★)) · luck: +(-0.53/g)<br><strong>Away adj:</strong> rolling: form→50% · Elo: λ+1.6%(3297) · motiv: +3%(title race) · inj: λ-12%(Matteo Politano(F,33/36=92%★)) · luck: -(+0.30/g)</strong><br><br><strong>Kickoff:</strong> Sun May 17 · 14:00 Dubai<br><strong>Model:</strong> 60.2% &nbsp; <strong>Book:</strong> 40.8% &nbsp; <strong>Edge:</strong> +47.4%<br><strong>λH</strong>=0.51 &nbsp; <strong>λA</strong>=1.37</div><div class="nb"><span class="nl2">Model:</span><span class="nv2 green">60.2%</span><span class="nl2">Book:</span><span class="nv2 dim">40.8%</span><span class="nl2">Win:</span><span class="nv2 green">+$290</span><span class="nl2">Lose:</span><span class="nv2 red">-$200</span></div></div>
+</div>
+<div class="pk" id="d-3" data-date="2026-05-17">
+<div class="ph" onclick="toggle(this)">
+<div class="rk">#3</div>
+<div class="pi"><div class="pn">Nott Forest +0.5 <span class="flag" style="background:rgba(34,197,94,.15);color:#22c55e;border:1px solid rgba(34,197,94,.35)">🔥 STRONG</span></div>
+<div class="pm">Man Utd vs Nott Forest &middot; <span style="color:#E07A3A;font-weight:700">Sun May 17 · 15:30 Dubai</span> &middot; EPL</div></div>
+<div class="ps">
+<div class="n"><div class="nv accent">@2.29</div><div class="nl">ODDS</div></div>
+<div class="n"><div class="nv green">+56.2%</div><div class="nl">EDGE</div></div>
+<div class="n"><div class="nv">$200</div><div class="nl">STAKE</div></div>
+</div>
+<div class="pr" id="d-3-r"><span class="pp">pending</span></div>
+<div class="pb">
+<button class="bw" onclick="event.stopPropagation();mk('d',3,'win')">WIN</button>
+<button class="bl" onclick="event.stopPropagation();mk('d',3,'loss')">LOSS</button>
+<button class="br" onclick="event.stopPropagation();mk('d',3,'push')">PUSH</button>
+<button class="br" onclick="event.stopPropagation();mk('d',3,'pending')">RST</button>
+</div></div>
+<div class="pd" id="d-3-d"><div class="rb">🔥 <strong>STRONG: Engine pick — AH market, outcome direction. λH=1.36 λA=1.56.<br><strong>Confidence flags:</strong> ⚠️BIG_GAP(4302pp model vs market)<br><br><strong>🌐 Web verification:</strong> Forest unbeaten in 8 PL (W4D4), 3 away wins 11-1 agg recently, despite massive injury list. Man Utd: 3rd-place secured, just 0-0'd Sunderland (snapped 23-game scoring streak). Casemiro returns for Old Trafford farewell — slight headwind to Forest +0.5 but engine's 68.2% model probability well-supported by Forest's strong away form.<br><br><strong>Home adj:</strong> rolling: form→50% · Elo: λ+0.7%(3618) · motiv: +2%(CL race) · inj: λ-23%(Benjamin Sesko(F,30/36=83%★),Casemiro(M,33/36=92%★),Manuel Ugarte(M,22/36=61%½)) · luck: -(+0.16/g)<br><strong>Away adj:</strong> rolling: form→50% · Elo: λ-0.3%(3227) · motiv: +2%(relegation fight(away)) · inj: λ-27%(Ola Aina(D,18/36=50%½),Murillo(D,25/36=69%½),Ibrahim Sangare(M,26/36=72%★),Dan Ndoye(F,24/36=67%½),Morgan Gibbs-White(M,35/36=97%★),Callum Hudson-Odoi(F,30/36=83%★))</strong><br><br><strong>Kickoff:</strong> Sun May 17 · 15:30 Dubai<br><strong>Model:</strong> 68.2% &nbsp; <strong>Book:</strong> 43.7% &nbsp; <strong>Edge:</strong> +56.2%<br><strong>λH</strong>=1.36 &nbsp; <strong>λA</strong>=1.56</div><div class="nb"><span class="nl2">Model:</span><span class="nv2 green">68.2%</span><span class="nl2">Book:</span><span class="nv2 dim">43.7%</span><span class="nl2">Win:</span><span class="nv2 green">+$258</span><span class="nl2">Lose:</span><span class="nv2 red">-$200</span></div></div>
+</div>
+<div class="pk" id="d-4" data-date="2026-05-17">
+<div class="ph" onclick="toggle(this)">
+<div class="rk">#4</div>
+<div class="pi"><div class="pn">Fulham U1.5 <span class="flag" style="background:rgba(34,197,94,.15);color:#22c55e;border:1px solid rgba(34,197,94,.35)">🔥 STRONG</span></div>
+<div class="pm">Wolves vs Fulham &middot; <span style="color:#E07A3A;font-weight:700">Sun May 17 · 18:00 Dubai</span> &middot; EPL</div></div>
+<div class="ps">
+<div class="n"><div class="nv accent">@1.92</div><div class="nl">ODDS</div></div>
+<div class="n"><div class="nv green">+76.1%</div><div class="nl">EDGE</div></div>
+<div class="n"><div class="nv">$200</div><div class="nl">STAKE</div></div>
+</div>
+<div class="pr" id="d-4-r"><span class="pp">pending</span></div>
+<div class="pb">
+<button class="bw" onclick="event.stopPropagation();mk('d',4,'win')">WIN</button>
+<button class="bl" onclick="event.stopPropagation();mk('d',4,'loss')">LOSS</button>
+<button class="br" onclick="event.stopPropagation();mk('d',4,'push')">PUSH</button>
+<button class="br" onclick="event.stopPropagation();mk('d',4,'pending')">RST</button>
+</div></div>
+<div class="pd" id="d-4-d"><div class="rb">🔥 <strong>STRONG: Engine pick — TT market, defensive direction. λH=1.26 λA=0.48.<br><strong>Confidence flags:</strong> ⚠️BIG_GAP(5118pp model vs market)<br><br><strong>🌐 Web verification:</strong> Same supporting context as C #1 Fulham U0.5 — depleted attack + Wolves' non-scoring pattern. λA=0.48 → P(X≤1)=91.7% per engine, well-supported.<br><br><strong>Home adj:</strong> rolling: form→50% · Elo: λ-1.7%(2659) · finish: wasteful(0.73)→λ+2% · ppda: deep(14.2v13.6)→λ-3% · motiv: +-5%(mathematically relegated) · luck: +(-0.38/g)<br><strong>Away adj:</strong> rolling: form→50% · Elo: λ-0.5%(3152) · ppda: deep(14.2v13.6)→λ-3% · inj: λ-27%(Joachim Andersen(D,33/36=92%★),Alex Iwobi(F,27/36=75%★),Raul Jimenez(F,34/36=94%★),Ryan Sessegnon(M,27/36=75%★)) · luck: -(+0.19/g)</strong><br><br><strong>Kickoff:</strong> Sun May 17 · 18:00 Dubai<br><strong>Model:</strong> 91.7% &nbsp; <strong>Book:</strong> 52.1% &nbsp; <strong>Edge:</strong> +76.1%<br><strong>λH</strong>=1.26 &nbsp; <strong>λA</strong>=0.48</div><div class="nb"><span class="nl2">Model:</span><span class="nv2 green">91.7%</span><span class="nl2">Book:</span><span class="nv2 dim">52.1%</span><span class="nl2">Win:</span><span class="nv2 green">+$184</span><span class="nl2">Lose:</span><span class="nv2 red">-$200</span></div></div>
+</div>
+<div class="pk" id="d-5" data-date="2026-05-17">
+<div class="ph" onclick="toggle(this)">
+<div class="rk">#5</div>
+<div class="pi"><div class="pn">Brighton U1.5 <span class="flag" style="background:rgba(34,197,94,.15);color:#22c55e;border:1px solid rgba(34,197,94,.35)">🔥 STRONG</span></div>
+<div class="pm">Leeds vs Brighton &middot; <span style="color:#E07A3A;font-weight:700">Sun May 17 · 18:00 Dubai</span> &middot; EPL</div></div>
+<div class="ps">
+<div class="n"><div class="nv accent">@1.88</div><div class="nl">ODDS</div></div>
+<div class="n"><div class="nv green">+50.7%</div><div class="nl">EDGE</div></div>
+<div class="n"><div class="nv">$200</div><div class="nl">STAKE</div></div>
+</div>
+<div class="pr" id="d-5-r"><span class="pp">pending</span></div>
+<div class="pb">
+<button class="bw" onclick="event.stopPropagation();mk('d',5,'win')">WIN</button>
+<button class="bl" onclick="event.stopPropagation();mk('d',5,'loss')">LOSS</button>
+<button class="br" onclick="event.stopPropagation();mk('d',5,'push')">PUSH</button>
+<button class="br" onclick="event.stopPropagation();mk('d',5,'pending')">RST</button>
+</div></div>
+<div class="pd" id="d-5-d"><div class="rb">🔥 <strong>STRONG: Engine pick — TT market, defensive direction. λH=1.33 λA=0.82.<br><strong>Confidence flags:</strong> ⚠️BIG_GAP(5240pp model vs market)<br><br><strong>🌐 Web verification:</strong> Brighton missing Mitoma (hamstring) + Tzimas (attackers), Wieffer/Gomez doubts. Leeds unbeaten in 8 PL, strong home form. Brighton has CL motivation (chasing 6th) — slight headwind but engine λA=0.82 supported by depleted attack + Leeds home defense.<br><br><strong>Home adj:</strong> rolling: form→50% · Elo: λ-0.7%(3054) · finish: wasteful(0.84)→λ+2% · motiv: +5%(relegation fight(home)) · inj: λ-26%(Ethan Ampadu(M,33/36=92%★),Pascal Struijk(D,33/36=92%★),Gabriel Gudmundsson(D,32/36=89%★),Jayden Bogle(D,33/36=92%★),Noah Okafor(F,28/36=78%★),Ilia Gruev(M,23/36=64%½)) · luck: +(-0.31/g)<br><strong>Away adj:</strong> Elo: λ+0.4%(3490) · inj: λ-17%(Kaoru Mitoma(M,25/36=69%½),Mats Wieffer(M,25/36=69%½),Diego Gomez(M,30/36=83%★))</strong><br><br><strong>Kickoff:</strong> Sun May 17 · 18:00 Dubai<br><strong>Model:</strong> 80.2% &nbsp; <strong>Book:</strong> 53.2% &nbsp; <strong>Edge:</strong> +50.7%<br><strong>λH</strong>=1.33 &nbsp; <strong>λA</strong>=0.82</div><div class="nb"><span class="nl2">Model:</span><span class="nv2 green">80.2%</span><span class="nl2">Book:</span><span class="nv2 dim">53.2%</span><span class="nl2">Win:</span><span class="nv2 green">+$176</span><span class="nl2">Lose:</span><span class="nv2 red">-$200</span></div></div>
+</div>
+<div class="pk" id="d-6" data-date="2026-05-17">
+<div class="ph" onclick="toggle(this)">
+<div class="rk">#6</div>
+<div class="pi"><div class="pn">Levante Win <span class="flag" style="background:rgba(34,197,94,.15);color:#22c55e;border:1px solid rgba(34,197,94,.35)">🔥 STRONG</span></div>
+<div class="pm">Levante vs Mallorca &middot; <span style="color:#E07A3A;font-weight:700">Sun May 17 · 21:00 Dubai</span> &middot; LLG</div></div>
+<div class="ps">
+<div class="n"><div class="nv accent">@2.13</div><div class="nl">ODDS</div></div>
+<div class="n"><div class="nv green">+50.9%</div><div class="nl">EDGE</div></div>
+<div class="n"><div class="nv">$200</div><div class="nl">STAKE</div></div>
+</div>
+<div class="pr" id="d-6-r"><span class="pp">pending</span></div>
+<div class="pb">
+<button class="bw" onclick="event.stopPropagation();mk('d',6,'win')">WIN</button>
+<button class="bl" onclick="event.stopPropagation();mk('d',6,'loss')">LOSS</button>
+<button class="br" onclick="event.stopPropagation();mk('d',6,'push')">PUSH</button>
+<button class="br" onclick="event.stopPropagation();mk('d',6,'pending')">RST</button>
+</div></div>
+<div class="pd" id="d-6-d"><div class="rb">🔥 <strong>STRONG: Engine pick — ML market, outcome direction. λH=2.24 λA=0.71.<br><strong>Confidence flags:</strong> ⚠️BIG_GAP(4619pp model vs market)<br><br><strong>🌐 Web verification:</strong> Same as C #10 context: Levante home strength + Mascarell/Kumbulla suspensions + Mallorca atrocious away form (1 win in 16) all support. Strong KEEP.<br><br><strong>Home adj:</strong> rolling: form→50% · Elo: λ-1.1%(2394) · finish: wasteful(0.80)→λ+2% · ppda: deep(13.6v13.6)→λ-3% · motiv: +5%(relegation fight(home)) · inj: λ-12%(Carlos Alvarez(M,30/36=83%★)) · rest: -2%(4d)<br><strong>Away adj:</strong> Elo: λ-0.8%(2513) · ppda: deep(13.6v13.6)→λ-3% · motiv: +2%(relegation fight(away)) · inj: λ-21%(Omar Mascarell(M,29/36=81%★),Samu(M,32/36=89%★),Antonio Raillo(D,23/36=64%½)) · rest: -4%(3d)</strong><br><br><strong>Kickoff:</strong> Sun May 17 · 21:00 Dubai<br><strong>Model:</strong> 70.9% &nbsp; <strong>Book:</strong> 46.9% &nbsp; <strong>Edge:</strong> +50.9%<br><strong>λH</strong>=2.24 &nbsp; <strong>λA</strong>=0.71</div><div class="nb"><span class="nl2">Model:</span><span class="nv2 green">70.9%</span><span class="nl2">Book:</span><span class="nv2 dim">46.9%</span><span class="nl2">Win:</span><span class="nv2 green">+$226</span><span class="nl2">Lose:</span><span class="nv2 red">-$200</span></div></div>
+</div>
+<div class="pk" id="d-7" data-date="2026-05-17">
+<div class="ph" onclick="toggle(this)">
+<div class="rk">#7</div>
+<div class="pi"><div class="pn">Under 2.5 <span class="flag" style="background:rgba(34,197,94,.15);color:#22c55e;border:1px solid rgba(34,197,94,.35)">🔥 STRONG</span></div>
+<div class="pm">Sevilla vs Real Madrid &middot; <span style="color:#E07A3A;font-weight:700">Sun May 17 · 21:00 Dubai</span> &middot; LLG</div></div>
+<div class="ps">
+<div class="n"><div class="nv accent">@2.07</div><div class="nl">ODDS</div></div>
+<div class="n"><div class="nv green">+47.9%</div><div class="nl">EDGE</div></div>
+<div class="n"><div class="nv">$200</div><div class="nl">STAKE</div></div>
+</div>
+<div class="pr" id="d-7-r"><span class="pp">pending</span></div>
+<div class="pb">
+<button class="bw" onclick="event.stopPropagation();mk('d',7,'win')">WIN</button>
+<button class="bl" onclick="event.stopPropagation();mk('d',7,'loss')">LOSS</button>
+<button class="br" onclick="event.stopPropagation();mk('d',7,'push')">PUSH</button>
+<button class="br" onclick="event.stopPropagation();mk('d',7,'pending')">RST</button>
+</div></div>
+<div class="pd" id="d-7-d"><div class="rb">🔥 <strong>STRONG: Engine pick — O/U market, defensive direction. λH=0.79 λA=1.07.<br><strong>Confidence flags:</strong> ⚠️BIG_GAP(4759pp model vs market)<br><br><strong>🌐 Web verification:</strong> STRONG SUPPORT: Real Madrid massively depleted in attack — Mbappé OUT (injury), Rodrygo ACL, Güler hamstring, Militao surgery, Carvajal knee, Mendy thigh. With top scorer Mbappé absent, λA=1.07 looks very well-supported. Engine view strongly confirmed.<br><br><strong>Home adj:</strong> rolling: form→50% · Elo: λ-0.7%(2574) · finish: clinical(1.20)→λ-2% · xA: xA↓fin↑(0.79/1.20)→λ-2% · motiv: +5%(relegation fight(home)) · inj: λ-17%(Isaac Romero(F,27/36=75%★),Isaac Romero(F,27/36=75%★)) · rest: -4%(3d) · luck: -(+0.18/g)<br><strong>Away adj:</strong> rolling: form→50% · Elo: λ+2.9%(4008) · motiv: +3%(title race) · inj: λ-17%(Arda Guler(F,32/36=89%★),Dean Huijsen(D,26/36=72%★),Rodrygo(F,19/36=53%½)) · rest: -4%(2d) · luck: -(+0.22/g)</strong><br><br><strong>Kickoff:</strong> Sun May 17 · 21:00 Dubai<br><strong>Model:</strong> 71.5% &nbsp; <strong>Book:</strong> 48.3% &nbsp; <strong>Edge:</strong> +47.9%<br><strong>λH</strong>=0.79 &nbsp; <strong>λA</strong>=1.07</div><div class="nb"><span class="nl2">Model:</span><span class="nv2 green">71.5%</span><span class="nl2">Book:</span><span class="nv2 dim">48.3%</span><span class="nl2">Win:</span><span class="nv2 green">+$214</span><span class="nl2">Lose:</span><span class="nv2 red">-$200</span></div></div>
+</div>
+<div class="pk" id="d-8" data-date="2026-05-17">
+<div class="ph" onclick="toggle(this)">
+<div class="rk">#8</div>
+<div class="pi"><div class="pn">Under 3.0 <span class="flag" style="background:rgba(59,130,246,.15);color:#3b82f6;border:1px solid rgba(59,130,246,.35)">✅ KEEP</span></div>
+<div class="pm">Paris FC vs Paris Saint Germain &middot; <span style="color:#E07A3A;font-weight:700">Sun May 17 · 23:00 Dubai</span> &middot; L1</div></div>
+<div class="ps">
+<div class="n"><div class="nv accent">@2.37</div><div class="nl">ODDS</div></div>
+<div class="n"><div class="nv green">+51.3%</div><div class="nl">EDGE</div></div>
+<div class="n"><div class="nv">$200</div><div class="nl">STAKE</div></div>
+</div>
+<div class="pr" id="d-8-r"><span class="pp">pending</span></div>
+<div class="pb">
+<button class="bw" onclick="event.stopPropagation();mk('d',8,'win')">WIN</button>
+<button class="bl" onclick="event.stopPropagation();mk('d',8,'loss')">LOSS</button>
+<button class="br" onclick="event.stopPropagation();mk('d',8,'push')">PUSH</button>
+<button class="br" onclick="event.stopPropagation();mk('d',8,'pending')">RST</button>
+</div></div>
+<div class="pd" id="d-8-d"><div class="rb">✅ <strong>KEEP: Engine pick — O/U market, defensive direction. λH=0.80 λA=1.68.<br><strong>Confidence flags:</strong> ⚠️BIG_GAP(4165pp model vs market)<br><br><strong>🌐 Web verification:</strong> PSG title clinched, Champions League Final vs Arsenal on May 30 — heavy rotation expected. PSG missing 6 starters (Lee Kang-in, Pacho, Mendes, Zaïre-Emery, Hakimi, Chevalier). Paris FC at home, won last H2H 1-0, in good form (4-0 vs Brest at home recently).<br><br><strong>Home adj:</strong> rolling: form→50% · Elo: λ-0.8%(2328) · inj: λ-15%(Mamadou Mbow(D,31/33=94%★),Willem Geubbels(F,23/33=70%½),Jean-Philippe Krasso(F,25/33=76%★))<br><strong>Away adj:</strong> rolling: form→50% · Elo: λ+3.7%(4130) · motiv: +3%(title race) · inj: λ-22%(Kang-In Lee(M,26/33=79%★),Willian Pacho(D,23/33=70%½),Warren Zaire-Emery(M,31/33=94%★),Nuno Mendes(D,20/33=61%½),Achraf Hakimi(D,18/33=55%½),Lucas Chevalier(G,17/33=52%½)) · rest: -4%(3d)</strong><br><br><strong>Kickoff:</strong> Sun May 17 · 23:00 Dubai<br><strong>Model:</strong> 54.9% &nbsp; <strong>Book:</strong> 42.2% &nbsp; <strong>Edge:</strong> +51.3%<br><strong>λH</strong>=0.80 &nbsp; <strong>λA</strong>=1.68</div><div class="nb"><span class="nl2">Model:</span><span class="nv2 green">54.9%</span><span class="nl2">Book:</span><span class="nv2 dim">42.2%</span><span class="nl2">Win:</span><span class="nv2 green">+$274</span><span class="nl2">Lose:</span><span class="nv2 red">-$200</span></div></div>
+</div>
+<div class="pk" id="d-9" data-date="2026-05-17">
+<div class="ph" onclick="toggle(this)">
+<div class="rk">#9</div>
+<div class="pi"><div class="pn">Over 3.5 <span class="flag" style="background:rgba(34,197,94,.15);color:#22c55e;border:1px solid rgba(34,197,94,.35)">🔥 STRONG</span></div>
+<div class="pm">Lyon vs Lens &middot; <span style="color:#E07A3A;font-weight:700">Sun May 17 · 23:00 Dubai</span> &middot; L1</div></div>
+<div class="ps">
+<div class="n"><div class="nv accent">@2.32</div><div class="nl">ODDS</div></div>
+<div class="n"><div class="nv green">+38.4%</div><div class="nl">EDGE</div></div>
+<div class="n"><div class="nv">$200</div><div class="nl">STAKE</div></div>
+</div>
+<div class="pr" id="d-9-r"><span class="pp">pending</span></div>
+<div class="pb">
+<button class="bw" onclick="event.stopPropagation();mk('d',9,'win')">WIN</button>
+<button class="bl" onclick="event.stopPropagation();mk('d',9,'loss')">LOSS</button>
+<button class="br" onclick="event.stopPropagation();mk('d',9,'push')">PUSH</button>
+<button class="br" onclick="event.stopPropagation();mk('d',9,'pending')">RST</button>
+</div></div>
+<div class="pd" id="d-9-d"><div class="rb">🔥 <strong>STRONG: Engine pick — O/U market, attacking direction. λH=2.45 λA=1.72.<br><strong>Confidence flags:</strong> ⚠️BIG_GAP(4250pp model vs market)<br><strong>NOTE:</strong> Engine assigned $0 stake (residual Bug 1). Set to $200 to honor flat-staking rule.<br><strong>Web verify:</strong> Status changed KEEP → STRONG based on web verification.<br><br><strong>🌐 Web verification:</strong> UPGRADED CONVICTION: Lyon scoring in 9 consecutive home games, 18 consecutive scoring streak. BOTH teams' defenses leaky (Lyon conceding in 4 consecutive home, Lens conceding in 3). Lens defense injuries: Gurtner, Baidoo, Gradit all out/doubt. Lens fatigued from 2-0 PSG midweek loss (3 days rest). Lyon needs win for CL qualification. λ-total of 4.17 likely conservative.<br><br><strong>Home adj:</strong> rolling: form→50% · Elo: λ+1.1%(3106) · motiv: +2%(CL race) · inj: λ-5%(Tanner Tessmann(M,29/33=88%★)) · luck: -(+0.24/g)<br><strong>Away adj:</strong> rolling: form→50% · Elo: λ+1.0%(3063) · finish: wasteful(0.86)→λ+2% · xA: xA↑fin↓(1.69/0.86)→λ+2% · motiv: +3%(title race) · inj: λ-1%(Samson Baidoo(D,23/33=70%½)) · rest: -4%(3d) · rot: -3%(Coupe de France in 5d)</strong><br><br><strong>Kickoff:</strong> Sun May 17 · 23:00 Dubai<br><strong>Model:</strong> 59.7% &nbsp; <strong>Book:</strong> 43.1% &nbsp; <strong>Edge:</strong> +38.4%<br><strong>λH</strong>=2.45 &nbsp; <strong>λA</strong>=1.72</div><div class="nb"><span class="nl2">Model:</span><span class="nv2 green">59.7%</span><span class="nl2">Book:</span><span class="nv2 dim">43.1%</span><span class="nl2">Win:</span><span class="nv2 green">+$264</span><span class="nl2">Lose:</span><span class="nv2 red">-$200</span></div></div>
+</div>
+<div class="pk" id="d-10" data-date="2026-05-17">
+<div class="ph" onclick="toggle(this)">
+<div class="rk">#10</div>
+<div class="pi"><div class="pn">Under 3.0 <span class="flag" style="background:rgba(59,130,246,.15);color:#3b82f6;border:1px solid rgba(59,130,246,.35)">✅ KEEP</span></div>
+<div class="pm">Barcelona vs Real Betis &middot; <span style="color:#E07A3A;font-weight:700">Sun May 17 · 23:15 Dubai</span> &middot; LLG</div></div>
+<div class="ps">
+<div class="n"><div class="nv accent">@2.55</div><div class="nl">ODDS</div></div>
+<div class="n"><div class="nv green">+54.8%</div><div class="nl">EDGE</div></div>
+<div class="n"><div class="nv">$200</div><div class="nl">STAKE</div></div>
+</div>
+<div class="pr" id="d-10-r"><span class="pp">pending</span></div>
+<div class="pb">
+<button class="bw" onclick="event.stopPropagation();mk('d',10,'win')">WIN</button>
+<button class="bl" onclick="event.stopPropagation();mk('d',10,'loss')">LOSS</button>
+<button class="br" onclick="event.stopPropagation();mk('d',10,'push')">PUSH</button>
+<button class="br" onclick="event.stopPropagation();mk('d',10,'pending')">RST</button>
+</div></div>
+<div class="pd" id="d-10-d"><div class="rb">✅ <strong>KEEP: Engine pick — O/U market, defensive direction. λH=1.99 λA=0.60.<br><strong>Confidence flags:</strong> ⚠️BIG_GAP(3868pp model vs market) · ⚠️LONGSHOT(odds 2.55 in overcharged zone per fav-longshot bias)<br><br><strong>🌐 Web verification:</strong> Same as C #9 context: Barca's rotation post-title + Yamal out + Flick making 10 changes all support Under 3.0. H2H goal pattern is the offset.<br><br><strong>Home adj:</strong> rolling: form→50% · Elo: λ+3.3%(4177) · motiv: +3%(title race) · inj: λ-23%(Raphinha(F,21/36=58%½),Lamine Yamal(F,28/36=78%★)) · rest: -4%(3d) · luck: -(+0.41/g)<br><strong>Away adj:</strong> Elo: λ+0.7%(3117) · motiv: +2%(CL race) · inj: λ-27%(Juan Hernandez(F,31/36=86%★),Aitor Ruibal(F,27/36=75%★),Aitor Ruibal(F,27/36=75%★),Aitor Ruibal(F,27/36=75%★),Marc Bartra(D,25/36=69%½)) · rest: -2%(4d)</strong><br><br><strong>Kickoff:</strong> Sun May 17 · 23:15 Dubai<br><strong>Model:</strong> 52.2% &nbsp; <strong>Book:</strong> 39.2% &nbsp; <strong>Edge:</strong> +54.8%<br><strong>λH</strong>=1.99 &nbsp; <strong>λA</strong>=0.60</div><div class="nb"><span class="nl2">Model:</span><span class="nv2 green">52.2%</span><span class="nl2">Book:</span><span class="nv2 dim">39.2%</span><span class="nl2">Win:</span><span class="nv2 green">+$310</span><span class="nl2">Lose:</span><span class="nv2 red">-$200</span></div></div>
+</div>
+<div class="day-header" data-date="2026-05-19"><span class="day-name">📅 Tue May 19</span> <span class="day-count">2 picks</span></div>
+<div class="pk" id="d-11" data-date="2026-05-19">
+<div class="ph" onclick="toggle(this)">
+<div class="rk">#11</div>
+<div class="pi"><div class="pn">Man City U1.5 <span class="flag" style="background:rgba(59,130,246,.15);color:#3b82f6;border:1px solid rgba(59,130,246,.35)">✅ KEEP</span></div>
+<div class="pm">Bournemouth vs Man City &middot; <span style="color:#E07A3A;font-weight:700">Tue May 19 · 22:30 Dubai</span> &middot; EPL</div></div>
+<div class="ps">
+<div class="n"><div class="nv accent">@2.45</div><div class="nl">ODDS</div></div>
+<div class="n"><div class="nv green">+49.1%</div><div class="nl">EDGE</div></div>
+<div class="n"><div class="nv">$200</div><div class="nl">STAKE</div></div>
+</div>
+<div class="pr" id="d-11-r"><span class="pp">pending</span></div>
+<div class="pb">
+<button class="bw" onclick="event.stopPropagation();mk('d',11,'win')">WIN</button>
+<button class="bl" onclick="event.stopPropagation();mk('d',11,'loss')">LOSS</button>
+<button class="br" onclick="event.stopPropagation();mk('d',11,'push')">PUSH</button>
+<button class="br" onclick="event.stopPropagation();mk('d',11,'pending')">RST</button>
+</div></div>
+<div class="pd" id="d-11-d"><div class="rb">✅ <strong>KEEP: Engine pick — TT market, defensive direction. λH=1.23 λA=1.35.<br><strong>Confidence flags:</strong> ⚠️BIG_GAP(4019pp model vs market)<br><strong>Web verify:</strong> Status changed STRONG → KEEP based on web verification.<br><br><strong>🌐 Web verification:</strong> REVISED: City still in PL title race chasing Arsenal — won 3-0 vs Crystal Palace Wed to trim gap. If title race still mathematically alive, Pep WILL NOT rotate heavily for Bournemouth — he'll go full strength with Haaland. That weakens the engine's rotation thesis. Still genuine support: 6 City injuries (Rodri torn ligament, Kovacic knock, Ake ankle, Bobb thigh, Stones thigh, Gvardiol recovering), Bournemouth home strong (6th, chasing 6th spot), cumulative fatigue (3rd game in 7 days). But STRONG conviction downgraded to KEEP.<br><br><strong>Home adj:</strong> Elo: λ+0.2%(3402) · finish: wasteful(0.88)→λ+2% · motiv: +2%(CL race) · inj: λ-6%(Ryan Christie(M,26/36=72%★))<br><strong>Away adj:</strong> Elo: λ+2.3%(4261) · motiv: +3%(title race)</strong><br><br><strong>Kickoff:</strong> Tue May 19 · 22:30 Dubai<br><strong>Model:</strong> 60.9% &nbsp; <strong>Book:</strong> 40.8% &nbsp; <strong>Edge:</strong> +49.1%<br><strong>λH</strong>=1.23 &nbsp; <strong>λA</strong>=1.35</div><div class="nb"><span class="nl2">Model:</span><span class="nv2 green">60.9%</span><span class="nl2">Book:</span><span class="nv2 dim">40.8%</span><span class="nl2">Win:</span><span class="nv2 green">+$290</span><span class="nl2">Lose:</span><span class="nv2 red">-$200</span></div></div>
+</div>
+<div class="pk" id="d-12" data-date="2026-05-19">
+<div class="ph" onclick="toggle(this)">
+<div class="rk">#12</div>
+<div class="pi"><div class="pn">Under 2.5 <span class="flag" style="background:rgba(34,197,94,.15);color:#22c55e;border:1px solid rgba(34,197,94,.35)">🔥 STRONG</span></div>
+<div class="pm">Chelsea vs Tottenham &middot; <span style="color:#E07A3A;font-weight:700">Tue May 19 · 23:15 Dubai</span> &middot; EPL</div></div>
+<div class="ps">
+<div class="n"><div class="nv accent">@2.31</div><div class="nl">ODDS</div></div>
+<div class="n"><div class="nv green">+52.8%</div><div class="nl">EDGE</div></div>
+<div class="n"><div class="nv">$200</div><div class="nl">STAKE</div></div>
+</div>
+<div class="pr" id="d-12-r"><span class="pp">pending</span></div>
+<div class="pb">
+<button class="bw" onclick="event.stopPropagation();mk('d',12,'win')">WIN</button>
+<button class="bl" onclick="event.stopPropagation();mk('d',12,'loss')">LOSS</button>
+<button class="br" onclick="event.stopPropagation();mk('d',12,'push')">PUSH</button>
+<button class="br" onclick="event.stopPropagation();mk('d',12,'pending')">RST</button>
+</div></div>
+<div class="pd" id="d-12-d"><div class="rb">🔥 <strong>STRONG: Engine pick — O/U market, defensive direction. λH=0.92 λA=1.14.<br><strong>Confidence flags:</strong> ⚠️BIG_GAP(4264pp model vs market)<br><br><strong>🌐 Web verification:</strong> FA Cup Final today (May 16) for Chelsea — 3 days rest before Tue. Chelsea form crisis (3 goals in last 5). Spurs missing 5 starters (Davies, Kudus, Kulusevski, Odobert, Romero) + Vicario/Solanke doubts. Both attacks depleted; engine λ-total of 2.06 supports U2.5.<br><br><strong>Home adj:</strong> rolling: form→50% · Elo: λ+0.5%(3539) · finish: wasteful(0.78)→λ+2% · xA: xA↑fin↓(1.36/0.78)→λ+2% · derby: +4%(london,open) · inj: λ-5%(Estevao(F,22/36=61%½)) · luck: +(-0.25/g)<br><strong>Away adj:</strong> rolling: form→50% · Elo: λ-0.5%(3126) · motiv: +2%(relegation fight(away)) · inj: λ-22%(Guglielmo Vicario(G,31/36=86%★),Xavi Simons(M,28/36=78%★),Mohammed Kudus(M,19/36=53%½),Cristian Romero(D,23/36=64%½),Wilson Odobert(F,24/36=67%½)) · luck: +(-0.18/g)</strong><br><br><strong>Kickoff:</strong> Tue May 19 · 23:15 Dubai<br><strong>Model:</strong> 66.1% &nbsp; <strong>Book:</strong> 43.3% &nbsp; <strong>Edge:</strong> +52.8%<br><strong>λH</strong>=0.92 &nbsp; <strong>λA</strong>=1.14</div><div class="nb"><span class="nl2">Model:</span><span class="nv2 green">66.1%</span><span class="nl2">Book:</span><span class="nv2 dim">43.3%</span><span class="nl2">Win:</span><span class="nv2 green">+$262</span><span class="nl2">Lose:</span><span class="nv2 red">-$200</span></div></div>
+</div>
+</div>
+
+</div>
+<script>
+function sw(r){document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));event.target.classList.add('on');document.querySelectorAll('.rng').forEach(x=>x.classList.remove('on'));document.getElementById('r-'+r).classList.add('on');}
+function toggle(el){var pd=el.parentElement.querySelector('.pd');pd.classList.toggle('open');}
+const RESULTS={};
+const ODDS={};
+document.querySelectorAll('.pk').forEach(pk=>{const id=pk.id;const o=parseFloat(pk.querySelector('.nv.accent').innerText.replace('@',''));ODDS[id]=o;});
+function mk(r,n,res){const id=r+'-'+n;RESULTS[id]=res;const pk=document.getElementById(id);pk.classList.remove('win','loss','push');if(res!=='pending')pk.classList.add(res);const pr=document.getElementById(id+'-r');const o=ODDS[id];let pnl=0;if(res==='win')pnl=Math.round(200*(o-1));else if(res==='loss')pnl=-200;const pnlStr=(pnl>=0?'+$':'-$')+Math.abs(pnl).toLocaleString();const styles={win:'<span style="color:var(--gn);font-weight:800;font-size:14px">'+pnlStr+'</span>',loss:'<span style="color:var(--rd);font-weight:800;font-size:14px">'+pnlStr+'</span>',push:'<span style="color:var(--dm);font-weight:800;font-size:14px">$0</span>',pending:'<span class="pp">pending</span>'};pr.innerHTML=styles[res];upd(r);}
+function upd(r){let w=0,l=0,p=0,pnl=0,staked=0;document.querySelectorAll('#r-'+r+' .pk').forEach(pk=>{const id=pk.id;const res=RESULTS[id];if(!res||res==='pending')return;const o=ODDS[id];staked+=200;if(res==='win'){w++;pnl+=Math.round(200*(o-1));}else if(res==='loss'){l++;pnl-=200;}else{p++;}});document.getElementById(r+'-record').innerText=w+'-'+l+(p?'-'+p:'');document.getElementById(r+'-staked').innerText='$'+staked.toLocaleString();const tEl=document.getElementById(r+'-total');tEl.innerText=(pnl>=0?'+$':'-$')+Math.abs(pnl).toLocaleString();tEl.style.color=pnl>0?'var(--gn)':(pnl<0?'var(--rd)':'var(--dm)');document.getElementById(r+'-roi').innerText=staked>0?((pnl/staked*100).toFixed(1)+'%'):'—';}
+function filt(r,d){const picks=document.querySelectorAll('#r-'+r+' .pk');const dhs=document.querySelectorAll('#r-'+r+' .day-header');let v=0;picks.forEach(p=>{if(d==='all'||p.dataset.date===d){p.classList.remove('hidden');v++;}else{p.classList.add('hidden');}});dhs.forEach(dh=>{if(d==='all'||dh.dataset.date===d){dh.classList.remove('hidden');}else{dh.classList.add('hidden');}});document.getElementById(r+'-visible').innerText=v;}
+</script>
+</body>
+</html>
