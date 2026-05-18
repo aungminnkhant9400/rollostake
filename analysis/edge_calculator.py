@@ -1602,17 +1602,7 @@ class EdgeCalculator:
         conn = sqlite3.connect(DB_PATH)
         c = conn.cursor()
         
-        # Clear only future/current scheduled picks. Stale pending picks are
-        # kept so late result imports can settle them into history.
-        c.execute(
-            """
-            DELETE FROM picks
-            WHERE status = 'pending'
-              AND match_id IN (
-                  SELECT match_id FROM matches WHERE status = 'scheduled'
-              )
-            """
-        )
+        self._clear_replaceable_pending_picks(c)
         
         for pick in top_picks:
             c.execute('''
@@ -1637,15 +1627,7 @@ class EdgeCalculator:
         """Save risk-band picks without bankroll scaling."""
         conn = sqlite3.connect(DB_PATH)
         c = conn.cursor()
-        c.execute(
-            """
-            DELETE FROM picks
-            WHERE status = 'pending'
-              AND match_id IN (
-                  SELECT match_id FROM matches WHERE status = 'scheduled'
-              )
-            """
-        )
+        self._clear_replaceable_pending_picks(c)
 
         for pick in picks:
             c.execute('''
@@ -1664,6 +1646,30 @@ class EdgeCalculator:
         conn.close()
         print(f"Saved {len(picks)} risk-band picks")
         return picks
+
+    def _clear_replaceable_pending_picks(self, c) -> None:
+        """Clear only pending picks for matches that have not kicked off yet."""
+        now_utc = datetime.now(timezone.utc)
+        c.execute(
+            """
+            SELECT p.id, m.kickoff
+            FROM picks p
+            JOIN matches m ON p.match_id = m.match_id
+            WHERE p.status = 'pending'
+              AND m.status = 'scheduled'
+            """
+        )
+        replaceable_ids = []
+        for pick_id, kickoff in c.fetchall():
+            kickoff_utc = parse_kickoff_utc(kickoff)
+            if kickoff_utc is None or kickoff_utc >= now_utc:
+                replaceable_ids.append(pick_id)
+        if not replaceable_ids:
+            return
+        c.execute(
+            f"DELETE FROM picks WHERE id IN ({','.join('?' for _ in replaceable_ids)})",
+            replaceable_ids,
+        )
 
 if __name__ == '__main__':
     calc = EdgeCalculator(use_kelly=True)
