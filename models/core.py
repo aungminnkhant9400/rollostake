@@ -146,6 +146,20 @@ def init_db():
         )
     ''')
 
+    c.execute('''
+        CREATE TABLE IF NOT EXISTS team_news (
+            id INTEGER PRIMARY KEY,
+            player TEXT,
+            team TEXT,
+            status TEXT,
+            reason TEXT,
+            source TEXT,
+            confidence TEXT,
+            return_date TEXT,
+            fetched_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    ''')
+
     # Lightweight migrations for databases created before the Range C/D work.
     _add_column_if_missing(c, 'matches', 'home_fatigue_score', 'REAL')
     _add_column_if_missing(c, 'matches', 'away_fatigue_score', 'REAL')

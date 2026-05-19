@@ -289,7 +289,7 @@ class DashboardGenerator:
             '<th>Played</th><th>Risk Band</th><th>Quality</th><th>Match</th>'
             '<th>Pick</th><th>Result</th><th>P&L</th><th>Cumulative</th>'
             '</tr></thead><tbody>'
-            + ''.join(rows[-20:])
+            + ''.join(rows)
             + '</tbody></table></div>'
         )
 
@@ -386,6 +386,8 @@ class DashboardGenerator:
             SELECT home_team, away_team, home_goals, away_goals, kickoff
             FROM matches
             WHERE status = 'completed'
+            AND home_goals IS NOT NULL
+            AND away_goals IS NOT NULL
             AND (home_team = ? OR away_team = ?)
             ORDER BY kickoff DESC
             LIMIT ?
