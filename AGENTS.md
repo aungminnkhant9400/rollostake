@@ -196,6 +196,7 @@ Never use `--create-missing` unless the user explicitly asks. Do not clear past 
 - Do not blindly chase more picks. The user wants better win rate, not filler.
 - Low Risk `KEEP` has recently outperformed Low Risk `STRONG`; respect learned performance.
 - High Risk has performed poorly; avoid repeated losing shapes such as aggressive AH `-1.5/-2.5`, unsupported away 1X2 shots, and bad low-total fillers unless context strongly supports them.
+- If a risk band's live bank is below its flat stake, that band must be paused. Do not generate official picks that cannot be staked from the live band bank.
 - Parley should focus on low odds and high probability, with only small controlled exposure to booster legs.
 - Always report record, P&L, ROI, and bank when running the weekly workflow.
 

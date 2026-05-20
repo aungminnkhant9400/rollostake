@@ -242,6 +242,30 @@ class EdgeCalculator:
     def flat_range_stake(self, range_config: RangeConfig) -> float:
         """Return the flat stake used by the C/D range model."""
         return range_config.flat_stake
+
+    def _range_bank_state(self, code: str, config: RangeConfig) -> Dict[str, float]:
+        """Return settled P&L, live bank, and flat-stake capacity for a range."""
+        conn = sqlite3.connect(DB_PATH)
+        c = conn.cursor()
+        c.execute(
+            """
+            SELECT COALESCE(SUM(pnl), 0)
+            FROM results
+            WHERE range_code = ?
+            """,
+            (code,),
+        )
+        pnl = float(c.fetchone()[0] or 0)
+        conn.close()
+        bank = config.bankroll + pnl
+        stake = self.flat_range_stake(config)
+        stake_slots = int(bank // stake) if stake > 0 else 0
+        return {
+            "pnl": pnl,
+            "bank": bank,
+            "stake": stake,
+            "stake_slots": max(0, stake_slots),
+        }
     
     def generate_picks(self, league: str = None, min_edge: float = 0.05) -> List[Pick]:
         """
@@ -345,6 +369,10 @@ class EdgeCalculator:
         exposure = set()
 
         for code, config in self.range_configs.items():
+            bank_state = self._range_bank_state(code, config)
+            if bank_state["stake_slots"] <= 0:
+                continue
+            max_budgeted_picks = min(config.max_picks, bank_state["stake_slots"])
             match_counts = {}
             family_counts = {}
             range_candidates = [
@@ -376,6 +404,8 @@ class EdgeCalculator:
 
             def add_pick(pick: Pick) -> bool:
                 nonlocal count
+                if count >= max_budgeted_picks:
+                    return False
                 exposure_key = (pick.home_team, pick.away_team, pick.market, pick.selection)
                 if exposure_key in exposure:
                     return False
@@ -405,7 +435,7 @@ class EdgeCalculator:
             for market, minimum in config.market_min_picks.items():
                 market_count = 0
                 for pick in clean_candidates:
-                    if count >= config.max_picks or market_count >= minimum:
+                    if count >= max_budgeted_picks or market_count >= minimum:
                         break
                     if pick.market != market:
                         continue
@@ -413,13 +443,13 @@ class EdgeCalculator:
                         market_count += 1
 
             for pick in clean_candidates:
-                if count >= config.max_picks:
+                if count >= max_budgeted_picks:
                     break
                 if add_pick(pick):
                     continue
 
             for pick in fallback_candidates:
-                if count >= config.max_picks:
+                if count >= max_budgeted_picks:
                     break
                 if add_pick(pick):
                     continue

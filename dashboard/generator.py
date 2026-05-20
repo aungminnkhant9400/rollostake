@@ -601,6 +601,17 @@ class DashboardGenerator:
         settled_roi = (f'{settled["roi"]:+.1f}%' if settled["staked"] else "-")
         settled_pnl_class = "good" if settled["pnl"] >= 0 else "bad"
         settled_bank = config.bankroll + settled["pnl"]
+        stake_slots = int(settled_bank // config.flat_stake) if config.flat_stake > 0 else 0
+        if stake_slots <= 0:
+            range_note = (
+                f"{len(picks)} picks &middot; bank ${settled_bank:,.2f} is below "
+                f"the ${config.flat_stake:,.0f} flat stake, so this band is paused until the bank is topped up or stake size is changed."
+            )
+        else:
+            range_note = (
+                f"{len(picks)} picks &middot; planned stake ${total_stake:,.0f} "
+                f"&middot; {stake_slots} stake slots available from live bank &middot; correlated same-match exposure is flagged in each pick's risk note."
+            )
         cards = []
         index = 1
 
@@ -633,7 +644,7 @@ class DashboardGenerator:
     <div><span>ROI</span><strong id="{code}-roi" class="{settled_pnl_class if settled["staked"] else ""}">{settled_roi}</strong></div>
     <div><span>Bank</span><strong id="{code}-bank" class="{settled_pnl_class}">${settled_bank:,.2f}</strong></div>
   </div>
-  <div class="range-note">{len(picks)} picks · planned stake ${total_stake:,.0f} · correlated same-match exposure is flagged in each pick's risk note.</div>
+  <div class="range-note">{range_note}</div>
   {self._render_filter(code, picks)}
   {''.join(cards)}
   {self._history_table(results_history, code)}
