@@ -1055,6 +1055,99 @@ class DashboardGenerator:
 </section>
 """
 
+    def _fixture_coverage_summary(self) -> str:
+        now_dt = datetime.now(timezone.utc).astimezone(self.display_tz)
+        end_dt = now_dt + timedelta(days=7)
+        conn = sqlite3.connect(DB_PATH)
+        conn.row_factory = sqlite3.Row
+        c = conn.cursor()
+        c.execute(
+            """
+            SELECT m.match_id, m.league, m.home_team, m.away_team, m.kickoff,
+                   COUNT(o.id) AS odds_rows
+            FROM matches m
+            LEFT JOIN odds o
+              ON m.match_id = o.match_id
+             AND o.bookmaker = 'polymarket'
+            WHERE m.status = 'scheduled'
+            GROUP BY m.match_id
+            """,
+        )
+        fixtures = []
+        for row in c.fetchall():
+            item = dict(row)
+            kickoff_utc = parse_kickoff_utc(item.get("kickoff"))
+            if kickoff_utc is None:
+                continue
+            kickoff_local = kickoff_utc.astimezone(self.display_tz)
+            if now_dt <= kickoff_local <= end_dt:
+                item["_kickoff_local"] = kickoff_local
+                fixtures.append(item)
+        conn.close()
+
+        by_league = {}
+        for fixture in fixtures:
+            league = str(fixture.get("league") or "")
+            stats = by_league.setdefault(league, {"league": league, "fixtures": 0, "odds_fixtures": 0})
+            stats["fixtures"] += 1
+            if int(fixture.get("odds_rows") or 0) > 0:
+                stats["odds_fixtures"] += 1
+        rows = [by_league[key] for key in sorted(by_league)]
+        uncovered = sorted(
+            [fixture for fixture in fixtures if int(fixture.get("odds_rows") or 0) == 0],
+            key=lambda row: (row["_kickoff_local"], str(row.get("league") or ""), str(row.get("home_team") or "")),
+        )[:18]
+
+        total_fixtures = sum(int(row["fixtures"] or 0) for row in rows)
+        total_odds_fixtures = sum(int(row["odds_fixtures"] or 0) for row in rows)
+        cards = []
+        for row in rows:
+            league = html.escape(str(row["league"] or ""))
+            fixtures = int(row["fixtures"] or 0)
+            odds_fixtures = int(row["odds_fixtures"] or 0)
+            missing = max(0, fixtures - odds_fixtures)
+            cards.append(
+                '<div class="performance-card">'
+                f"<span>{league}</span>"
+                f"<strong>{fixtures}</strong>"
+                f"<small>{odds_fixtures} with Polymarket odds</small>"
+                f"<div>{missing} fixture{'s' if missing != 1 else ''} waiting for odds.</div>"
+                "</div>"
+            )
+
+        uncovered_rows = "".join(
+            "<tr>"
+            f"<td>{html.escape(row['_kickoff_local'].strftime('%Y-%m-%d %H:%M'))}</td>"
+            f"<td>{html.escape(str(row.get('league') or ''))}</td>"
+            f"<td>{html.escape(str(row.get('home_team') or ''))} vs {html.escape(str(row.get('away_team') or ''))}</td>"
+            "<td>No Polymarket market matched yet</td>"
+            "</tr>"
+            for row in uncovered
+        )
+        uncovered_html = (
+            '<div class="history"><h2>Fetched Fixtures Without Polymarket Odds</h2><table><thead><tr>'
+            '<th>Kickoff</th><th>League</th><th>Match</th><th>Status</th>'
+            '</tr></thead><tbody>'
+            + uncovered_rows
+            + '</tbody></table></div>'
+            if uncovered_rows
+            else ""
+        )
+
+        return f"""
+<section class="range-performance">
+  <div class="performance-heading">
+    <div><span>Fixture coverage</span><h2>Upcoming fixtures vs matched odds</h2></div>
+    <p>Fixtures are fetched first. Picks are generated only where Polymarket odds are matched.</p>
+  </div>
+  <div class="performance-grid">
+    <div class="performance-card performance-leader"><span>Total</span><strong>{total_fixtures}</strong><small>{total_odds_fixtures} with odds</small><div>{max(0, total_fixtures - total_odds_fixtures)} waiting for Polymarket coverage.</div></div>
+    {"".join(cards)}
+  </div>
+</section>
+{uncovered_html}
+"""
+
     def generate(self):
         """Generate the dashboard and return the output path."""
         picks = self.get_picks()
@@ -1298,6 +1391,7 @@ button.loss {{ color:var(--bad); border-color:#ef444433; }}
   <div class="intro">
     <strong>Polymarket risk-band workflow.</strong> All kickoff and played dates are shown in Macau time. High Risk keeps the bigger price band for carefully vetted upside; Low Risk keeps the tighter price band. Both use flat ${flat_stake:,.0f} staking, quality flags, correlated-exposure notes, and browser-side result settlement.
   </div>
+  {self._fixture_coverage_summary()}
   {range_sections}
 </main>
 <script>
