@@ -1,6 +1,7 @@
 """Static risk-band dashboard generator."""
 
 import html
+import hashlib
 import json
 import os
 import sqlite3
@@ -15,6 +16,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from analysis.edge_calculator import EdgeCalculator
 from config.paths import DASHBOARD_DIR, DB_PATH, ensure_runtime_dirs
 from config.settings import load_settings
+from models.core import init_db
 from utils.match_resolver import parse_kickoff_utc
 
 
@@ -23,6 +25,7 @@ class DashboardGenerator:
 
     def __init__(self):
         ensure_runtime_dirs()
+        init_db()
         self.output_file = DASHBOARD_DIR / "index.html"
         self.settings = load_settings()
         try:
@@ -745,14 +748,139 @@ class DashboardGenerator:
             "odds": odds,
             "model_prob": model_prob,
             "boosters": booster_count,
+            "status": "pending",
+            "quality": "KEEP",
         }
+
+    def _parley_slip_key(self, slip: Dict) -> str:
+        raw = "|".join(
+            [str(slip.get("label") or "Parley")]
+            + [
+                f"{leg.get('match_id')}:{leg.get('market')}:{leg.get('selection')}"
+                for leg in slip.get("legs", [])
+            ]
+        )
+        return hashlib.sha1(raw.encode("utf-8")).hexdigest()
+
+    def _clear_replaceable_pending_parleys(self, c) -> None:
+        now_utc = datetime.now(timezone.utc)
+        c.execute(
+            """
+            SELECT s.id, MIN(m.kickoff) AS first_kickoff
+            FROM parley_slips s
+            JOIN parley_legs l ON s.id = l.slip_id
+            JOIN matches m ON l.match_id = m.match_id
+            WHERE s.status = 'pending'
+            GROUP BY s.id
+            """
+        )
+        replaceable_ids = []
+        for slip_id, first_kickoff in c.fetchall():
+            kickoff_utc = parse_kickoff_utc(first_kickoff)
+            if kickoff_utc is None or kickoff_utc >= now_utc:
+                replaceable_ids.append(slip_id)
+        if not replaceable_ids:
+            return
+        placeholders = ",".join("?" for _ in replaceable_ids)
+        c.execute(f"DELETE FROM parley_legs WHERE slip_id IN ({placeholders})", replaceable_ids)
+        c.execute(f"DELETE FROM parley_slips WHERE id IN ({placeholders})", replaceable_ids)
+
+    def save_parley_slips(self) -> List[Dict]:
+        candidates = self._parley_candidates()
+        stake = max(float(self.settings.get("flat_stake", 10)) / 2, 1)
+        slips = [
+            self._build_parley_slip("Conservative 2-leg", candidates, 2, max_boosters=0),
+            self._build_parley_slip("Balanced 3-leg", candidates, 3, max_boosters=1),
+        ]
+        slips = [slip for slip in slips if len(slip.get("legs", [])) >= 2]
+
+        conn = sqlite3.connect(DB_PATH)
+        c = conn.cursor()
+        self._clear_replaceable_pending_parleys(c)
+        saved = []
+        for slip in slips:
+            slip_key = self._parley_slip_key(slip)
+            c.execute(
+                """
+                INSERT OR IGNORE INTO parley_slips
+                (slip_key, label, odds, model_prob, stake, quality, status)
+                VALUES (?, ?, ?, ?, ?, 'KEEP', 'pending')
+                """,
+                (slip_key, slip["label"], slip["odds"], slip["model_prob"], stake),
+            )
+            c.execute("SELECT id FROM parley_slips WHERE slip_key = ?", (slip_key,))
+            row = c.fetchone()
+            if not row:
+                continue
+            slip_id = row[0]
+            c.execute("SELECT COUNT(*) FROM parley_legs WHERE slip_id = ?", (slip_id,))
+            if c.fetchone()[0]:
+                continue
+            for leg_order, leg in enumerate(slip["legs"], 1):
+                c.execute(
+                    """
+                    INSERT INTO parley_legs
+                    (slip_id, leg_order, match_id, selection, market, odds, model_prob,
+                     edge_pct, source_band)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    """,
+                    (
+                        slip_id,
+                        leg_order,
+                        leg.get("match_id"),
+                        leg.get("selection"),
+                        leg.get("market"),
+                        leg.get("odds"),
+                        leg.get("model_prob"),
+                        leg.get("edge_pct"),
+                        leg.get("source_band"),
+                    ),
+                )
+            slip["id"] = slip_id
+            slip["slip_key"] = slip_key
+            saved.append(slip)
+        conn.commit()
+        conn.close()
+        return saved
+
+    def _get_parley_slips(self) -> List[Dict]:
+        conn = sqlite3.connect(DB_PATH)
+        conn.row_factory = sqlite3.Row
+        c = conn.cursor()
+        c.execute(
+            """
+            SELECT *
+            FROM parley_slips
+            ORDER BY COALESCE(settled_at, created_at), id
+            """
+        )
+        slips = [dict(row) for row in c.fetchall()]
+        for slip in slips:
+            c.execute(
+                """
+                SELECT l.*, m.home_team, m.away_team, m.league, m.kickoff
+                FROM parley_legs l
+                JOIN matches m ON l.match_id = m.match_id
+                WHERE l.slip_id = ?
+                ORDER BY l.leg_order
+                """,
+                (slip["id"],),
+            )
+            slip["legs"] = [dict(row) for row in c.fetchall()]
+        conn.close()
+        return slips
 
     def _render_parley_card(self, slip: Dict, index: int, stake: float) -> str:
         legs = slip["legs"]
         if not legs:
             return ""
 
+        stake = float(slip.get("stake") or stake)
+        status = str(slip.get("status") or "pending")
+        result = str(slip.get("result") or status)
         potential_profit = stake * (float(slip["odds"]) - 1)
+        pnl = float(slip.get("pnl") or 0)
+        result_class = "good" if result == "win" else "bad" if result == "loss" else ""
         details = []
         for leg in legs:
             match = html.escape(f"{leg.get('home_team') or ''} vs {leg.get('away_team') or ''}")
@@ -760,6 +888,7 @@ class DashboardGenerator:
             market = html.escape(str(leg.get("market") or ""))
             kickoff = html.escape(self._display_kickoff(leg.get("kickoff")))
             band = html.escape(str(leg.get("source_band") or "MODEL"))
+            leg_result = html.escape(str(leg.get("result") or "pending"))
             details.append(
                 '<div class="parley-leg">'
                 f'<div><span class="market-pill">{market}</span><strong>{pick}</strong></div>'
@@ -769,13 +898,19 @@ class DashboardGenerator:
                 f"<span>Model <strong>{float(leg.get('model_prob') or 0):.1%}</strong></span>"
                 f"<span>Edge <strong class=\"good\">+{float(leg.get('edge_pct') or 0):.1f}%</strong></span>"
                 f"<span>Band <strong>{band}</strong></span>"
+                f"<span>Result <strong>{leg_result}</strong></span>"
                 "</div>"
                 "</div>"
             )
 
-        slip_id = f"parley-{index}"
+        slip_id = f"parley-{slip.get('id') or index}"
         leg_count = len(legs)
         title = html.escape(str(slip["label"]))
+        result_html = (
+            f'<div class="result {result_class}">{html.escape(result)}</div>'
+            if status == "settled"
+            else '<div class="result">pending</div>'
+        )
         return f"""
 <div class="pick-card keep parley-pick" id="pick-{slip_id}">
   <div class="pick-summary" onclick="toggleDetails('{slip_id}')">
@@ -788,9 +923,9 @@ class DashboardGenerator:
       <div><strong>@{float(slip["odds"]):.2f}</strong><span>Total Odds</span></div>
       <div><strong class="good">{float(slip["model_prob"]):.1%}</strong><span>Model Hit</span></div>
       <div><strong>${stake:,.0f}</strong><span>Stake</span></div>
-      <div><strong class="good">+${potential_profit:,.0f}</strong><span>Profit</span></div>
+      <div><strong class="{'good' if pnl >= 0 else 'bad'}">{('$' + format(pnl, '+,.0f')) if status == 'settled' else ('+$' + format(potential_profit, ',.0f'))}</strong><span>{'P&L' if status == 'settled' else 'Profit'}</span></div>
     </div>
-    <div class="result">pending</div>
+    {result_html}
   </div>
   <div class="pick-details" id="details-{slip_id}">
     <div class="reasoning">This parley is built from the model's separate parley pool, not copied from Low Risk. It prefers lower odds, higher model probability, and segments that have learned better from settled results. It allows only limited booster odds because every leg must win.</div>
@@ -805,21 +940,81 @@ class DashboardGenerator:
 </div>
 """
 
+    def _parley_stats(self, slips: List[Dict]) -> Dict:
+        settled = [slip for slip in slips if slip.get("status") == "settled" and slip.get("result") in ("win", "loss", "push")]
+        wins = sum(1 for slip in settled if slip.get("result") == "win")
+        losses = sum(1 for slip in settled if slip.get("result") == "loss")
+        pushes = sum(1 for slip in settled if slip.get("result") == "push")
+        staked = sum(float(slip.get("stake") or 0) for slip in settled)
+        pnl = sum(float(slip.get("pnl") or 0) for slip in settled)
+        roi = (pnl / staked * 100) if staked else 0.0
+        return {
+            "settled": len(settled),
+            "wins": wins,
+            "losses": losses,
+            "pushes": pushes,
+            "staked": staked,
+            "pnl": pnl,
+            "roi": roi,
+        }
+
+    def _render_parley_history(self, slips: List[Dict]) -> str:
+        settled = [
+            slip for slip in slips
+            if slip.get("status") == "settled" and slip.get("result") in ("win", "loss", "push")
+        ]
+        if not settled:
+            return '<div class="history empty-history">No settled parley history yet.</div>'
+
+        running = 0.0
+        rows = []
+        for slip in settled:
+            running += float(slip.get("pnl") or 0)
+            legs = slip.get("legs", [])
+            played_at = max((self._kickoff_sort_key(leg.get("kickoff")) for leg in legs), default=datetime.min)
+            played_label = played_at.strftime("%Y-%m-%d %H:%M") if played_at != datetime.min else ""
+            leg_text = " / ".join(
+                f"{leg.get('home_team') or ''} vs {leg.get('away_team') or ''}: {leg.get('selection') or ''}"
+                for leg in legs
+            )
+            rows.append(
+                "<tr>"
+                f"<td>{html.escape(played_label)}</td>"
+                "<td>Parley</td>"
+                f"<td>{html.escape(str(slip.get('quality') or 'KEEP'))}</td>"
+                f"<td>{html.escape(str(slip.get('label') or 'Parley'))}</td>"
+                f"<td>{html.escape(leg_text)}</td>"
+                f"<td>{html.escape(str(slip.get('result') or ''))}</td>"
+                f"<td>${float(slip.get('pnl') or 0):+,.0f}</td>"
+                f"<td>${running:+,.0f}</td>"
+                "</tr>"
+            )
+        return (
+            '<div class="history"><h2>Parley History</h2><table><thead><tr>'
+            '<th>Played</th><th>Risk Band</th><th>Quality</th><th>Slip</th>'
+            '<th>Legs</th><th>Result</th><th>P&L</th><th>Cumulative</th>'
+            '</tr></thead><tbody>'
+            + ''.join(rows)
+            + '</tbody></table></div>'
+        )
+
     def _render_parley(self) -> str:
         candidates = self._parley_candidates()
+        saved_slips = self._get_parley_slips()
+        pending_slips = [slip for slip in saved_slips if slip.get("status") == "pending"]
+        stats = self._parley_stats(saved_slips)
         stake = max(float(self.settings.get("flat_stake", 10)) / 2, 1)
         bank = float(self.settings.get("bankroll", 100))
-        slips = [
-            self._build_parley_slip("Conservative 2-leg", candidates, 2, max_boosters=0),
-            self._build_parley_slip("Balanced 3-leg", candidates, 3, max_boosters=1),
-        ]
         cards = [
             self._render_parley_card(slip, index, stake)
-            for index, slip in enumerate(slips, 1)
-            if len(slip["legs"]) >= 2
+            for index, slip in enumerate(pending_slips, 1)
         ]
         if not cards:
-            cards.append('<div class="empty">No parley candidates generated from the model pool.</div>')
+            cards.append('<div class="empty">No pending parley slips saved yet.</div>')
+        record = f"{stats['wins']}W-{stats['losses']}L" + (f"-{stats['pushes']}P" if stats["pushes"] else "")
+        pnl_class = "good" if stats["pnl"] >= 0 else "bad"
+        roi_class = "good" if stats["roi"] >= 0 else "bad"
+        settled_bank = bank + stats["pnl"]
 
         return f"""
 <section class="range" id="range-PARLEY">
@@ -829,7 +1024,8 @@ class DashboardGenerator:
       <p>Recommended: 2 legs first. The 3-leg slip may include one controlled odds booster.</p>
     </div>
     <div class="performance-grid">
-      <div class="performance-card performance-leader"><span>Source</span><strong>{len(candidates)}</strong><small>Parley candidates</small><div>Selected from full model odds pool.</div></div>
+      <div class="performance-card performance-leader"><span>Parley</span><strong class="{roi_class}">{stats["roi"]:+.1f}%</strong><small>{stats["settled"]} settled - {record}</small><div>Staked ${stats["staked"]:,.0f} / P&amp;L ${stats["pnl"]:+,.2f}</div></div>
+      <div class="performance-card"><span>Source</span><strong>{len(candidates)}</strong><small>Parley candidates</small><div>Selected from full model odds pool.</div></div>
       <div class="performance-card"><span>Stake</span><strong>${stake:,.0f}</strong><small>Suggested per slip</small><div>Half of flat stake.</div></div>
       <div class="performance-card"><span>Rule</span><strong>1</strong><small>Booster max</small><div>Low odds first, no same-match correlation.</div></div>
     </div>
@@ -837,14 +1033,14 @@ class DashboardGenerator:
   <div class="pnl-bar">
     <div><span>Base Bank</span><strong>${bank:,.0f}</strong></div>
     <div><span>Slip Stake</span><strong>${stake:,.0f}</strong></div>
-    <div><span>Source Picks</span><strong>{len(candidates)}</strong></div>
-    <div><span>Record</span><strong>-</strong></div>
-    <div><span>P&amp;L</span><strong>-</strong></div>
+    <div><span>Record</span><strong>{record}</strong></div>
+    <div><span>P&amp;L</span><strong class="{pnl_class}">${stats["pnl"]:+,.2f}</strong></div>
+    <div><span>Bank</span><strong class="{pnl_class}">${settled_bank:,.2f}</strong></div>
   </div>
-  <div class="range-note">{len(cards)} parley slips &middot; every leg must win &middot; treat this as separate from official High Risk and Low Risk single-pick records.</div>
-  <div class="day-header"><span>Recommended Parley Slips</span><small>{len(cards)} slips</small></div>
+  <div class="range-note">{len(pending_slips)} pending parley slips &middot; every leg must win &middot; Parley is now saved and settled separately from High Risk and Low Risk.</div>
+  <div class="day-header"><span>Recommended Parley Slips</span><small>{len(pending_slips)} slips</small></div>
   {"".join(cards)}
-  <div class="history empty-history">No settled parley history yet.</div>
+  {self._render_parley_history(saved_slips)}
 </section>
 """
 

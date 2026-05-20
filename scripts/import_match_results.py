@@ -126,6 +126,85 @@ def _match_kickoff(c, match_id: str) -> str:
     return row[0] if row else ""
 
 
+def _settle_parley_slips(c, match_ids, home_team, away_team, home_goals, away_goals):
+    c.execute(
+        f"""
+        SELECT id, slip_id, match_id, selection, market
+        FROM parley_legs
+        WHERE match_id IN ({",".join("?" for _ in match_ids)})
+        """,
+        match_ids,
+    )
+    affected_slips = set()
+    settled_legs = []
+    for leg_id, slip_id, leg_match_id, selection, market in c.fetchall():
+        leg_result = _settle_selection(selection, market, home_team, away_team, home_goals, away_goals)
+        if leg_result not in {"win", "loss", "push"}:
+            continue
+        c.execute(
+            """
+            UPDATE parley_legs
+            SET result = ?, home_goals = ?, away_goals = ?, settled_at = CURRENT_TIMESTAMP
+            WHERE id = ?
+            """,
+            (leg_result, home_goals, away_goals, leg_id),
+        )
+        affected_slips.add(slip_id)
+        settled_legs.append((slip_id, selection, leg_result))
+
+    settled_slips = []
+    for slip_id in affected_slips:
+        c.execute(
+            """
+            SELECT l.result, l.odds
+            FROM parley_legs l
+            WHERE l.slip_id = ?
+            ORDER BY l.leg_order
+            """,
+            (slip_id,),
+        )
+        legs = c.fetchall()
+        if not legs or any(result not in {"win", "loss", "push"} for result, _odds in legs):
+            continue
+
+        c.execute("SELECT stake FROM parley_slips WHERE id = ?", (slip_id,))
+        row = c.fetchone()
+        if not row:
+            continue
+        stake = float(row[0] or 0)
+        leg_results = [result for result, _odds in legs]
+
+        if "loss" in leg_results:
+            slip_result = "loss"
+            payout = 0.0
+            pnl = -stake
+        else:
+            effective_odds = 1.0
+            for leg_result, odds in legs:
+                if leg_result == "win":
+                    effective_odds *= float(odds or 1)
+            if effective_odds > 1:
+                slip_result = "win"
+                payout = stake * effective_odds
+                pnl = payout - stake
+            else:
+                slip_result = "push"
+                payout = stake
+                pnl = 0.0
+
+        c.execute(
+            """
+            UPDATE parley_slips
+            SET status = 'settled', result = ?, payout = ?, pnl = ?, settled_at = CURRENT_TIMESTAMP
+            WHERE id = ?
+            """,
+            (slip_result, payout, pnl, slip_id),
+        )
+        settled_slips.append((slip_id, slip_result, pnl))
+
+    return settled_legs, settled_slips
+
+
 def update_results(match_id, result=None, home_goals=None, away_goals=None, allow_future: bool = False):
     conn = sqlite3.connect(DB_PATH)
     c = conn.cursor()
@@ -206,6 +285,10 @@ def update_results(match_id, result=None, home_goals=None, away_goals=None, allo
         )
         settled.append((pick_id, selection, pick_result, pnl))
 
+    settled_parley_legs, settled_parley_slips = _settle_parley_slips(
+        c, match_ids, home_team, away_team, home_goals, away_goals
+    )
+
     conn.commit()
     conn.close()
 
@@ -214,6 +297,10 @@ def update_results(match_id, result=None, home_goals=None, away_goals=None, allo
         print(f"  Also marked duplicate fixture ids completed: {', '.join(match_ids[1:])}")
     for pick_id, selection, pick_result, pnl in settled:
         print(f"  Pick {pick_id} {selection}: {pick_result} ({pnl:+.2f})")
+    for slip_id, selection, leg_result in settled_parley_legs:
+        print(f"  Parley slip {slip_id} leg {selection}: {leg_result}")
+    for slip_id, slip_result, pnl in settled_parley_slips:
+        print(f"  Parley slip {slip_id}: {slip_result} ({pnl:+.2f})")
 
 
 def import_results(path: str) -> dict:

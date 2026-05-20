@@ -66,7 +66,7 @@ Parley currently:
 - Uses learned segment performance, weighted more toward Low Risk.
 - Allows only one leg per match.
 - Builds a conservative 2-leg and balanced 3-leg slip.
-- Is displayed like High Risk and Low Risk cards, but is not yet stored as settled official DB picks.
+- Is saved in `parley_slips` and `parley_legs`, shown like High Risk and Low Risk, and settled as its own record once every leg has a result.
 
 ## Weekly `/stake` Workflow
 
@@ -203,7 +203,7 @@ Never use `--create-missing` unless the user explicitly asks. Do not clear past 
 
 - Live injury/news ingestion is partly automated through `scrapers/browser_news_scraper.py`, but it depends on Kimi WebBridge or a manual JSON fallback and still needs careful verification.
 - Some table, H2H, fatigue, and manual team-news adjustment logic exists.
-- Parley history exists visually as a placeholder; Parley slips are not yet saved and settled as their own database records.
+- Parley slips are saved and settled separately from High Risk and Low Risk. They use `parley_slips` and `parley_legs`, not the single-pick `results` table.
 - Friend cards are studied as aggregate market-shape lessons, not as exact picks.
 - Browser automation may be blocked from reloading `file://` pages. Rebuild the HTML and ask the user to refresh if needed.
 

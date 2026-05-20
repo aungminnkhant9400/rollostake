@@ -23,7 +23,10 @@ def rebuild_card(league: str = None) -> list:
     )
     picks = calc.generate_range_picks(league=league)
     calc.save_range_picks(picks)
-    DashboardGenerator().generate()
+    dashboard = DashboardGenerator()
+    parley_slips = dashboard.save_parley_slips()
+    dashboard.generate()
+    print(f"Saved {len(parley_slips)} parley slips")
     return picks, calc
 
 

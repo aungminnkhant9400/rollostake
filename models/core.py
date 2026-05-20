@@ -160,6 +160,45 @@ def init_db():
         )
     ''')
 
+    c.execute('''
+        CREATE TABLE IF NOT EXISTS parley_slips (
+            id INTEGER PRIMARY KEY,
+            slip_key TEXT UNIQUE,
+            label TEXT,
+            odds REAL,
+            model_prob REAL,
+            stake REAL,
+            quality TEXT DEFAULT 'KEEP',
+            status TEXT DEFAULT 'pending',
+            result TEXT,
+            payout REAL DEFAULT 0,
+            pnl REAL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            settled_at TIMESTAMP
+        )
+    ''')
+
+    c.execute('''
+        CREATE TABLE IF NOT EXISTS parley_legs (
+            id INTEGER PRIMARY KEY,
+            slip_id INTEGER,
+            leg_order INTEGER,
+            match_id TEXT,
+            selection TEXT,
+            market TEXT,
+            odds REAL,
+            model_prob REAL,
+            edge_pct REAL,
+            source_band TEXT,
+            result TEXT,
+            home_goals INTEGER,
+            away_goals INTEGER,
+            settled_at TIMESTAMP,
+            FOREIGN KEY (slip_id) REFERENCES parley_slips(id),
+            FOREIGN KEY (match_id) REFERENCES matches(match_id)
+        )
+    ''')
+
     # Lightweight migrations for databases created before the Range C/D work.
     _add_column_if_missing(c, 'matches', 'home_fatigue_score', 'REAL')
     _add_column_if_missing(c, 'matches', 'away_fatigue_score', 'REAL')
