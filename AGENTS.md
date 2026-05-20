@@ -90,7 +90,21 @@ python scripts\import_match_results.py match_results.csv
 python scripts\study_external_card.py friend_cards
 ```
 
-4. Dry-run Polymarket odds before writing.
+4. Fetch upcoming fixtures for the five leagues through token-free HTTP.
+
+```powershell
+python scripts\fetch_weekly_fixtures.py --days 7
+```
+
+This uses ESPN scoreboard JSON and does not require `FOOTBALL_DATA_TOKEN`.
+
+5. Fit/update predictions from the saved fixtures.
+
+```powershell
+python main.py --skip-scrape --no-fatigue
+```
+
+6. Dry-run Polymarket odds before writing.
 
 ```powershell
 python scripts\scrape_polymarket_full.py --days 7 --dry-run
@@ -98,7 +112,7 @@ python scripts\scrape_polymarket_full.py --days 7 --dry-run
 
 Only continue if unresolved matches are acceptable and no fake fixtures are created.
 
-5. Import Polymarket odds.
+7. Import Polymarket odds.
 
 ```powershell
 python scripts\scrape_polymarket_full.py --days 7
@@ -106,13 +120,13 @@ python scripts\scrape_polymarket_full.py --days 7
 
 Never use `--create-missing` unless the user explicitly asks.
 
-6. Rebuild predictions and dashboard.
+8. Rebuild official picks and dashboard.
 
 ```powershell
 python scripts\rebuild_card.py
 ```
 
-7. Validate touched Python files.
+9. Validate touched Python files.
 
 ```powershell
 $env:PYTHONDONTWRITEBYTECODE='1'; python -m py_compile analysis\edge_calculator.py dashboard\generator.py scripts\rebuild_card.py scripts\import_match_results.py scripts\study_external_card.py scripts\scrape_polymarket_full.py scripts\import_historical_odds.py utils\match_resolver.py
@@ -164,6 +178,8 @@ python scripts\rebuild_card.py
 6. If pending picks are fewer than `2`, fetch/find next-week fixtures and odds, then rebuild predictions.
 
 ```powershell
+python scripts\fetch_weekly_fixtures.py --days 7
+python main.py --skip-scrape --no-fatigue
 python scripts\scrape_polymarket_full.py --days 7 --dry-run
 python scripts\scrape_polymarket_full.py --days 7
 python scripts\rebuild_card.py

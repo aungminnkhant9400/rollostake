@@ -1,10 +1,9 @@
 #!/usr/bin/env python3
-"""Fetch real upcoming fixtures from football-data.org."""
+"""Fetch real upcoming fixtures from ESPN's public scoreboard JSON."""
 
 import argparse
 import csv
 import json
-import os
 import sqlite3
 import sys
 from datetime import datetime, timedelta, timezone
@@ -12,7 +11,7 @@ from pathlib import Path
 from urllib.error import HTTPError, URLError
 from urllib.parse import urlencode
 from urllib.request import Request, urlopen
-from zoneinfo import ZoneInfo
+from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from config.paths import DB_PATH, ensure_runtime_dirs
@@ -21,13 +20,13 @@ from scrapers.manual_fixtures import add_fixture
 from utils.team_normalizer import normalize_team_name
 
 
-API_BASE = "https://api.football-data.org/v4"
+API_BASE = "https://site.api.espn.com/apis/site/v2/sports/soccer"
 LEAGUE_CODES = {
-    "EPL": "PL",
-    "L1": "FL1",
-    "Bundesliga": "BL1",
-    "SerieA": "SA",
-    "LaLiga": "PD",
+    "EPL": "eng.1",
+    "L1": "fra.1",
+    "Bundesliga": "ger.1",
+    "SerieA": "ita.1",
+    "LaLiga": "esp.1",
 }
 SLATE_COLUMNS = [
     "home_team",
@@ -71,16 +70,22 @@ def _date(value: str) -> datetime:
     return datetime.strptime(value, "%Y-%m-%d")
 
 
-def _request_json(url: str, token: str) -> dict:
-    request = Request(url, headers={"X-Auth-Token": token, "Accept": "application/json"})
+def _request_json(url: str) -> dict:
+    request = Request(
+        url,
+        headers={
+            "Accept": "application/json",
+            "User-Agent": "RolloStake/1.0 fixture-fetcher",
+        },
+    )
     try:
         with urlopen(request, timeout=30) as response:
             return json.loads(response.read().decode("utf-8"))
     except HTTPError as exc:
         body = exc.read().decode("utf-8", errors="replace")
-        raise RuntimeError(f"football-data.org returned HTTP {exc.code}: {body}") from exc
+        raise RuntimeError(f"ESPN scoreboard returned HTTP {exc.code}: {body}") from exc
     except URLError as exc:
-        raise RuntimeError(f"football-data.org request failed: {exc.reason}") from exc
+        raise RuntimeError(f"ESPN scoreboard request failed: {exc.reason}") from exc
 
 
 def _kickoff_local(utc_date: str, timezone_name: str) -> str:
@@ -88,14 +93,29 @@ def _kickoff_local(utc_date: str, timezone_name: str) -> str:
     kickoff_utc = datetime.fromisoformat(raw)
     if kickoff_utc.tzinfo is None:
         kickoff_utc = kickoff_utc.replace(tzinfo=timezone.utc)
-    return kickoff_utc.astimezone(ZoneInfo(timezone_name)).strftime("%Y-%m-%d %H:%M")
+    try:
+        local_tz = ZoneInfo(timezone_name)
+    except ZoneInfoNotFoundError:
+        local_tz = timezone(timedelta(hours=8), timezone_name)
+    return kickoff_utc.astimezone(local_tz).strftime("%Y-%m-%d %H:%M")
 
 
-def _fixture_from_match(match: dict, league: str, timezone_name: str) -> dict:
-    home_team = normalize_team_name(match["homeTeam"]["name"])
-    away_team = normalize_team_name(match["awayTeam"]["name"])
-    kickoff = _kickoff_local(match["utcDate"], timezone_name)
-    match_id = f"football_data_{match['id']}"
+def _fixture_from_match(match: dict, league: str, timezone_name: str) -> dict | None:
+    competition = (match.get("competitions") or [{}])[0]
+    status = competition.get("status", {}).get("type", {})
+    if status.get("completed") or status.get("state") != "pre":
+        return None
+
+    competitors = competition.get("competitors") or []
+    home = next((item for item in competitors if item.get("homeAway") == "home"), None)
+    away = next((item for item in competitors if item.get("homeAway") == "away"), None)
+    if not home or not away:
+        return None
+
+    home_team = normalize_team_name(home["team"]["displayName"])
+    away_team = normalize_team_name(away["team"]["displayName"])
+    kickoff = _kickoff_local(match["date"], timezone_name)
+    match_id = f"espn_{LEAGUE_CODES[league].replace('.', '_')}_{match['id']}"
     return {
         "match_id": match_id,
         "home_team": home_team,
@@ -127,21 +147,18 @@ def _stale_existing_fixtures(start_date: str, end_date: str, leagues: list[str])
     return changed
 
 
-def fetch_fixtures(
-    token: str,
-    leagues: list[str],
-    start_date: str,
-    end_date: str,
-    timezone_name: str,
-) -> list[dict]:
+def fetch_fixtures(leagues: list[str], start_date: str, end_date: str, timezone_name: str) -> list[dict]:
     fixtures = []
+    date_range = f"{start_date.replace('-', '')}-{end_date.replace('-', '')}"
     for league in leagues:
-        competition = LEAGUE_CODES[league]
-        query = urlencode({"dateFrom": start_date, "dateTo": end_date, "status": "SCHEDULED"})
-        url = f"{API_BASE}/competitions/{competition}/matches?{query}"
-        data = _request_json(url, token)
-        for match in data.get("matches", []):
-            fixtures.append(_fixture_from_match(match, league, timezone_name))
+        espn_league = LEAGUE_CODES[league]
+        query = urlencode({"dates": date_range})
+        url = f"{API_BASE}/{espn_league}/scoreboard?{query}"
+        data = _request_json(url)
+        for match in data.get("events", []):
+            fixture = _fixture_from_match(match, league, timezone_name)
+            if fixture:
+                fixtures.append(fixture)
     fixtures.sort(key=lambda item: (item["kickoff"], item["league"], item["home_team"]))
     return fixtures
 
@@ -183,7 +200,7 @@ def export_slate(path: str, fixtures: list[dict]) -> None:
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Fetch upcoming fixtures from football-data.org")
+    parser = argparse.ArgumentParser(description="Fetch upcoming fixtures from ESPN scoreboard JSON")
     parser.add_argument("--days", type=int, default=7, help="Number of days ahead to fetch")
     parser.add_argument("--from-date", dest="from_date", type=_date, help="Start date YYYY-MM-DD")
     parser.add_argument("--to-date", dest="to_date", type=_date, help="End date YYYY-MM-DD")
@@ -203,16 +220,12 @@ def main():
     )
     args = parser.parse_args()
 
-    token = os.getenv("FOOTBALL_DATA_TOKEN")
-    if not token:
-        raise SystemExit("Set FOOTBALL_DATA_TOKEN before running this script.")
-
     start = args.from_date or datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
     end = args.to_date or (start + timedelta(days=args.days))
     start_date = start.strftime("%Y-%m-%d")
     end_date = end.strftime("%Y-%m-%d")
 
-    fixtures = fetch_fixtures(token, args.leagues, start_date, end_date, args.timezone)
+    fixtures = fetch_fixtures(args.leagues, start_date, end_date, args.timezone)
     summary = save_fixtures(
         fixtures,
         stale_window=not args.no_stale_window,

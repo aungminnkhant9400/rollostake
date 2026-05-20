@@ -31,6 +31,7 @@ TEAM_NAME_MAP = {
     "Athletic Bilbao": "Ath Bilbao",
     "Athletic Club": "Ath Bilbao",
     "Real Betis Balompié": "Betis",
+    "Real Betis": "Betis",
     "Real Sociedad de Fútbol": "Sociedad",
     "Real Sociedad": "Sociedad",
     "Rayo Vallecano de Madrid": "Vallecano",

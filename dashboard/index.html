@@ -179,7 +179,7 @@ button.loss { color:var(--bad); border-color:#ef444433; }
 <header class="site-header">
   <div class="brand">
     <h1>RolloStake</h1>
-    <p>Football edge intelligence &middot; Polymarket odds &middot; 0 picks &middot; generated Wednesday, May 20, 2026 at 14:57 Macau time</p>
+    <p>Football edge intelligence &middot; Polymarket odds &middot; 7 picks &middot; generated Wednesday, May 20, 2026 at 15:14 Macau time</p>
   </div>
 </header>
 <main class="shell">
@@ -196,26 +196,271 @@ button.loss { color:var(--bad); border-color:#ef444433; }
     <div><span>Base Bank</span><strong>$100</strong></div>
     <div><span>Flat Stake</span><strong>$10</strong></div>
     <div><span>Odds Band</span><strong>1.70-2.70</strong></div>
-    <div><span>Strong</span><strong class="good">0</strong></div>
-    <div><span>Keep</span><strong>0</strong></div>
-    <div><span>Caution</span><strong class="warn">0</strong></div>
+    <div><span>Strong</span><strong class="good">3</strong></div>
+    <div><span>Keep</span><strong>3</strong></div>
+    <div><span>Caution</span><strong class="warn">1</strong></div>
     <div><span>Record</span><strong id="D-record">17W-9L-1P</strong></div>
     <div><span>Staked</span><strong id="D-staked">$270</strong></div>
     <div><span>P&amp;L</span><strong id="D-pnl" class="good">$+79.60</strong></div>
     <div><span>ROI</span><strong id="D-roi" class="good">+29.5%</strong></div>
     <div><span>Bank</span><strong id="D-bank" class="good">$179.60</strong></div>
   </div>
-  <div class="range-note">0 picks &middot; planned stake $0 &middot; 17 stake slots available from live bank &middot; correlated same-match exposure is flagged in each pick's risk note.</div>
+  <div class="range-note">7 picks &middot; planned stake $70 &middot; 17 stake slots available from live bank &middot; correlated same-match exposure is flagged in each pick's risk note.</div>
 
 <div class="filter-bar">
   <label for="D-filter">Filter by kickoff</label>
   <select id="D-filter" class="filter-select" onchange="filterRange('D', this.value)">
-    <option value="all">All dates</option>
+    <option value="all">All dates</option><option value="2026-05-23">Sat May 23</option><option value="2026-05-24">Sun May 24</option>
   </select>
-  <div class="filter-count">Showing <span id="D-visible">0</span> of 0 picks</div>
+  <div class="filter-count">Showing <span id="D-visible">7</span> of 7 picks</div>
 </div>
 
-  <div class="empty">No picks generated for this risk band yet.</div>
+  <div class="day-header" data-date="2026-05-23"><span>Sat May 23</span><small>1 picks</small></div>
+<div class="pick-card caution" id="pick-93" data-date="2026-05-23">
+  <div class="pick-summary" onclick="toggleDetails(93)">
+    <div class="rank">#1</div>
+    <div class="pick-main">
+      <div class="pick-title"><span class="market-pill">1X2</span>Atalanta Win <span class="badge caution">CAUTION</span></div>
+      <div class="pick-meta">Fiorentina vs Atalanta · <span>2026-05-23 02:45</span> · SerieA</div>
+    </div>
+    <div class="numbers">
+      <div><strong>@2.60</strong><span>Odds</span></div>
+      <div><strong class="good">+7.5%</strong><span>Edge</span></div>
+      <div><strong>$10</strong><span>Stake</span></div>
+    </div>
+    <div class="result" id="result-93">pending</div>
+    <div class="actions">
+      <button class="win" onclick="event.stopPropagation(); markPick('D', 93, 'win')">WIN</button>
+      <button class="loss" onclick="event.stopPropagation(); markPick('D', 93, 'loss')">LOSS</button>
+      <button onclick="event.stopPropagation(); markPick('D', 93, 'push')">PUSH</button>
+      <button onclick="event.stopPropagation(); markPick('D', 93, 'pending')">RST</button>
+    </div>
+  </div>
+  <div class="pick-details" id="details-93">
+    <div class="reasoning">Model prices this at 41.4% versus bookmaker implied 38.5%, creating +7.5% edge. 1X2 value should be manually checked against injuries, motivation, and likely rotation. External context: H2H downgrades pick (3/5 recent misses); fixture congestion supports pick. Low Risk candidate by odds profile.<br><br><strong>Risk:</strong> Check team news and odds movement before kickoff.</div>
+    <div class="metrics">
+      <span>Model <strong>41.4%</strong></span>
+      <span>Book <strong>38.5%</strong></span>
+      <span>Win <strong class="good">+$16</strong></span>
+      <span>Lose <strong class="bad">-$10</strong></span>
+    </div>
+    <div class="h2h"><h3>Head-to-Head</h3><table><thead><tr><th>Date</th><th>Match</th><th>W</th></tr></thead><tbody><tr><td>2025-03-30</td><td>Fiorentina 1-0 Atalanta</td><td>H</td></tr><tr><td>2024-09-15</td><td>Atalanta 3-2 Fiorentina</td><td>H</td></tr><tr><td>2024-06-02</td><td>Atalanta 2-3 Fiorentina</td><td>A</td></tr><tr><td>2023-09-17</td><td>Fiorentina 3-2 Atalanta</td><td>H</td></tr><tr><td>2023-04-17</td><td>Fiorentina 1-1 Atalanta</td><td>D</td></tr></tbody></table></div>
+    <div class="recent-form"><h3>Recent Form</h3><div class="form-row"><span class="form-d">D</span><small>Inter Milan 1-1</small><span class="form-l">L</span><small>Inter Milan 0-3</small><span class="form-w">W</span><small>Udinese 3-2</small><span class="form-w">W</span><small>Bologna 3-2</small><span class="form-l">L</span><small>Venezia 1-2</small></div></div>
+    <div class="recent-form"><h3>Recent Form</h3><div class="form-row"><span class="form-d">D</span><small>Inter Milan 1-1</small><span class="form-l">L</span><small>Inter Milan 0-1</small><span class="form-l">L</span><small>Parma 2-3</small><span class="form-w">W</span><small>Genoa 3-2</small><span class="form-w">W</span><small>Roma 2-1</small></div></div>
+
+  </div>
+</div>
+<div class="day-header" data-date="2026-05-24"><span>Sun May 24</span><small>6 picks</small></div>
+<div class="pick-card keep" id="pick-94" data-date="2026-05-24">
+  <div class="pick-summary" onclick="toggleDetails(94)">
+    <div class="rank">#2</div>
+    <div class="pick-main">
+      <div class="pick-title"><span class="market-pill">OU</span>Over 3.5 <span class="badge keep">KEEP</span></div>
+      <div class="pick-meta">Bologna vs Inter Milan · <span>2026-05-24 00:00</span> · SerieA</div>
+    </div>
+    <div class="numbers">
+      <div><strong>@2.60</strong><span>Odds</span></div>
+      <div><strong class="good">+20.5%</strong><span>Edge</span></div>
+      <div><strong>$10</strong><span>Stake</span></div>
+    </div>
+    <div class="result" id="result-94">pending</div>
+    <div class="actions">
+      <button class="win" onclick="event.stopPropagation(); markPick('D', 94, 'win')">WIN</button>
+      <button class="loss" onclick="event.stopPropagation(); markPick('D', 94, 'loss')">LOSS</button>
+      <button onclick="event.stopPropagation(); markPick('D', 94, 'push')">PUSH</button>
+      <button onclick="event.stopPropagation(); markPick('D', 94, 'pending')">RST</button>
+    </div>
+  </div>
+  <div class="pick-details" id="details-94">
+    <div class="reasoning">Model prices this at 46.4% versus bookmaker implied 38.5%, creating +20.5% edge. Goals market should be manually checked against fatigue, tactical setup, and recent scoring profiles. External context: H2H supports goals (avg 2.8). Low Risk candidate by odds profile.<br><br><strong>Risk:</strong> Check lineup and fatigue news before kickoff.</div>
+    <div class="metrics">
+      <span>Model <strong>46.4%</strong></span>
+      <span>Book <strong>38.5%</strong></span>
+      <span>Win <strong class="good">+$16</strong></span>
+      <span>Lose <strong class="bad">-$10</strong></span>
+    </div>
+    <div class="h2h"><h3>Head-to-Head</h3><table><thead><tr><th>Date</th><th>Match</th><th>W</th></tr></thead><tbody><tr><td>2026-01-04</td><td>Inter Milan 3-1 Bologna</td><td>H</td></tr><tr><td>2025-04-20</td><td>Bologna 1-0 Inter Milan</td><td>H</td></tr><tr><td>2025-01-15</td><td>Inter Milan 2-2 Bologna</td><td>D</td></tr><tr><td>2024-03-09</td><td>Bologna 0-1 Inter Milan</td><td>A</td></tr><tr><td>2023-10-07</td><td>Inter Milan 2-2 Bologna</td><td>D</td></tr></tbody></table></div>
+    <div class="recent-form"><h3>Recent Form</h3><div class="form-row"><span class="form-l">L</span><small>Inter Milan 1-3</small><span class="form-l">L</span><small>Genoa 1-3</small><span class="form-l">L</span><small>Fiorentina 2-3</small><span class="form-l">L</span><small>Milan 1-3</small><span class="form-d">D</span><small>Juventus 1-1</small></div></div>
+    <div class="recent-form"><h3>Recent Form</h3><div class="form-row"><span class="form-w">W</span><small>Cagliari 3-0</small><span class="form-w">W</span><small>Como 4-3</small><span class="form-w">W</span><small>Roma 5-2</small><span class="form-d">D</span><small>Fiorentina 1-1</small><span class="form-d">D</span><small>Atalanta 1-1</small></div></div>
+
+  </div>
+</div>
+
+<div class="pick-card strong" id="pick-95" data-date="2026-05-24">
+  <div class="pick-summary" onclick="toggleDetails(95)">
+    <div class="rank">#3</div>
+    <div class="pick-main">
+      <div class="pick-title"><span class="market-pill">BTTS</span>BTTS Yes <span class="badge strong">STRONG</span></div>
+      <div class="pick-meta">Lazio vs Pisa · <span>2026-05-24 02:45</span> · SerieA</div>
+    </div>
+    <div class="numbers">
+      <div><strong>@1.98</strong><span>Odds</span></div>
+      <div><strong class="good">+45.4%</strong><span>Edge</span></div>
+      <div><strong>$10</strong><span>Stake</span></div>
+    </div>
+    <div class="result" id="result-95">pending</div>
+    <div class="actions">
+      <button class="win" onclick="event.stopPropagation(); markPick('D', 95, 'win')">WIN</button>
+      <button class="loss" onclick="event.stopPropagation(); markPick('D', 95, 'loss')">LOSS</button>
+      <button onclick="event.stopPropagation(); markPick('D', 95, 'push')">PUSH</button>
+      <button onclick="event.stopPropagation(); markPick('D', 95, 'pending')">RST</button>
+    </div>
+  </div>
+  <div class="pick-details" id="details-95">
+    <div class="reasoning">Model prices this at 73.4% versus bookmaker implied 50.5%, creating +45.4% edge. BTTS value should be manually checked against both teams&#x27; scoring and clean-sheet trends. Low Risk candidate by odds profile.<br><br><strong>Risk:</strong> Check lineup and fatigue news before kickoff.</div>
+    <div class="metrics">
+      <span>Model <strong>73.4%</strong></span>
+      <span>Book <strong>50.5%</strong></span>
+      <span>Win <strong class="good">+$10</strong></span>
+      <span>Lose <strong class="bad">-$10</strong></span>
+    </div>
+
+    <div class="recent-form"><h3>Recent Form</h3><div class="form-row"><span class="form-l">L</span><small>Inter Milan 0-2</small><span class="form-l">L</span><small>Lecce 0-1</small><span class="form-d">D</span><small>Inter 2-2</small><span class="form-d">D</span><small>Inter Milan 2-2</small><span class="form-d">D</span><small>Juventus 1-1</small></div></div>
+    <div class="recent-form"><h3>Recent Form</h3><div class="form-row"><span class="form-l">L</span><small>Inter Milan 2-6</small><span class="form-l">L</span><small>Inter Milan 0-2</small></div></div>
+
+  </div>
+</div>
+
+<div class="pick-card strong" id="pick-96" data-date="2026-05-24">
+  <div class="pick-summary" onclick="toggleDetails(96)">
+    <div class="rank">#4</div>
+    <div class="pick-main">
+      <div class="pick-title"><span class="market-pill">BTTS</span>BTTS No <span class="badge strong">STRONG</span></div>
+      <div class="pick-meta">Alaves vs Vallecano · <span>2026-05-24 03:00</span> · LaLiga</div>
+    </div>
+    <div class="numbers">
+      <div><strong>@2.17</strong><span>Odds</span></div>
+      <div><strong class="good">+53.9%</strong><span>Edge</span></div>
+      <div><strong>$10</strong><span>Stake</span></div>
+    </div>
+    <div class="result" id="result-96">pending</div>
+    <div class="actions">
+      <button class="win" onclick="event.stopPropagation(); markPick('D', 96, 'win')">WIN</button>
+      <button class="loss" onclick="event.stopPropagation(); markPick('D', 96, 'loss')">LOSS</button>
+      <button onclick="event.stopPropagation(); markPick('D', 96, 'push')">PUSH</button>
+      <button onclick="event.stopPropagation(); markPick('D', 96, 'pending')">RST</button>
+    </div>
+  </div>
+  <div class="pick-details" id="details-96">
+    <div class="reasoning">Model prices this at 70.8% versus bookmaker implied 46.0%, creating +53.9% edge. BTTS value should be manually checked against both teams&#x27; scoring and clean-sheet trends. External context: H2H supports lower scoring (avg 1.4); fixture congestion supports pick. Low Risk candidate by odds profile.<br><br><strong>Risk:</strong> Check lineup and fatigue news before kickoff.</div>
+    <div class="metrics">
+      <span>Model <strong>70.8%</strong></span>
+      <span>Book <strong>46.0%</strong></span>
+      <span>Win <strong class="good">+$12</strong></span>
+      <span>Lose <strong class="bad">-$10</strong></span>
+    </div>
+    <div class="h2h"><h3>Head-to-Head</h3><table><thead><tr><th>Date</th><th>Match</th><th>W</th></tr></thead><tbody><tr><td>2025-03-29</td><td>Alaves 0-2 Vallecano</td><td>A</td></tr><tr><td>2024-10-26</td><td>Vallecano 1-0 Alaves</td><td>H</td></tr><tr><td>2024-03-10</td><td>Alaves 1-0 Vallecano</td><td>H</td></tr><tr><td>2023-09-15</td><td>Vallecano 2-0 Alaves</td><td>H</td></tr><tr><td>2022-04-16</td><td>Alaves 1-0 Vallecano</td><td>H</td></tr></tbody></table></div>
+    <div class="recent-form"><h3>Recent Form</h3><div class="form-row"><span class="form-l">L</span><small>Atletico Madrid 0-1</small><span class="form-w">W</span><small>Athletic Bilbao 1-0</small><span class="form-d">D</span><small>Atletico Madrid 1-1</small><span class="form-d">D</span><small>Osasuna 1-1</small><span class="form-w">W</span><small>Valladolid 1-0</small></div></div>
+    <div class="recent-form"><h3>Recent Form</h3><div class="form-row"><span class="form-d">D</span><small>Athletic Bilbao 1-1</small><span class="form-w">W</span><small>Atletico Madrid 3-0</small><span class="form-l">L</span><small>Atletico Madrid 2-3</small><span class="form-l">L</span><small>Athletic Bilbao 0-1</small><span class="form-d">D</span><small>Mallorca 0-0</small></div></div>
+
+  </div>
+</div>
+
+<div class="pick-card strong" id="pick-97" data-date="2026-05-24">
+  <div class="pick-summary" onclick="toggleDetails(97)">
+    <div class="rank">#5</div>
+    <div class="pick-main">
+      <div class="pick-title"><span class="market-pill">AH</span>Real Oviedo AH +1.5 <span class="badge strong">STRONG</span></div>
+      <div class="pick-meta">Mallorca vs Real Oviedo · <span>2026-05-24 03:00</span> · LaLiga</div>
+    </div>
+    <div class="numbers">
+      <div><strong>@1.71</strong><span>Odds</span></div>
+      <div><strong class="good">+34.0%</strong><span>Edge</span></div>
+      <div><strong>$10</strong><span>Stake</span></div>
+    </div>
+    <div class="result" id="result-97">pending</div>
+    <div class="actions">
+      <button class="win" onclick="event.stopPropagation(); markPick('D', 97, 'win')">WIN</button>
+      <button class="loss" onclick="event.stopPropagation(); markPick('D', 97, 'loss')">LOSS</button>
+      <button onclick="event.stopPropagation(); markPick('D', 97, 'push')">PUSH</button>
+      <button onclick="event.stopPropagation(); markPick('D', 97, 'pending')">RST</button>
+    </div>
+  </div>
+  <div class="pick-details" id="details-97">
+    <div class="reasoning">Model prices this at 78.4% versus bookmaker implied 58.5%, creating +34.0% edge. Asian handicap value should be checked for push rules, lineup strength, and game-state risk. External context: fixture congestion supports pick. Low Risk candidate by odds profile.<br><br><strong>Risk:</strong> Check exact handicap line, push rules, and team news before kickoff.</div>
+    <div class="metrics">
+      <span>Model <strong>78.4%</strong></span>
+      <span>Book <strong>58.5%</strong></span>
+      <span>Win <strong class="good">+$7</strong></span>
+      <span>Lose <strong class="bad">-$10</strong></span>
+    </div>
+
+    <div class="recent-form"><h3>Recent Form</h3><div class="form-row"><span class="form-l">L</span><small>Atletico Madrid 0-3</small><span class="form-w">W</span><small>Athletic Bilbao 3-2</small><span class="form-l">L</span><small>Athletic Bilbao 1-2</small><span class="form-d">D</span><small>Atletico Madrid 1-1</small><span class="form-d">D</span><small>Vallecano 0-0</small></div></div>
+
+
+  </div>
+</div>
+
+<div class="pick-card keep" id="pick-98" data-date="2026-05-24">
+  <div class="pick-summary" onclick="toggleDetails(98)">
+    <div class="rank">#6</div>
+    <div class="pick-main">
+      <div class="pick-title"><span class="market-pill">OU</span>Under 2.5 <span class="badge keep">KEEP</span></div>
+      <div class="pick-meta">Betis vs Levante · <span>2026-05-24 03:00</span> · LaLiga</div>
+    </div>
+    <div class="numbers">
+      <div><strong>@2.41</strong><span>Odds</span></div>
+      <div><strong class="good">+22.6%</strong><span>Edge</span></div>
+      <div><strong>$10</strong><span>Stake</span></div>
+    </div>
+    <div class="result" id="result-98">pending</div>
+    <div class="actions">
+      <button class="win" onclick="event.stopPropagation(); markPick('D', 98, 'win')">WIN</button>
+      <button class="loss" onclick="event.stopPropagation(); markPick('D', 98, 'loss')">LOSS</button>
+      <button onclick="event.stopPropagation(); markPick('D', 98, 'push')">PUSH</button>
+      <button onclick="event.stopPropagation(); markPick('D', 98, 'pending')">RST</button>
+    </div>
+  </div>
+  <div class="pick-details" id="details-98">
+    <div class="reasoning">Model prices this at 50.9% versus bookmaker implied 41.5%, creating +22.6% edge. Goals market should be manually checked against fatigue, tactical setup, and recent scoring profiles. External context: fixture congestion supports pick. Low Risk candidate by odds profile.<br><br><strong>Risk:</strong> Check lineup and fatigue news before kickoff.</div>
+    <div class="metrics">
+      <span>Model <strong>50.9%</strong></span>
+      <span>Book <strong>41.5%</strong></span>
+      <span>Win <strong class="good">+$14</strong></span>
+      <span>Lose <strong class="bad">-$10</strong></span>
+    </div>
+    <div class="h2h"><h3>Head-to-Head</h3><table><thead><tr><th>Date</th><th>Match</th><th>W</th></tr></thead><tbody><tr><td>2022-02-13</td><td>Levante 2-4 Betis</td><td>A</td></tr><tr><td>2021-11-28</td><td>Betis 3-1 Levante</td><td>H</td></tr></tbody></table></div>
+    <div class="recent-form"><h3>Recent Form</h3><div class="form-row"><span class="form-l">L</span><small>Athletic Bilbao 1-2</small><span class="form-w">W</span><small>Atletico Madrid 1-0</small><span class="form-l">L</span><small>Atletico Madrid 0-2</small><span class="form-l">L</span><small>Athletic Bilbao 1-2</small><span class="form-d">D</span><small>Valencia 1-1</small></div></div>
+    <div class="recent-form"><h3>Recent Form</h3><div class="form-row"><span class="form-l">L</span><small>Athletic Bilbao 2-4</small><span class="form-d">D</span><small>Atletico Madrid 0-0</small><span class="form-l">L</span><small>Athletic Bilbao 0-2</small><span class="form-l">L</span><small>Atletico Madrid 1-3</small><span class="form-w">W</span><small>Vallecano 4-2</small></div></div>
+
+  </div>
+</div>
+
+<div class="pick-card keep" id="pick-99" data-date="2026-05-24">
+  <div class="pick-summary" onclick="toggleDetails(99)">
+    <div class="rank">#7</div>
+    <div class="pick-main">
+      <div class="pick-title"><span class="market-pill">OU</span>Over 3.5 <span class="badge keep">KEEP</span></div>
+      <div class="pick-meta">Valencia vs Barcelona · <span>2026-05-24 03:00</span> · LaLiga</div>
+    </div>
+    <div class="numbers">
+      <div><strong>@2.25</strong><span>Odds</span></div>
+      <div><strong class="good">+16.3%</strong><span>Edge</span></div>
+      <div><strong>$10</strong><span>Stake</span></div>
+    </div>
+    <div class="result" id="result-99">pending</div>
+    <div class="actions">
+      <button class="win" onclick="event.stopPropagation(); markPick('D', 99, 'win')">WIN</button>
+      <button class="loss" onclick="event.stopPropagation(); markPick('D', 99, 'loss')">LOSS</button>
+      <button onclick="event.stopPropagation(); markPick('D', 99, 'push')">PUSH</button>
+      <button onclick="event.stopPropagation(); markPick('D', 99, 'pending')">RST</button>
+    </div>
+  </div>
+  <div class="pick-details" id="details-99">
+    <div class="reasoning">Model prices this at 51.8% versus bookmaker implied 44.5%, creating +16.3% edge. Goals market should be manually checked against fatigue, tactical setup, and recent scoring profiles. External context: H2H supports goals (avg 4.0); fixture congestion downgrades pick. Low Risk candidate by odds profile.<br><br><strong>Risk:</strong> Check lineup and fatigue news before kickoff.</div>
+    <div class="metrics">
+      <span>Model <strong>51.8%</strong></span>
+      <span>Book <strong>44.5%</strong></span>
+      <span>Win <strong class="good">+$12</strong></span>
+      <span>Lose <strong class="bad">-$10</strong></span>
+    </div>
+    <div class="h2h"><h3>Head-to-Head</h3><table><thead><tr><th>Date</th><th>Match</th><th>W</th></tr></thead><tbody><tr><td>2025-01-26</td><td>Barcelona 7-1 Valencia</td><td>H</td></tr><tr><td>2024-08-17</td><td>Valencia 1-2 Barcelona</td><td>A</td></tr><tr><td>2024-04-29</td><td>Barcelona 4-2 Valencia</td><td>H</td></tr><tr><td>2023-12-16</td><td>Valencia 1-1 Barcelona</td><td>D</td></tr><tr><td>2023-03-05</td><td>Barcelona 1-0 Valencia</td><td>H</td></tr></tbody></table></div>
+    <div class="recent-form"><h3>Recent Form</h3><div class="form-row"><span class="form-l">L</span><small>Atletico Madrid 1-2</small><span class="form-w">W</span><small>Athletic Bilbao 2-0</small><span class="form-d">D</span><small>Betis 1-1</small><span class="form-l">L</span><small>Ath Bilbao 0-1</small><span class="form-l">L</span><small>Athletic Bilbao 0-1</small></div></div>
+    <div class="recent-form"><h3>Recent Form</h3><div class="form-row"><span class="form-w">W</span><small>Atletico Madrid 2-1</small><span class="form-w">W</span><small>Athletic Bilbao 1-0</small><span class="form-w">W</span><small>Atletico Madrid 3-1</small><span class="form-w">W</span><small>Athletic Bilbao 4-0</small><span class="form-d">D</span><small>Real Madrid 1-1</small></div></div>
+
+  </div>
+</div>
+
   <div class="history"><h2>Low Risk History</h2><table><thead><tr><th>Played</th><th>Risk Band</th><th>Quality</th><th>Match</th><th>Pick</th><th>Result</th><th>P&L</th><th>Cumulative</th></tr></thead><tbody><tr><td>2026-05-05 00:30</td><td>Low Risk</td><td>KEEP</td><td>Cremonese vs Lazio</td><td>Lazio Win</td><td>win</td><td>$+15</td><td>$+15</td></tr><tr><td>2026-05-09 02:30</td><td>Low Risk</td><td>STRONG</td><td>Dortmund vs Ein Frankfurt</td><td>Dortmund Win</td><td>win</td><td>$+7</td><td>$+22</td></tr><tr><td>2026-05-09 21:30</td><td>Low Risk</td><td>STRONG</td><td>RB Leipzig vs St Pauli</td><td>Under 3.0</td><td>push</td><td>$+0</td><td>$+22</td></tr><tr><td>2026-05-09 22:00</td><td>Low Risk</td><td>KEEP</td><td>Brighton vs Wolves</td><td>Wolves U0.5</td><td>win</td><td>$+10</td><td>$+32</td></tr><tr><td>2026-05-09 22:00</td><td>Low Risk</td><td>KEEP</td><td>Fulham vs Bournemouth</td><td>Fulham U1.5</td><td>win</td><td>$+8</td><td>$+40</td></tr><tr><td>2026-05-10 00:00</td><td>Low Risk</td><td>STRONG</td><td>Lazio vs Inter Milan</td><td>Inter Milan Win</td><td>win</td><td>$+8</td><td>$+48</td></tr><tr><td>2026-05-10 02:45</td><td>Low Risk</td><td>KEEP</td><td>Lecce vs Juventus</td><td>BTTS No</td><td>win</td><td>$+8</td><td>$+56</td></tr><tr><td>2026-05-10 03:00</td><td>Low Risk</td><td>STRONG</td><td>Sociedad vs Betis</td><td>Sociedad Win</td><td>loss</td><td>$-10</td><td>$+46</td></tr><tr><td>2026-05-10 21:00</td><td>Low Risk</td><td>STRONG</td><td>Crystal Palace vs Everton</td><td>Everton Win</td><td>loss</td><td>$-10</td><td>$+36</td></tr><tr><td>2026-05-11 02:45</td><td>Low Risk</td><td>STRONG</td><td>AC Milan vs Atalanta</td><td>AC Milan Win</td><td>loss</td><td>$-10</td><td>$+26</td></tr><tr><td>2026-05-11 03:00</td><td>Low Risk</td><td>KEEP</td><td>Monaco vs Lille</td><td>Under 3.0</td><td>win</td><td>$+8</td><td>$+34</td></tr><tr><td>2026-05-15 02:00</td><td>Low Risk</td><td>KEEP</td><td>Girona vs Sociedad</td><td>Under 2.5</td><td>win</td><td>$+13</td><td>$+47</td></tr><tr><td>2026-05-16 21:30</td><td>Low Risk</td><td>KEEP</td><td>Union Berlin vs Augsburg</td><td>Under 3.5</td><td>loss</td><td>$-10</td><td>$+37</td></tr><tr><td>2026-05-17 19:30</td><td>Low Risk</td><td>KEEP</td><td>Aston Villa vs Liverpool</td><td>Under 2.5</td><td>loss</td><td>$-10</td><td>$+27</td></tr><tr><td>2026-05-17 21:00</td><td>Low Risk</td><td>KEEP</td><td>Juventus vs Fiorentina</td><td>BTTS No</td><td>win</td><td>$+9</td><td>$+36</td></tr><tr><td>2026-05-17 21:00</td><td>Low Risk</td><td>CAUTION</td><td>Udinese vs Cremonese</td><td>BTTS No</td><td>win</td><td>$+11</td><td>$+47</td></tr><tr><td>2026-05-17 22:00</td><td>Low Risk</td><td>KEEP</td><td>Brentford vs Crystal Palace</td><td>BTTS Yes</td><td>win</td><td>$+8</td><td>$+55</td></tr><tr><td>2026-05-18 00:30</td><td>Low Risk</td><td>KEEP</td><td>Newcastle vs West Ham</td><td>Under 3.5</td><td>loss</td><td>$-10</td><td>$+45</td></tr><tr><td>2026-05-18 01:00</td><td>Low Risk</td><td>KEEP</td><td>Ath Bilbao vs Celta</td><td>BTTS Yes</td><td>win</td><td>$+9</td><td>$+54</td></tr><tr><td>2026-05-18 01:00</td><td>Low Risk</td><td>KEEP</td><td>Elche vs Getafe</td><td>Under 1.5</td><td>win</td><td>$+17</td><td>$+71</td></tr><tr><td>2026-05-18 01:00</td><td>Low Risk</td><td>KEEP</td><td>Levante vs Mallorca</td><td>BTTS Yes</td><td>loss</td><td>$-10</td><td>$+61</td></tr><tr><td>2026-05-18 01:00</td><td>Low Risk</td><td>KEEP</td><td>Sociedad vs Valencia</td><td>BTTS Yes</td><td>win</td><td>$+7</td><td>$+68</td></tr><tr><td>2026-05-18 03:00</td><td>Low Risk</td><td>KEEP</td><td>Brest vs Angers</td><td>Under 2.5</td><td>win</td><td>$+11</td><td>$+79</td></tr><tr><td>2026-05-18 03:00</td><td>Low Risk</td><td>KEEP</td><td>Strasbourg vs Monaco</td><td>Under 3.5</td><td>loss</td><td>$-10</td><td>$+69</td></tr><tr><td>2026-05-19 03:00</td><td>Low Risk</td><td>KEEP</td><td>Arsenal vs Burnley</td><td>Burnley AH +2.5</td><td>win</td><td>$+10</td><td>$+79</td></tr><tr><td>2026-05-20 02:30</td><td>Low Risk</td><td>KEEP</td><td>Bournemouth vs Man City</td><td>Over 2.5</td><td>loss</td><td>$-10</td><td>$+69</td></tr><tr><td>2026-05-20 03:15</td><td>Low Risk</td><td>KEEP</td><td>Chelsea vs Tottenham</td><td>Chelsea Win</td><td>win</td><td>$+11</td><td>$+80</td></tr></tbody></table></div>
 </section>
 
@@ -256,7 +501,7 @@ button.loss { color:var(--bad); border-color:#ef444433; }
     </div>
     <div class="performance-grid">
       <div class="performance-card performance-leader"><span>Parley</span><strong class="good">+0.0%</strong><small>0 settled - 0W-0L</small><div>Staked $0 / P&amp;L $+0.00</div></div>
-      <div class="performance-card"><span>Source</span><strong>0</strong><small>Parley candidates</small><div>Selected from full model odds pool.</div></div>
+      <div class="performance-card"><span>Source</span><strong>4</strong><small>Parley candidates</small><div>Selected from full model odds pool.</div></div>
       <div class="performance-card"><span>Stake</span><strong>$5</strong><small>Suggested per slip</small><div>Half of flat stake.</div></div>
       <div class="performance-card"><span>Rule</span><strong>1</strong><small>Booster max</small><div>Low odds first, no same-match correlation.</div></div>
     </div>
@@ -268,16 +513,70 @@ button.loss { color:var(--bad); border-color:#ef444433; }
     <div><span>P&amp;L</span><strong class="good">$+0.00</strong></div>
     <div><span>Bank</span><strong class="good">$100.00</strong></div>
   </div>
-  <div class="range-note">0 pending parley slips &middot; every leg must win &middot; Parley is now saved and settled separately from High Risk and Low Risk.</div>
-  <div class="day-header"><span>Recommended Parley Slips</span><small>0 slips</small></div>
-  <div class="empty">No pending parley slips saved yet.</div>
+  <div class="range-note">2 pending parley slips &middot; every leg must win &middot; Parley is now saved and settled separately from High Risk and Low Risk.</div>
+  <div class="day-header"><span>Recommended Parley Slips</span><small>2 slips</small></div>
+
+<div class="pick-card keep parley-pick" id="pick-parley-1">
+  <div class="pick-summary" onclick="toggleDetails('parley-1')">
+    <div class="rank">#1</div>
+    <div class="pick-main">
+      <div class="pick-title"><span class="market-pill">PARLEY</span>Conservative 2-leg <span class="badge keep">KEEP</span></div>
+      <div class="pick-meta">2 legs &middot; low odds model pool &middot; no same-match legs</div>
+    </div>
+    <div class="numbers">
+      <div><strong>@3.38</strong><span>Total Odds</span></div>
+      <div><strong class="good">57.5%</strong><span>Model Hit</span></div>
+      <div><strong>$5</strong><span>Stake</span></div>
+      <div><strong class="good">+$12</strong><span>Profit</span></div>
+    </div>
+    <div class="result">pending</div>
+  </div>
+  <div class="pick-details" id="details-parley-1">
+    <div class="reasoning">This parley is built from the model's separate parley pool, not copied from Low Risk. It prefers lower odds, higher model probability, and segments that have learned better from settled results. It allows only limited booster odds because every leg must win.</div>
+    <div class="metrics">
+      <span>Combined Odds <strong>@3.38</strong></span>
+      <span>Combined Model <strong>57.5%</strong></span>
+      <span>Win <strong class="good">+$12</strong></span>
+      <span>Lose <strong class="bad">-$5</strong></span>
+    </div>
+    <div class="parley-legs"><div class="parley-leg"><div><span class="market-pill">BTTS</span><strong>BTTS Yes</strong></div><small>Lazio vs Pisa &middot; 2026-05-24 02:45</small><div class="metrics"><span>Odds <strong>@1.98</strong></span><span>Model <strong>73.4%</strong></span><span>Edge <strong class="good">+45.4%</strong></span><span>Band <strong>LOW RISK</strong></span><span>Result <strong>pending</strong></span></div></div><div class="parley-leg"><div><span class="market-pill">AH</span><strong>Real Oviedo AH +1.5</strong></div><small>Mallorca vs Real Oviedo &middot; 2026-05-24 03:00</small><div class="metrics"><span>Odds <strong>@1.71</strong></span><span>Model <strong>78.4%</strong></span><span>Edge <strong class="good">+34.0%</strong></span><span>Band <strong>LOW RISK</strong></span><span>Result <strong>pending</strong></span></div></div></div>
+  </div>
+</div>
+
+<div class="pick-card keep parley-pick" id="pick-parley-2">
+  <div class="pick-summary" onclick="toggleDetails('parley-2')">
+    <div class="rank">#2</div>
+    <div class="pick-main">
+      <div class="pick-title"><span class="market-pill">PARLEY</span>Balanced 3-leg <span class="badge keep">KEEP</span></div>
+      <div class="pick-meta">3 legs &middot; low odds model pool &middot; no same-match legs</div>
+    </div>
+    <div class="numbers">
+      <div><strong>@7.36</strong><span>Total Odds</span></div>
+      <div><strong class="good">40.7%</strong><span>Model Hit</span></div>
+      <div><strong>$5</strong><span>Stake</span></div>
+      <div><strong class="good">+$32</strong><span>Profit</span></div>
+    </div>
+    <div class="result">pending</div>
+  </div>
+  <div class="pick-details" id="details-parley-2">
+    <div class="reasoning">This parley is built from the model's separate parley pool, not copied from Low Risk. It prefers lower odds, higher model probability, and segments that have learned better from settled results. It allows only limited booster odds because every leg must win.</div>
+    <div class="metrics">
+      <span>Combined Odds <strong>@7.36</strong></span>
+      <span>Combined Model <strong>40.7%</strong></span>
+      <span>Win <strong class="good">+$32</strong></span>
+      <span>Lose <strong class="bad">-$5</strong></span>
+    </div>
+    <div class="parley-legs"><div class="parley-leg"><div><span class="market-pill">BTTS</span><strong>BTTS Yes</strong></div><small>Lazio vs Pisa &middot; 2026-05-24 02:45</small><div class="metrics"><span>Odds <strong>@1.98</strong></span><span>Model <strong>73.4%</strong></span><span>Edge <strong class="good">+45.4%</strong></span><span>Band <strong>LOW RISK</strong></span><span>Result <strong>pending</strong></span></div></div><div class="parley-leg"><div><span class="market-pill">BTTS</span><strong>BTTS No</strong></div><small>Alaves vs Vallecano &middot; 2026-05-24 03:00</small><div class="metrics"><span>Odds <strong>@2.17</strong></span><span>Model <strong>70.8%</strong></span><span>Edge <strong class="good">+53.9%</strong></span><span>Band <strong>BOOSTER</strong></span><span>Result <strong>pending</strong></span></div></div><div class="parley-leg"><div><span class="market-pill">AH</span><strong>Real Oviedo AH +1.5</strong></div><small>Mallorca vs Real Oviedo &middot; 2026-05-24 03:00</small><div class="metrics"><span>Odds <strong>@1.71</strong></span><span>Model <strong>78.4%</strong></span><span>Edge <strong class="good">+34.0%</strong></span><span>Band <strong>LOW RISK</strong></span><span>Result <strong>pending</strong></span></div></div></div>
+  </div>
+</div>
+
   <div class="history empty-history">No settled parley history yet.</div>
 </section>
 
 </main>
 <script>
 const KEY = 'rollo-range-results-v1';
-const PICKS = {"D": [], "C": []};
+const PICKS = {"D": [{"id": 93, "odds": 2.5974, "stake": 10.0, "status": "pending"}, {"id": 94, "odds": 2.5974, "stake": 10.0, "status": "pending"}, {"id": 95, "odds": 1.9802, "stake": 10.0, "status": "pending"}, {"id": 96, "odds": 2.1739, "stake": 10.0, "status": "pending"}, {"id": 97, "odds": 1.7094, "stake": 10.0, "status": "pending"}, {"id": 98, "odds": 2.4096, "stake": 10.0, "status": "pending"}, {"id": 99, "odds": 2.2472, "stake": 10.0, "status": "pending"}], "C": []};
 const BANK = {"D": 100.0, "C": 100.0};
 const SETTLED = {"D": {"wins": 17, "losses": 9, "pushes": 1, "staked": 270.0, "pnl": 79.6}, "C": {"wins": 4, "losses": 21, "pushes": 0, "staked": 250.0, "pnl": -96.0}};
 const ACTIVE_RANGES = ["D", "C"];

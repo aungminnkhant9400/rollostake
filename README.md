@@ -27,10 +27,9 @@ Then open `dashboard/index.html` in your browser.
 
 ## Weekly Fixture + Odds Workflow
 
-Fetch real upcoming fixtures from football-data.org, export a blank odds slate, then fill the odds from your bookmaker.
+Fetch real upcoming fixtures through token-free HTTP, export a blank odds slate, then fill the odds from your bookmaker.
 
 ```bash
-export FOOTBALL_DATA_TOKEN="your-football-data-token"
 python3 scripts/fetch_weekly_fixtures.py --days 7 --export week_slate.csv
 python3 scripts/import_weekly_slate.py week_slate.csv
 python3 main.py --skip-scrape --no-fatigue
@@ -39,7 +38,6 @@ python3 main.py --skip-scrape --no-fatigue
 On Windows PowerShell:
 
 ```powershell
-$env:FOOTBALL_DATA_TOKEN="your-football-data-token"
 python scripts\fetch_weekly_fixtures.py --days 7 --export week_slate.csv
 python scripts\import_weekly_slate.py week_slate.csv
 python main.py --skip-scrape --no-fatigue
