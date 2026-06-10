@@ -14,6 +14,7 @@ from models.core import init_db
 from models.dixon_coles import DixonColesModel, MatchResult, save_prediction
 from scrapers.historical_loader import HistoricalDataLoader, get_historical_matches
 from scrapers.stake_scraper import fetch_all_leagues
+from analysis.adjustment_layers import AdjustmentLayerEngine, save_prediction_layers
 from analysis.edge_calculator import EdgeCalculator
 from analysis.fatigue import FatigueAnalyzer, save_fatigue_analysis
 from dashboard.generator import DashboardGenerator
@@ -237,15 +238,22 @@ def run_pipeline(leagues=None, skip_scrape=False, use_fatigue=True):
     else:
         print("\n[4/8] Skipping scrape (using existing data)")
     
-    # Step 5: Generate predictions using per-league models
+    # Step 5: Generate predictions using per-league models and the 14-layer
+    # football-context adjustment stack.
     print("\n[5/8] Generating predictions...")
+    layer_engine = AdjustmentLayerEngine(settings)
+    layer_active_count = 0
     for match in upcoming:
         league = match.get('league', 'EPL')
         model = league_models.get(league, default_model)
         preds = model.predict(match['home_team'], match['away_team'])
+        preds = layer_engine.apply(match, preds)
         save_prediction(match['match_id'], preds)
+        save_prediction_layers(match['match_id'], preds.get('layers', []))
+        layer_active_count += sum(1 for layer in preds.get('layers', []) if layer.active)
 
     print(f"Generated predictions for {len(upcoming)} matches")
+    print(f"  14-layer adjustments recorded: {layer_active_count} active layer hits")
 
     # Step 6: Analyze upcoming matches (already loaded in step 2b)
     print("\n[6/8] Analyzing upcoming matches...")
@@ -256,9 +264,6 @@ def run_pipeline(leagues=None, skip_scrape=False, use_fatigue=True):
         print("\n[6/8] Running fatigue analysis...")
         fatigue = FatigueAnalyzer()
         
-        # Track if we applied any adjustments
-        adjustments_applied = 0
-        
         for match in upcoming:
             analysis = fatigue.analyze_matchup(
                 match['home_team'], 
@@ -267,38 +272,8 @@ def run_pipeline(leagues=None, skip_scrape=False, use_fatigue=True):
             )
             save_fatigue_analysis(match['match_id'], analysis)
             
-            # Apply fatigue adjustment to predictions if significant
-            if abs(analysis['fatigue_diff']) >= 10:
-                # Get current prediction
-                conn = sqlite3.connect(DB_PATH)
-                c = conn.cursor()
-                c.execute('SELECT prob_home_win, prob_away_win FROM predictions WHERE match_id = ?', (match['match_id'],))
-                row = c.fetchone()
-                conn.close()
-                
-                if row:
-                    # Adjust home win probability based on fatigue advantage
-                    adjustment = analysis['fatigue_diff'] * 0.001  # Small adjustment
-                    new_home = max(0.05, min(0.95, row[0] + adjustment))
-                    new_away = max(0.05, min(0.95, row[1] - adjustment))
-                    
-                    # Update prediction
-                    conn = sqlite3.connect(DB_PATH)
-                    c = conn.cursor()
-                    c.execute('''
-                        UPDATE predictions 
-                        SET prob_home_win = ?, prob_away_win = ?
-                        WHERE match_id = ?
-                    ''', (new_home, new_away, match['match_id']))
-                    conn.commit()
-                    conn.close()
-                    adjustments_applied += 1
-            
             if analysis['fatigue_advantage'] != 'even':
                 print(f"  {match['home_team']} vs {match['away_team']}: {analysis['fatigue_advantage_desc']} (diff: {analysis['fatigue_diff']:+.1f})")
-        
-        if adjustments_applied > 0:
-            print(f"  Applied fatigue adjustments to {adjustments_applied} matches")
     else:
         print("\n[6/8] Skipping fatigue analysis")
     

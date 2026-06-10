@@ -20,6 +20,7 @@ from models.core import init_db
 
 MATCH_TOTAL_LINES = (0.5, 1.5, 2.5, 3.0, 3.5)
 TEAM_TOTAL_LINES = (0.5, 1.5, 2.5)
+DC_RHO = -0.13
 FIELDNAMES = [
     "risk_band",
     "match_id",
@@ -43,11 +44,27 @@ def _poisson_pmf(goals: int, expected: float) -> float:
     return math.exp(-expected) * (expected**goals) / math.factorial(goals)
 
 
+def _dc_correction(home_goals: int, away_goals: int, lambda_h: float, lambda_a: float) -> float:
+    if home_goals == 0 and away_goals == 0:
+        return 1 - lambda_h * lambda_a * DC_RHO
+    if home_goals == 0 and away_goals == 1:
+        return 1 + lambda_h * DC_RHO
+    if home_goals == 1 and away_goals == 0:
+        return 1 + lambda_a * DC_RHO
+    if home_goals == 1 and away_goals == 1:
+        return 1 - DC_RHO
+    return 1.0
+
+
 def _score_distribution(lambda_h: float, lambda_a: float, max_goals: int = 10) -> dict:
     dist = {}
     for home_goals in range(max_goals + 1):
         for away_goals in range(max_goals + 1):
-            dist[(home_goals, away_goals)] = _poisson_pmf(home_goals, lambda_h) * _poisson_pmf(away_goals, lambda_a)
+            base = _poisson_pmf(home_goals, lambda_h) * _poisson_pmf(away_goals, lambda_a)
+            dist[(home_goals, away_goals)] = max(
+                0.0,
+                base * _dc_correction(home_goals, away_goals, lambda_h, lambda_a),
+            )
 
     total = sum(dist.values())
     if total <= 0:

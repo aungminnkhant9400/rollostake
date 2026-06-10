@@ -32,6 +32,12 @@ Context factors to include when available:
 - Motivation
 - Team news
 
+Production model probabilities now run through a 14-layer lambda adjustment
+stack before picks are priced: rolling form blend, Elo strength-of-schedule,
+finishing/xG proxy, motivation, manager bounce, derby, injuries, European
+fatigue, cup fatigue, rest days, rotation, luck regression, lambda cap
+`[0.3, 5.0]`, and Dixon-Coles `rho=-0.13`.
+
 ## Core Concepts
 
 - High Risk: bigger odds, higher upside, more volatile. Current range code is `C`.
@@ -129,7 +135,7 @@ python scripts\rebuild_card.py
 9. Validate touched Python files.
 
 ```powershell
-$env:PYTHONDONTWRITEBYTECODE='1'; python -m py_compile analysis\edge_calculator.py dashboard\generator.py scripts\rebuild_card.py scripts\import_match_results.py scripts\study_external_card.py scripts\scrape_polymarket_full.py scripts\import_historical_odds.py utils\match_resolver.py
+$env:PYTHONDONTWRITEBYTECODE='1'; python -m py_compile analysis\adjustment_layers.py analysis\edge_calculator.py dashboard\generator.py scripts\adjustment_layer_report.py scripts\rebuild_card.py scripts\import_match_results.py scripts\study_external_card.py scripts\scrape_polymarket_full.py scripts\import_historical_odds.py utils\match_resolver.py
 ```
 
 ## `update` Workflow
@@ -192,6 +198,7 @@ Never use `--create-missing` unless the user explicitly asks. Do not clear past 
 ## Important Files
 
 - `analysis/edge_calculator.py`: Candidate generation, edge scoring, learned adjustments, loss traps, risk-band selection.
+- `analysis/adjustment_layers.py`: Fourteen pre-market lambda adjustment layers and prediction-layer audit rows.
 - `dashboard/generator.py`: Static dashboard rendering, risk tabs, history, Parley tab.
 - `scripts/rebuild_card.py`: Regenerates risk-band picks and dashboard.
 - `scripts/import_match_results.py`: Imports final scores and settles picks.
@@ -200,6 +207,7 @@ Never use `--create-missing` unless the user explicitly asks. Do not clear past 
 - `friend_cards/`: Raw weekly prediction HTML cards from the user's friend. Add new friend cards here before studying them.
 - `scrapers/browser_news_scraper.py`: Optional browser/Kimi WebBridge team-news scraper plus manual JSON fallback.
 - `scripts/news_impact_report.py`: Reports which pending picks have visible news/context adjustments.
+- `scripts/adjustment_layer_report.py`: Reports active/inactive 14-layer adjustments saved for current predictions.
 - `utils/match_resolver.py`: Normalizes and resolves Polymarket matches to existing fixtures.
 - `utils/team_normalizer.py`: Team name alias map used by odds, fixture, and news matching.
 - `config/settings.json`: Active ranges, bankroll, stake size, leagues, bookmaker, and fixture settings.

@@ -161,6 +161,23 @@ def init_db():
     ''')
 
     c.execute('''
+        CREATE TABLE IF NOT EXISTS prediction_adjustment_layers (
+            id INTEGER PRIMARY KEY,
+            match_id TEXT,
+            layer_no INTEGER,
+            layer_name TEXT,
+            home_before REAL,
+            away_before REAL,
+            home_after REAL,
+            away_after REAL,
+            note TEXT,
+            active INTEGER DEFAULT 0,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (match_id) REFERENCES matches(match_id)
+        )
+    ''')
+
+    c.execute('''
         CREATE TABLE IF NOT EXISTS parley_slips (
             id INTEGER PRIMARY KEY,
             slip_key TEXT UNIQUE,

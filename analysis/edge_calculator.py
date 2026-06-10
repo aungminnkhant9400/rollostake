@@ -81,6 +81,7 @@ class EdgeCalculator:
     KELLY_FRACTION = 0.15  # 15% Kelly for safety (was 25%)
     MAX_KELLY_PCT = 0.05   # Max 5% of bankroll per bet (was $500 fixed)
     MIN_KELLY_STAKE = 50.0
+    DC_RHO = -0.13
 
     DEFAULT_RANGES = {
         'C': RangeConfig('C', 'High Risk', 10000.0, 200.0, 2.50, 5.00, 12, 0.05),
@@ -327,6 +328,8 @@ class EdgeCalculator:
                 continue
 
             context_delta, context_notes = self._external_factor_adjustment(row, row['selection'], row['market'])
+            if self._has_prediction_layer_stack(row):
+                context_delta = 0.0
             model_prob = max(0.01, min(0.99, model_prob + context_delta))
             
             edge_pct, book_prob = self.calculate_edge(model_prob, row['odds'])
@@ -989,6 +992,18 @@ class EdgeCalculator:
     def _poisson_pmf(self, goals: int, expected: float) -> float:
         return math.exp(-expected) * (expected ** goals) / math.factorial(goals)
 
+    def _dc_correction(self, home_goals: int, away_goals: int, lambda_h: float, lambda_a: float) -> float:
+        rho = self.DC_RHO
+        if home_goals == 0 and away_goals == 0:
+            return 1 - lambda_h * lambda_a * rho
+        if home_goals == 0 and away_goals == 1:
+            return 1 + lambda_h * rho
+        if home_goals == 1 and away_goals == 0:
+            return 1 + lambda_a * rho
+        if home_goals == 1 and away_goals == 1:
+            return 1 - rho
+        return 1.0
+
     def _score_distribution(self, row, max_goals: int = 10) -> Optional[Dict[Tuple[int, int], float]]:
         lambdas = self._lambda_pair(row)
         if not lambdas:
@@ -998,7 +1013,11 @@ class EdgeCalculator:
         for home_goals in range(max_goals + 1):
             home_prob = self._poisson_pmf(home_goals, lambda_h)
             for away_goals in range(max_goals + 1):
-                dist[(home_goals, away_goals)] = home_prob * self._poisson_pmf(away_goals, lambda_a)
+                base = home_prob * self._poisson_pmf(away_goals, lambda_a)
+                dist[(home_goals, away_goals)] = max(
+                    0.0,
+                    base * self._dc_correction(home_goals, away_goals, lambda_h, lambda_a),
+                )
         total = sum(dist.values())
         if total <= 0:
             return None
@@ -1204,9 +1223,13 @@ class EdgeCalculator:
 
         existing_note = str(row['adjustment_note'] or "").strip() if 'adjustment_note' in row.keys() else ""
         if existing_note and existing_note != "Home: +0% overall, Away: +0% overall":
-            notes.append(f"manual team-news probabilities loaded ({existing_note})")
+            notes.append(f"prediction adjustment note loaded ({existing_note})")
 
         return max(-0.12, min(0.12, adjustment)), notes[:4]
+
+    def _has_prediction_layer_stack(self, row) -> bool:
+        note = str(row['adjustment_note'] or "") if 'adjustment_note' in row.keys() else ""
+        return note.startswith("14-layer model")
 
     def _fatigue_context_adjustment(self, row, side: str, market: str) -> Tuple[float, str]:
         home_score = row['home_fatigue_score'] if 'home_fatigue_score' in row.keys() else None

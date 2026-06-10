@@ -231,9 +231,21 @@ This repo is set up for collaboration between:
 ### Dixon-Coles Model
 - Poisson distribution for goal scoring
 - Home advantage factor (~35%)
-- Dixon-Coles correction for low-score correlation
+- Dixon-Coles correction for low-score correlation (`rho=-0.13`)
 - Team-specific attack/defense ratings
 - Trained per league on all historical data
+
+### 14 Adjustment Layers
+
+Before odds are priced, production lambdas pass through `analysis/adjustment_layers.py`:
+rolling form blend, Elo strength-of-schedule, finishing/xG proxy, motivation,
+manager bounce, derby, injuries, European fatigue, cup fatigue, rest days,
+rotation, luck regression, lambda cap `[0.3, 5.0]`, and Dixon-Coles `rho=-0.13`.
+Run this after `main.py` to inspect the saved layer audit:
+
+```powershell
+python scripts\adjustment_layer_report.py --all
+```
 
 ### Edge Calculation
 - **STRONG**: Edge ≥ 25% → Kelly stake

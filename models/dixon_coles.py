@@ -36,11 +36,12 @@ class DixonColesModel:
     - rho: home advantage factor
     """
     
-    def __init__(self):
+    def __init__(self, rho: float = -0.13, fit_rho: bool = False):
         self.teams = set()
         self.params = {}
         self.home_advantage = 1.35  # Home teams score ~35% more
-        self.rho = -0.08  # Dixon-Coles correlation parameter (low scores correlated)
+        self.rho = rho  # Dixon-Coles correlation parameter (low scores correlated)
+        self.fit_rho = fit_rho
         self.avg_goals_home = 1.55
         self.avg_goals_away = 1.15
         
@@ -71,7 +72,7 @@ class DixonColesModel:
         attack = params[:n_teams]
         defense = params[n_teams:2*n_teams]
         home_adv = params[2*n_teams] if len(params) > 2*n_teams else 1.35
-        rho = params[2*n_teams + 1] if len(params) > 2*n_teams + 1 else -0.08
+        rho = params[2*n_teams + 1] if len(params) > 2*n_teams + 1 else self.rho
         
         log_lik = 0
         for match in matches:
@@ -113,13 +114,18 @@ class DixonColesModel:
         team_index = {team: i for i, team in enumerate(sorted(self.teams))}
         n_teams = len(team_index)
         
-        # Initial parameters: attack=1.0, defense=1.0, home_adv=1.35, rho=-0.08
-        x0 = np.ones(2 * n_teams + 2)
+        # Initial parameters: attack=1.0, defense=1.0, home_adv=1.35.
+        # Production uses a fixed rho=-0.13 unless fit_rho is explicitly enabled.
+        param_count = 2 * n_teams + (2 if self.fit_rho else 1)
+        x0 = np.ones(param_count)
         x0[2*n_teams] = 1.35  # home advantage
-        x0[2*n_teams + 1] = -0.08  # rho
+        if self.fit_rho:
+            x0[2*n_teams + 1] = self.rho  # rho
         
         # Constraints: attack and defense should be positive
-        bounds = [(0.1, 3.0)] * (2 * n_teams) + [(1.0, 2.0), (-0.3, 0.0)]
+        bounds = [(0.1, 3.0)] * (2 * n_teams) + [(1.0, 2.0)]
+        if self.fit_rho:
+            bounds.append((-0.3, 0.0))
         
         # Optimize
         result = minimize(
@@ -136,7 +142,7 @@ class DixonColesModel:
             'attack': result.x[:n_teams],
             'defense': result.x[n_teams:2*n_teams],
             'home_advantage': result.x[2*n_teams],
-            'rho': result.x[2*n_teams + 1],
+            'rho': result.x[2*n_teams + 1] if self.fit_rho else self.rho,
             'team_index': team_index
         }
         
@@ -166,7 +172,7 @@ class DixonColesModel:
                 
                 # Apply Dixon-Coles correction
                 if h <= 1 and a <= 1:
-                    correction = self._dc_correction(h, a, lambda_h, lambda_a, self.rho)
+                    correction = self._dc_correction(h, a, lambda_h, lambda_a, self.params.get('rho', self.rho))
                     prob *= correction
                 
                 distribution[(h, a)] = prob
@@ -321,8 +327,9 @@ def save_prediction(match_id: str, preds: Dict):
     c.execute('''
         INSERT OR REPLACE INTO predictions 
         (match_id, lambda_h, lambda_a, prob_home_win, prob_draw, prob_away_win,
-         prob_over_1_5, prob_over_2_5, prob_under_2_5, prob_btts_yes)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+         prob_over_1_5, prob_over_2_5, prob_under_2_5, prob_btts_yes,
+         adj_prob_home, adj_prob_draw, adj_prob_away, adjustment_note)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     ''', (
         match_id, 
         preds.get('lambda_h', 0),
@@ -333,7 +340,11 @@ def save_prediction(match_id: str, preds: Dict):
         preds.get('prob_over_1_5', 0),
         preds.get('prob_over_2_5', 0), 
         preds.get('prob_under_2_5', 0),
-        preds.get('prob_btts_yes', 0)
+        preds.get('prob_btts_yes', 0),
+        preds.get('adj_prob_home', preds.get('prob_home_win', 0)),
+        preds.get('adj_prob_draw', preds.get('prob_draw', 0)),
+        preds.get('adj_prob_away', preds.get('prob_away_win', 0)),
+        preds.get('adjustment_note', ''),
     ))
     
     conn.commit()

@@ -29,6 +29,15 @@ def load_settings():
         "min_edge": 0.05,
         "max_picks": 12,
         "use_fatigue": True,
+        "adjustment_layers": {
+            "enabled": True,
+            "rolling_blend_threshold": 0.30,
+            "lambda_min": 0.30,
+            "lambda_max": 5.00,
+            "dixon_coles_rho": -0.13,
+            "manual_context_file": "data/team_context.json",
+            "derby_pairs": [],
+        },
         "ranges": {
             "C": {
                 "name": "High Risk",
@@ -61,6 +70,10 @@ def load_settings():
     settings["ranges"] = {
         **defaults["ranges"],
         **loaded.get("ranges", {}),
+    }
+    settings["adjustment_layers"] = {
+        **defaults["adjustment_layers"],
+        **loaded.get("adjustment_layers", {}),
     }
     env_key = os.getenv("API_FOOTBALL_KEY")
     if env_key:
